@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <title>SnackZilla app</title>
+</head>
+<body>
+    <%- include ('partials/header.ejs') %>
+    <div class="container"><h2>Register an account with us!</h2>
+    <form action="/register" method="post">
+        
+            <label for="UserID">userID</label>
+            <input type="number" id="user_id" name="userId" required><br><br>
+        
+            <label for="Username">username</label>
+            <input type="text" id="username" name="Username" required><br><br>
+        
+
+            <label for="Email">email</label>
+            <input type="email" id="email" name="Email" required><br><br>
+        
+
+            <label for="Password" >password</label>
+            <input type="numbers" id="password" name="Password" required><br><br>
+        
+        
+            <label for="Address">address</label>
+            <input type="text" id="address" name="Address" required><br><br>
+    
+        
+            <label for="Full_Name">full name</label>
+            <input type="text" id="full name" name="Full_Name" required><br><br>
+            
+        </div>
+        <a href="/">Back</a>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+    
+    </div>
+</body>
+</html>
