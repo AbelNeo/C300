@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar & Forum | Your Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Calendar & Forum</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="calendar-forum.html">Calendar & Forum</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Calendar Section -->
+        <section class="calendar">
+            <h2>Event Calendar</h2>
+            <div id="calendar-container">
+                <!-- Embed a calendar (e.g., Google Calendar) -->
+                <iframe src="https://calendar.google.com/calendar/embed?src=your-calendar-id%40group.calendar.google.com&ctz=UTC" 
+                        width="100%" height="400" frameborder="0" scrolling="no"></iframe>
+            </div>
+        </section>
+
+        <!-- Forum Section -->
+        <section class="forum">
+            <h2>Community Forum</h2>
+            <div id="forum-posts">
+                <!-- Simple forum placeholder (for a real forum, use a backend or third-party tool) -->
+                <div class="post">
+                    <h3>Post Title</h3>
+                    <p>Post content goes here...</p>
+                    <small>Posted by User on Jan 1, 2024</small>
+                </div>
+            </div>
+            <form id="forum-form">
+                <input type="text" placeholder="Post Title" required>
+                <textarea placeholder="Your message..."></textarea>
+                <button type="submit">Submit Post</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; Your Website 2024</p>
+    </footer>
+</body>
+</html>
