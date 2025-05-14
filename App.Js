@@ -23,7 +23,17 @@ app.use(bodyParser.json());
 //     console.log('Connected to MySQL database');
 // });
 
+import { db } from "./firebase.js";
+import { collection, getDocs } from "firebase/firestore";
 
+async function getPosts() {
+  const querySnapshot = await getDocs(collection(db, "posts"));
+  querySnapshot.forEach((doc) => {
+    console.log(doc.id, " => ", doc.data());
+  });
+}
+
+getPosts();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

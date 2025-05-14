@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FootMaster Pro - Club Management</title>
-
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -17,6 +16,7 @@
                 </div>
 
                 <ul class="nav-links">
+                  <!-- Main Search bar -->
                     <li class="header_navIconSearch"><a class="Button_root__RKQ4c Button_icon__k478f Header_headerNavLink__2ueoJ" href="/en/search"><p class="screen-reader-only">Search</p><svg class="Header_headerNavLinkIcon__90yzK" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M16.6342 17.6949C15.1119 18.9773 13.1462 19.75 11 19.75c-4.8325 0-8.75-3.9175-8.75-8.75S6.1675 2.25 11 2.25s8.75 3.9175 8.75 8.75c0 2.1463-.7727 4.112-2.0552 5.6343l3.8354 3.8354a.75.75 0 0 1-1.0606 1.0607l-3.8354-3.8355ZM3.75 11c0-4.004 3.246-7.25 7.25-7.25 4.0041 0 7.25 3.246 7.25 7.25 0 1.9605-.7782 3.7393-2.0425 5.0443a.7492.7492 0 0 0-.1633.1633C14.7392 17.4719 12.9605 18.25 11 18.25c-4.004 0-7.25-3.2459-7.25-7.25Z" clip-rule="evenodd"></path></svg></a></li>
                     <li class="header_navIconDivider"></li>
                     <li><a href="index.html">Home</a></li>
@@ -33,6 +33,23 @@
     <main class="container">
         <h1>Welcome to FootMaster Pro</h1>
         <p>Your ultimate football club management solution.</p>
+        
+        <!-- Account-Specific Gallery Section -->
+        <section class="account-gallery">
+            <div class="account-info">
+                <h2 id="account-name">Welcome Back, Manager!</h2>
+                <p id="account-type">Your premium content is ready</p>
+            </div>
+            
+            <div class="image-container" id="account-image-container">
+                <!-- Segments will be filled by JavaScript -->
+                <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+            </div>
+        </section>
+        
+        <!-- Your existing video thumbnail -->
         <a href="https://youtu.be/YsWzugAnsBw" target="_blank" rel="noopener noreferrer" class="video-thumbnail">
             <picture class="custom-picture">
               <!-- Mobile (Dark/Light) -->
@@ -90,5 +107,60 @@
             <div class="play-button"></div>
           </a>
     </main>
+
+    <script>
+        // Sample account detection (replace with your actual auth logic)
+        function detectAccount() {
+            // In a real app, you would check Firebase auth or cookies
+            const urlParams = new URLSearchParams(window.location.search);
+            const accountParam = urlParams.get('account') || 'premium'; // Default to premium
+            
+            loadAccountView(accountParam);
+        }
+
+        // Account-specific content
+        function loadAccountView(accountType) {
+            const accountData = {
+                premium: {
+                    name: "Premium Member",
+                    message: "Your exclusive content is ready",
+                    images: [
+                        'https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+                        'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+                        'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
+                    ]
+                },
+                standard: {
+                    name: "Standard Member",
+                    message: "Upgrade for premium content",
+                    images: [
+                        'https://images.unsplash.com/photo-1508098682722-e99c47a06b43?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+                        'https://images.unsplash.com/photo-1552667466-07770ae110d0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+                        'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
+                    ]
+                }
+            };
+
+            const account = accountData[accountType] || accountData.premium;
+            
+            // Update account info
+            document.getElementById('account-name').textContent = `Welcome ${account.name}`;
+            document.getElementById('account-type').textContent = account.message;
+            
+            // Update images
+            const container = document.getElementById('account-image-container');
+            container.innerHTML = '';
+            
+            account.images.forEach(imageUrl => {
+                const segment = document.createElement('div');
+                segment.className = 'image-segment';
+                segment.style.backgroundImage = `url(${imageUrl})`;
+                container.appendChild(segment);
+            });
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', detectAccount);
+    </script>
 </body>
 </html>
