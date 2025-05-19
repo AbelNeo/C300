@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Match Seat Booking</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="container">
+    <h2>🎟️ Book Your Match Seat</h2>
+
+<!-- Match Selection -->
+<select id="matchSelect">
+  <!-- Populate this dynamically from Firestore matches -->
+</select>
+
+<!-- Seat Selection -->
+<select id="seatSelect">
+  <!-- Populate dynamically based on match -->
+</select>
+
+<!-- Book Button -->
+<button id="btn-book">Book Now</button>
+
+<!-- Message Area -->
+<div id="bookingMessage"></div>
+
+
+<script type="module" src="./booking.js"></script></script>
+</body>
+</html>

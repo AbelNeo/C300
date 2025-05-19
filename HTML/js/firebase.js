@@ -15,3 +15,30 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 export { db };
+
+import {
+  getDocs,
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  runTransaction,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+
+export {
+  getDocs,
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  runTransaction,
+  setDoc,
+  updateDoc,
+};
+
+
+

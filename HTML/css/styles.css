@@ -274,3 +274,18 @@ a {
 .btn-refresh:hover {
   background-color: #600000;
 }
+
+
+
+
+
+
+/* booking system section */
+.btn-book {
+background-color: #600000;
+}
+
+#bookingMessage {
+  margin-top: 20px;
+  font-weight: bold;
+}
