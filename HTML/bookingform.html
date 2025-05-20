@@ -12,22 +12,24 @@
     <h2>🎟️ Book Your Match Seat</h2>
 
 <!-- Match Selection -->
+<label for="matchSelect">Select Match:</label> 
 <select id="matchSelect">
-  <!-- Populate this dynamically from Firestore matches -->
+  <option value="">-- Choose a Match --</option>
 </select>
 
 <!-- Seat Selection -->
+<label for="seatSelect">Select Seat:</label>
 <select id="seatSelect">
-  <!-- Populate dynamically based on match -->
+  <option value="">-- Choose preferred seat --</option>
 </select>
 
 <!-- Book Button -->
-<button id="btn-book">Book Now</button>
+<button id="btn-book" disabled>Book Now</button>
 
 <!-- Message Area -->
 <div id="bookingMessage"></div>
 
 
-<script type="module" src="./booking.js"></script></script>
+<script type="module" src="js/booking.js" defer></script>
 </body>
 </html>
