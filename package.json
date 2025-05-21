@@ -1,25 +1,5 @@
 {
-  "name": "c300",
-  "version": "1.0.0",
-  "main": "App.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AbelNeo/C300.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/AbelNeo/C300/issues"
-  },
-  "homepage": "https://github.com/AbelNeo/C300#readme",
-  "description": "",
   "dependencies": {
-    "c300": "file:",
-    "firebase": "^9.22.0"
-  },
-  "type": "module"
+    "firebase": "^11.8.0"
+  }
 }
