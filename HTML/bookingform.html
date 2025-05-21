@@ -3,28 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Match Seat Booking</title>
+  <title>Footmaster Pro - Booking page</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+<script type="importmap">
+  {
+    "imports": {
+      "firebase/app": "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js",
+      "firebase/firestore": "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"
+    }
+  }
+  </script>
 <body>
+  <header>
+      <nav class="navbar">
+          <div class="container">
+              <div class="logo">
+                    <img src="https://pngdownload.io/wp-content/uploads/2024/02/Euro-2024-ball-football-ballon-transparent-PNG-image-jpg.webp" alt="FootMaster Pro Logo">
+                    <span>FootMaster Pro</span>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-  <div class="container">
-    <h2>🎟️ Book Your Match Seat</h2>
+    <main class="container">
+      <h1>FootMaster Pro - Booking page</h1>
+        
 
 <!-- Match Selection -->
+<div>
 <label for="matchSelect">Select Match:</label> 
 <select id="matchSelect">
-  <option value="">-- Choose a Match --</option>
+  <option value="">-- Choose a match --</option>
 </select>
+</div>
+
 
 <!-- Seat Selection -->
+<div style="display: flex; flex-direction: column; gap: 10px;"></div>
 <label for="seatSelect">Select Seat:</label>
 <select id="seatSelect">
   <option value="">-- Choose preferred seat --</option>
 </select>
+</div>
 
 <!-- Book Button -->
+<div>
 <button id="btn-book" disabled>Book Now</button>
+</div>
 
 <!-- Message Area -->
 <div id="bookingMessage"></div>
