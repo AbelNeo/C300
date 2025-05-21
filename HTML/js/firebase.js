@@ -1,4 +1,18 @@
 // public/js/firebase.js
+
+import {
+  getDocs,
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  runTransaction,
+  setDoc,
+  updateDoc,
+  bookSeat,
+} from "firebase/firestore";
+
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js'
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js'
 
@@ -14,30 +28,58 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export { db };
+async function bookSeat(match_id, seat_number, user_id) {
+  const seatRef = doc(db, `matches/${match_id}/seats/${seat_number}`);
+  const bookingRef = collection(db, "bookings");
 
-import {
-  getDocs,
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  runTransaction,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+  try {
+    await runTransaction(db, async (transaction) => {
+      const seatDoc = await transaction.get(seatRef);
 
-export {
-  getDocs,
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  runTransaction,
-  setDoc,
-  updateDoc,
-};
+      if (!seatDoc.exists()) {
+        throw "Seat not found!";
+      }
+
+      const seatData = seatDoc.data();
+
+      if (seatData.booked) {
+        throw "Seat already booked";
+      }
+
+      // 1. Mark seat as booked
+      transaction.update(seatRef, { booked: true });
+
+      // 2. Create booking
+      await addDoc(bookingRef, {
+        bookingId: Date.now(), // or UUID
+        userId: user_id,
+        itemType: "match",
+        referenceId: match_id,
+        status: "confirmed",
+        bookingDate: serverTimestamp()
+      });
+    });
+
+    document.getElementById("status").innerText = "Seat successfully booked!";
+  } catch (e) {
+    console.error("Booking failed:", e);
+    document.getElementById("status").innerText = "Seat already taken. Please choose another.";
+    recommendAnotherSeat(match_id);
+  }
+}
+
+function recommendAnotherSeat(match_id) {
+  // Pull locally available seats from dropdown options
+  const seatSelect = document.getElementById("seatSelect");
+  for (let option of seatSelect.options) {
+    if (!option.disabled) {
+      document.getElementById("status").innerText += ` Try seat ${option.value}`;
+      break;
+    }
+  }
+}
+
+export { db, getDocs, doc,getDoc, collection, query, where,runTransaction, setDoc, updateDoc, recommendAnotherSeat, bookSeat };
+
 
 

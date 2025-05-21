@@ -1,4 +1,4 @@
-import { db, collection, getDocs, doc, getDoc, setDoc, updateDoc } from './firebase.js';
+import { db, collection, getDocs, doc, getDoc, setDoc, updateDoc, runTransaction } from './firebase.js';
 
 const matchSelect = document.getElementById('matchSelect');
 const seatSelect = document.getElementById('seatSelect');
@@ -45,50 +45,58 @@ seatSelect.addEventListener('change', () => {
 });
 
 bookButton.addEventListener('click', async () => {
-  const matchId = matchSelect.value;
-  const seatId = seatSelect.value;
+  const match_id = matchSelect.value;
+  const seat_number = seatSelect.value;
 
-  if (!matchId || !seatId) return;
+  if (!match_id || !seat_number) return;
 
-  const seatRef = doc(db, `matches/${matchId}/seats/${seatId}`);
-  const seatSnap = await getDoc(seatRef);
+  const seatRef = doc(db, `matches/${match_id}/seats/${seat_number}`);
+  const bookingsRef = collection(db, 'bookings');
 
-  if (!seatSnap.exists()) {
-    messageArea.textContent = 'Seat not found!';
-    return;
-  }
-
-  const seatData = seatSnap.data();
-
-  if (seatData.booked) {
-    messageArea.textContent = 'Seat already booked. Please choose another.';
-    return;
-  }
-
-  // Book the seat (simulate locking by writing 'booked: true')
   try {
-    await updateDoc(seatRef, { booked: true });
+    await runTransaction(db, async (transaction) => {
+      const seatSnap = await transaction.get(seatRef)
 
-    // Optionally: Save booking to a separate bookings collection
-    const bookingRef = doc(collection(db, 'bookings'));
-    await setDoc(bookingRef, {
-      bookingId: bookingRef.id,
-      userId: 1, // Replace with actual user session ID later
-      itemType: 'match',
-      referenceId: parseInt(matchId),
-      status: 'confirmed',
-      bookingDate: new Date().toISOString()
+      if (!seatSnap.exists()) {
+        throw new Error('Seat not found.')
+      }
+
+      const seatData = seatSnap.data();
+
+      if (seatData.booked) {
+        throw new Error('Seat is already booked.');
+      }
+    
+      // 1. Mark seat as booked
+      transaction.update(seatRef, { booked: true });
+
+      // 2. Create booking
+      const newBookingRef = doc(bookingsRef);
+      transaction.set(newBookingRef, {
+        bookingId: newBookingRef.id,
+        userId: 1, // Replace this with actual user ID in production
+        itemType: 'match',
+        referenceId: match_id,
+        status: 'confirmed',
+        bookingDate: new Date().toISOString()
+      });
     });
 
-    messageArea.textContent = `Seat ${seatId} successfully booked!`;
-    seatSelect.querySelector(`option[value="${seatId}"]`).remove();
+    messageArea.textContent = `Seat ${seat_number} successfully booked!`;
+    seatSelect.querySelector(`option[value="${seat_number}"]`).remove();
     bookButton.disabled = true;
 
   } catch (error) {
-    messageArea.textContent = 'Booking failed. Please try again.';
     console.error(error);
+
+  // recommend another available seat if the seat is already taken
+  if (error.message === 'Seat is already booked.') {
+    const altSeatOption = [...seatSelect.options].find(o => !o.disabled && o.value !== seat_number);
+    if (altSeatOption) {
+      messageArea.textContent += ` Try seat ${altSeatOption.value}.`;
+      }
+    } else {
+      messageArea.textContent = 'Booking failed. Please try again.';
+    }
   }
 });
-
-// Initialize
-loadMatches();
