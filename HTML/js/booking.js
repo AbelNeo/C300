@@ -1,4 +1,4 @@
-import { db, collection, getDocs, doc, getDoc, setDoc, updateDoc, runTransaction } from './firebase.js';
+import { db, collection, getDocs, doc, getDoc, setDoc, updateDoc, runTransaction, recommendAnotherSeat } from './firebase.js';
 
 const matchSelect = document.getElementById('matchSelect');
 const seatSelect = document.getElementById('seatSelect');
@@ -91,9 +91,9 @@ bookButton.addEventListener('click', async () => {
 
   // recommend another available seat if the seat is already taken
   if (error.message === 'Seat is already booked.') {
-    const altSeatOption = [...seatSelect.options].find(o => !o.disabled && o.value !== seat_number);
+    const altSeatOption = recommendAnotherSeat(match_id);
     if (altSeatOption) {
-      messageArea.textContent += ` Try seat ${altSeatOption.value}.`;
+      messageArea.textContent += ` Try seat ${altSeatOption}.`;
       }
     } else {
       messageArea.textContent = 'Booking failed. Please try again.';
