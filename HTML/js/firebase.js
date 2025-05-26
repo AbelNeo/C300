@@ -9,8 +9,8 @@ import {
   runTransaction,
   setDoc,
   updateDoc,
-  addDoc,  // Added this missing import
-  serverTimestamp // Added this since you're using it
+  addDoc,  
+  serverTimestamp 
 } from "firebase/firestore";
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js'
