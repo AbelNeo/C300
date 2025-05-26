@@ -1,4 +1,3 @@
-// Corrected imports (removed bookSeat)
 import {
   getDocs,
   doc,
