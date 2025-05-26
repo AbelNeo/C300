@@ -1,4 +1,3 @@
-// main.js
 import { getAllPlayers } from "./players.js";
 
 async function loadAndDisplayPlayers() {
