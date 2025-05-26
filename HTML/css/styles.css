@@ -289,3 +289,308 @@ background-color: #600000;
   margin-top: 20px;
   font-weight: bold;
 }
+
+
+/* Sign Up Page Styles */
+.signup-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.signup-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.signup-logo {
+    width: 80px;
+    margin-bottom: 20px;
+}
+
+.social-signup {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.social-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+.google-btn {
+    color: #5f6368;
+}
+
+.apple-btn {
+    color: #000;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #888;
+}
+
+.divider::before, .divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.divider span {
+    padding: 0 15px;
+}
+
+.signup-form input {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.signup-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #800000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.signup-btn:hover {
+    background-color: #600000;
+}
+
+.login-redirect {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.login-redirect a {
+    color: #800000;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.signup-benefits {
+    margin-top: 40px;
+}
+
+.signup-benefits h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #800000;
+}
+
+.benefit-item {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+    align-items: flex-start;
+}
+
+.benefit-item img {
+    width: 40px;
+    margin-top: 5px;
+}
+
+.benefit-item h3 {
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.benefit-item p {
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .signup-container {
+        margin: 20px;
+        padding: 20px;
+    }
+}/* Sign Up Page Styles */
+.signup-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.signup-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.signup-logo {
+    width: 80px;
+    margin-bottom: 20px;
+}
+
+.social-signup {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.social-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+.google-btn {
+    color: #5f6368;
+}
+
+.apple-btn {
+    color: #000;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #888;
+}
+
+.divider::before, .divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.divider span {
+    padding: 0 15px;
+}
+
+.signup-form input {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.signup-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #800000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.signup-btn:hover {
+    background-color: #600000;
+}
+
+.login-redirect {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.login-redirect a {
+    color: #800000;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.signup-benefits {
+    margin-top: 40px;
+}
+
+.signup-benefits h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #800000;
+}
+
+.benefit-item {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+    align-items: flex-start;
+}
+
+.benefit-item img {
+    width: 40px;
+    margin-top: 5px;
+}
+
+.benefit-item h3 {
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.benefit-item p {
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .signup-container {
+        margin: 20px;
+        padding: 20px;
+    }
+}
