@@ -5,6 +5,25 @@ const seatSelect = document.getElementById('seatSelect');
 const bookButton = document.getElementById('bookButton');
 const messageArea = document.getElementById('messageArea');
 
+// imported plugins for fullcalendar
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import listPlugin from '@fullcalendar/list';
+document.addEventListener('DOMContentLoaded', function () {
+let calendarEl = document.getElementById('calendar');
+let calendar = new Calendar(calendarEl, {
+  plugins: [ dayGridPlugin, timeGridPlugin, listPlugin ],
+  initialView: 'dayGridMonth',
+  headerToolbar: {
+    left: 'prev,next today',
+    center: 'title',
+    right: 'dayGridMonth,timeGridWeek,listWeek'
+  }
+});
+calendar.render();
+
+
 // Load matches
 async function loadMatches() {
   const matchesSnapshot = await getDocs(collection(db, 'matches'));
@@ -99,4 +118,5 @@ bookButton.addEventListener('click', async () => {
       messageArea.textContent = 'Booking failed. Please try again.';
     }
   }
+})
 });
