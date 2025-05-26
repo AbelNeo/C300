@@ -116,7 +116,9 @@ a {
     left: 55%;
     transform: translate(-50%, -50%);
   }
-  /* ===== Add these new styles to your existing styles.css ===== */
+
+
+  
 
 /* Account-Specific Gallery Section */
 .account-gallery {
@@ -289,6 +291,9 @@ background-color: #600000;
   margin-top: 20px;
   font-weight: bold;
 }
+
+
+
 
 
 /* Sign Up Page Styles */
