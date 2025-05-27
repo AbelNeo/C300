@@ -5,23 +5,39 @@ const seatSelect = document.getElementById('seatSelect');
 const bookButton = document.getElementById('bookButton');
 const messageArea = document.getElementById('messageArea');
 
-// imported plugins for fullcalendar
-import { Calendar } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import listPlugin from '@fullcalendar/list';
+//calendar code
 document.addEventListener('DOMContentLoaded', function () {
-let calendarEl = document.getElementById('calendar');
-let calendar = new Calendar(calendarEl, {
-  plugins: [ dayGridPlugin, timeGridPlugin, listPlugin ],
-  initialView: 'dayGridMonth',
-  headerToolbar: {
-    left: 'prev,next today',
-    center: 'title',
-    right: 'dayGridMonth,timeGridWeek,listWeek'
-  }
+  const db = firebase.firestore();
+
+  const calendarEl = document.getElementById('calendar');
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    events: async function(fetchInfo, successCallback, failureCallback) {
+      try {
+        const matchesSnapshot = await db.collection('matches').get();
+        const events = matchesSnapshot.docs.map(doc => {
+          const match = doc.data();
+          return {
+            id: doc.id,
+            title: `${match.team_home} vs ${match.team_away}`,
+            start: match.date,
+          };
+        });
+        successCallback(events);
+      } catch (error) {
+        console.error('Error loading matches:', error);
+        failureCallback(error);
+      }
+    },
+    eventClick: function(info) {
+      const match_id = info.event.id;
+      window.location.href = `bookingform.html?match_id=${match_id}`;
+    }
+  });
+
+  calendar.render();
 });
-calendar.render();
+
 
 
 // Load matches
@@ -118,5 +134,5 @@ bookButton.addEventListener('click', async () => {
       messageArea.textContent = 'Booking failed. Please try again.';
     }
   }
-})
 });
+
