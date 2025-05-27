@@ -1,4 +1,5 @@
 import { db, collection, getDocs, doc, getDoc, setDoc, updateDoc, runTransaction, recommendAnotherSeat } from './firebase.js';
+import { FullCalendar } from 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'
 
 const matchSelect = document.getElementById('matchSelect');
 const seatSelect = document.getElementById('seatSelect');
@@ -18,9 +19,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const events = matchesSnapshot.docs.map(doc => {
           const match = doc.data();
           return {
-            id: doc.id,
+            id: match_id,
             title: `${match.team_home} vs ${match.team_away}`,
-            start: match.date,
+            start: match_date,
           };
         });
         successCallback(events);
