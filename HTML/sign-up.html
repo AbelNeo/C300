@@ -12,6 +12,7 @@
 <script type="module" src="components\navbar-component.js" ></script>
 
 
+
 </head>
 <body>
 
@@ -42,11 +43,18 @@
             <span>or</span>
         </div>
 
-        <form class="signup-form">
+        <form class="signup-form" id="signupForm">
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <div id="error-message" class="error-message" style="color: red; display: none;"></div>
+    <button type="submit" class="signup-btn">Create Account</button>
+</form>
+
+        <!-- <form class="signup-form">
             <input type="email" placeholder="Email" required>
             <input type="password" placeholder="Password" required>
             <button type="submit" class="signup-btn">Create Account</button>
-        </form>
+        </form> -->
 
         <div class="login-redirect">
             <p>Already have an account? <a href="login.html">Sign in</a></p>
