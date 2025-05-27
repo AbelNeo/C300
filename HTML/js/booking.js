@@ -39,11 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
   calendar.render();
 });
 
-getDocs(collection(db, 'matches')).then(snapshot => {
-  snapshot.forEach(doc => {
-    console.log(doc.id, doc.data());
-  });
-});
 
 
 // Load matches
