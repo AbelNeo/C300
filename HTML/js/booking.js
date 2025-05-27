@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const events = matchesSnapshot.docs.map(doc => {
           const match = doc.data();
           return {
-            id: match_id,
+            id: doc.id,
             title: `${match.team_home} vs ${match.team_away}`,
-            start: match_date,
+            start: match_date.toDate(),
           };
         });
         successCallback(events);
