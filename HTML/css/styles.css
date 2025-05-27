@@ -298,6 +298,18 @@ background-color: #600000;
 
 
 /* Sign Up Page Styles */
+.error-message {
+    color: #ff4444;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #ffebee;
+    border-radius: 4px;
+    display: none;
+}
+
+.signup-form input.error {
+    border-color: #ff4444;
+}
 .signup-container {
     max-width: 500px;
     margin: 50px auto;

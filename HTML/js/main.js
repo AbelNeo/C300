@@ -1,5 +1,6 @@
 import { getAllPlayers } from "./players.js";
 import { auth, onAuthStateChanged } from './firebase.js';
+import { GoogleAuthProvider, signInWithPopup, OAuthProvider, auth} from './firebase.js';
 
 async function loadAndDisplayPlayers() {
   console.log("Button clicked - function started"); // Debug log
@@ -61,6 +62,41 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+// Google Sign-In
+document.querySelector('.google-btn')?.addEventListener('click', async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        console.log('Google sign-in success:', user);
+        window.location.href = 'dashboard.html';
+    } catch (error) {
+        console.error('Google sign-in error:', error);
+        showError(error.message);
+    }
+});
+
+// Apple Sign-In
+document.querySelector('.apple-btn')?.addEventListener('click', async () => {
+    const provider = new OAuthProvider('apple.com');
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        console.log('Apple sign-in success:', user);
+        window.location.href = 'dashboard.html';
+    } catch (error) {
+        console.error('Apple sign-in error:', error);
+        showError(error.message);
+    }
+});
+
+function showError(message) {
+    const errorElement = document.getElementById('error-message');
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+}
 
 // Real account detection
 function detectAccount() {
