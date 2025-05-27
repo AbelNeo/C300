@@ -1,4 +1,5 @@
 import { getAllPlayers } from "./players.js";
+import { auth, onAuthStateChanged } from './firebase.js';
 
 async function loadAndDisplayPlayers() {
   console.log("Button clicked - function started"); // Debug log
@@ -58,3 +59,54 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load immediately on page load
   loadAndDisplayPlayers();
 });
+
+
+
+// Real account detection
+function detectAccount() {
+  return new Promise((resolve) => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in
+        resolve({
+          type: 'authenticated',
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || 'User'
+        });
+      } else {
+        // No user signed in
+        resolve({
+          type: 'guest',
+          uid: null
+        });
+      }
+    });
+  });
+}
+
+// Updated account view loader
+async function loadAccountView() {
+  const account = await detectAccount();
+  
+  const accountNameElement = document.getElementById('account-name');
+  const accountTypeElement = document.getElementById('account-type');
+  
+  if (account.type === 'authenticated') {
+    accountNameElement.textContent = `Welcome, ${account.displayName}`;
+    accountTypeElement.textContent = 'Premium Member';
+    accountTypeElement.style.color = '#800000';
+    
+    // Load premium features
+    document.querySelectorAll('.premium-feature').forEach(el => {
+      el.style.display = 'block';
+    });
+  } else {
+    accountNameElement.textContent = 'Welcome, Guest';
+    accountTypeElement.textContent = 'Sign in for premium features';
+    accountTypeElement.style.color = '#666';
+  }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', loadAccountView);

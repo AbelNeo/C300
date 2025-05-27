@@ -33,34 +33,33 @@
         <p>Your ultimate football club management solution.</p>
         
 
-<section class="players-section">
+<!-- <section class="players-section">
   <h2>Team Players</h2>
   <button id="refresh-players" class="btn-refresh">Load Players</button>
   <div id="players-container" class="players-grid"></div>
   <div id="debug-output" style="padding: 1rem; background: #f0f0f0;"></div>
-</section>
-
-<img src="../images/SakaHalfBody.jpeg" width="300" height="200">
+</section> -->
 
         <!-- Account-Specific Gallery Section -->
-        <section class="account-gallery">
+         <section class="account-gallery">
             <div class="account-info">
                 <h2 id="account-name">Welcome Back, Manager!</h2>
                 <p id="account-type">Your premium content is ready</p>
             </div>
             
             <div class="image-container" id="account-image-container">
-                <!-- Segments will be filled by JavaScript -->
-                <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
-                <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
-                <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+              
+              <div class="image-segment" style="background-image: src='../images/SakaHalfBody.jpeg';"></div>
+              <div class="image-segment"><img src="../images/SakaHalfBody.jpeg" alt="Description of image"></div>
+              <div class="image-segment" style="background-image: url('../images/SakaHalfBody.jpeg');"></div>
+
             </div>
-        </section>
+        </section> 
         
-        <!-- Your existing video thumbnail -->
-        <a href="https://youtu.be/YsWzugAnsBw" target="_blank" rel="noopener noreferrer" class="video-thumbnail">
+        <!-- video thumbnail -->
+        <!-- <a href="https://youtu.be/YsWzugAnsBw" target="_blank" rel="noopener noreferrer" class="video-thumbnail">
             <picture class="custom-picture">
-              <!-- Mobile (Dark/Light) -->
+              <!-- Mobile (Dark/Light) 
               <source 
                 media="(max-width: 767px) and (prefers-color-scheme: dark)" 
                 srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=335&h=188&dpr=2"
@@ -70,7 +69,7 @@
                 srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=335&h=188&dpr=2"
               >
           
-              <!-- Tablet (Dark/Light) -->
+              <!-- Tablet (Dark/Light) 
               <source 
                 media="(min-width: 768px) and (max-width: 1023px) and (prefers-color-scheme: dark)" 
                 srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=334&h=334&dpr=2"
@@ -80,7 +79,7 @@
                 srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=334&h=334&dpr=2"
               >
           
-              <!-- Desktop (Dark/Light) -->
+              <!-- Desktop (Dark/Light) 
               <source 
                 media="(min-width: 1024px) and (max-width: 1279px) and (prefers-color-scheme: dark)" 
                 srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=620&h=348&dpr=2"
@@ -90,7 +89,7 @@
                 srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=620&h=348&dpr=2"
               >
           
-              <!-- Large Desktop (Dark/Light) -->
+              <!-- Large Desktop (Dark/Light) 
               <source 
                 media="(min-width: 1280px) and (prefers-color-scheme: dark)" 
                 srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=840&h=472&dpr=2"
@@ -100,7 +99,7 @@
                 srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=840&h=472&dpr=2"
               >
           
-              <!-- Fallback Image -->
+              <!-- Fallback Image
               <img
                 alt="YouTube Video Thumbnail"
                 decoding="sync"
@@ -113,7 +112,7 @@
               >
             </picture>
             <div class="play-button"></div>
-          </a>
+          </a> -->
     </main>
 
     <script>
@@ -121,7 +120,7 @@
         function detectAccount() {
             // In a real app, you would check Firebase auth or cookies
             const urlParams = new URLSearchParams(window.location.search);
-            const accountParam = urlParams.get('account') || 'premium'; // Default to premium
+            const accountParam = urlParams.get('account') || 'guest'; 
             
             loadAccountView(accountParam);
         }
@@ -129,27 +128,22 @@
         // Account-specific content
         function loadAccountView(accountType) {
             const accountData = {
-                premium: {
+                user: {
                     name: "Premium Member",
                     message: "Your exclusive content is ready",
                     images: [
-                        'https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-                        'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+                        src='../images/SakaHalfBody.jpeg',
+                        src='../images/NetoHalfBody.jpeg',
                         'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
                     ]
                 },
-                standard: {
+                guest: {
                     name: "Standard Member",
-                    message: "Upgrade for premium content",
-                    images: [
-                        'https://images.unsplash.com/photo-1508098682722-e99c47a06b43?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-                        'https://images.unsplash.com/photo-1552667466-07770ae110d0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-                        'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
-                    ]
+                    message: "Upgrade for premium content"
                 }
             };
 
-            const account = accountData[accountType] || accountData.premium;
+            const account = accountData[accountType] || accountData.guest;
             
             // Update account info
             document.getElementById('account-name').textContent = `Welcome ${account.name}`;
@@ -172,3 +166,9 @@
     </script>
 </body>
 </html>
+
+
+
+                <!-- <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div> -->

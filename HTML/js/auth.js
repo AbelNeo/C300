@@ -81,7 +81,7 @@ function handleLoginError(error) {
 // Check auth state (if user is already logged in)
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // User is signed in, redirect to dashboard
+        // User is signed in, redirect to index
         window.location.href = 'index.html';
     }
 });

@@ -14,6 +14,7 @@ import {
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js'
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js'
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js'
 
 const firebaseConfig = {
   apiKey: "AIzaSyDZVSQAwB1YnKv6Pr_5kbsjvUz074mDsQ0",
@@ -72,8 +73,11 @@ function recommendAnotherSeat(match_id) {
   // ... (unchanged)
 }
 
+const auth = getAuth(app);
+
+
 // Export your custom functions
-export { db, bookSeat, recommendAnotherSeat };
+export { db, auth, onAuthStateChanged, bookSeat, recommendAnotherSeat };
 
 
 
