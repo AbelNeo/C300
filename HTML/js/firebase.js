@@ -15,6 +15,14 @@ import {
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js'
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js'
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  OAuthProvider,
+  sendEmailVerification
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { GoogleAuthProvider, signInWithPopup, OAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // Export the new functions
@@ -83,6 +91,14 @@ const auth = getAuth(app);
 // Export your custom functions
 export { db, auth, onAuthStateChanged, bookSeat, recommendAnotherSeat };
 export { auth, createUserWithEmailAndPassword };
+export { 
+  auth, 
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  OAuthProvider,
+  sendEmailVerification
+};
 
 
 
