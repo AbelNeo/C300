@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Store with Quantity Purchase</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      max-width: 500px;
+      margin: 0 auto 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    button, .buy-button {
+      margin-top: 5px;
+      padding: 8px 12px;
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .buy-button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+    table {
+      width: 95%;
+      margin: 0 auto;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 0 10px #ccc;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background-color: #27ae60;
+      color: white;
+    }
+    td img {
+      max-width: 80px;
+      max-height: 80px;
+      border-radius: 5px;
+    }
+    .buy-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .buy-section input[type="number"] {
+      width: 60px;
+      margin-bottom: 5px;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Create Store Items</h1>
+
+  <form id="itemForm">
+    <label for="name">Item Name:</label>
+    <input type="text" id="name" required />
+
+    <label for="description">Item Description:</label>
+    <textarea id="description" required></textarea>
+
+    <label for="price">Price ($):</label>
+    <input type="number" id="price" step="0.01" min="0" required />
+
+    <label for="stock">Stock Quantity:</label>
+    <input type="number" id="stock" min="0" required />
+
+    <label for="image">Upload Image:</label>
+    <input type="file" id="image" accept="image/*" />
+
+    <button type="submit">Add Item</button>
+  </form>
+
+  <table id="itemsTable" style="display: none;">
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price ($)</th>
+        <th>Stock</th>
+        <th>Buy</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('itemForm');
+    const table = document.getElementById('itemsTable');
+    const tbody = table.querySelector('tbody');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = form.name.value.trim();
+      const description = form.description.value.trim();
+      const price = parseFloat(form.price.value).toFixed(2);
+      let stock = parseInt(form.stock.value);
+      const imageInput = form.image;
+
+      const row = document.createElement('tr');
+
+      const imageCell = document.createElement('td');
+      const nameCell = document.createElement('td');
+      const descriptionCell = document.createElement('td');
+      const priceCell = document.createElement('td');
+      const stockCell = document.createElement('td');
+      const buyCell = document.createElement('td');
+
+      // Image preview
+      if (imageInput.files && imageInput.files[0]) {
+        const file = imageInput.files[0];
+        const img = document.createElement('img');
+        const reader = new FileReader();
+        reader.onload = e => img.src = e.target.result;
+        reader.readAsDataURL(file);
+        imageCell.appendChild(img);
+      } else {
+        imageCell.textContent = 'No image';
+      }
+
+      nameCell.textContent = name;
+      descriptionCell.textContent = description;
+      priceCell.textContent = price;
+      stockCell.textContent = stock > 0 ? stock : 'OUT OF STOCK';
+
+      // Buy section
+      const quantityInput = document.createElement('input');
+      quantityInput.type = 'number';
+      quantityInput.value = 1;
+      quantityInput.min = 1;
+
+      const buyButton = document.createElement('button');
+      buyButton.textContent = 'Buy';
+      buyButton.className = 'buy-button';
+
+      if (stock === 0) {
+        buyButton.disabled = true;
+        quantityInput.disabled = true;
+      }
+
+      buyButton.addEventListener('click', () => {
+        const quantity = parseInt(quantityInput.value);
+        if (isNaN(quantity) || quantity <= 0) return;
+
+        if (quantity > stock) {
+          alert(`Only ${stock} in stock.`);
+          return;
+        }
+
+        stock -= quantity;
+        stockCell.textContent = stock > 0 ? stock : 'OUT OF STOCK';
+
+        if (stock === 0) {
+          buyButton.disabled = true;
+          quantityInput.disabled = true;
+        }
+      });
+
+      const buySection = document.createElement('div');
+      buySection.className = 'buy-section';
+      buySection.appendChild(quantityInput);
+      buySection.appendChild(buyButton);
+      buyCell.appendChild(buySection);
+
+      row.appendChild(imageCell);
+      row.appendChild(nameCell);
+      row.appendChild(descriptionCell);
+      row.appendChild(priceCell);
+      row.appendChild(stockCell);
+      row.appendChild(buyCell);
+
+      tbody.appendChild(row);
+      table.style.display = 'table';
+
+      form.reset();
+    });
+  </script>
+
+</body>
+</html>
