@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Create Store Items with Image Upload</title>
+  <title>Store with Quantity Purchase</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -34,7 +34,6 @@
       box-sizing: border-box;
       border-radius: 4px;
       border: 1px solid #ccc;
-      font-family: inherit;
       font-size: 1em;
     }
     textarea {
@@ -42,18 +41,14 @@
       min-height: 60px;
     }
     button, .buy-button {
-      margin-top: 15px;
-      padding: 10px 15px;
+      margin-top: 5px;
+      padding: 8px 12px;
       background-color: #27ae60;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       font-size: 1em;
-      transition: background-color 0.3s;
-    }
-    button:hover, .buy-button:hover {
-      background-color: #219150;
     }
     .buy-button:disabled {
       background-color: #aaa;
@@ -70,22 +65,25 @@
       padding: 12px;
       border: 1px solid #ddd;
       text-align: center;
-      vertical-align: middle;
     }
     th {
       background-color: #27ae60;
       color: white;
     }
-    td.description {
-      text-align: left;
-      max-width: 300px;
-      word-wrap: break-word;
-    }
     td img {
       max-width: 80px;
       max-height: 80px;
       border-radius: 5px;
-      object-fit: contain;
+    }
+    .buy-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .buy-section input[type="number"] {
+      width: 60px;
+      margin-bottom: 5px;
+      padding: 5px;
     }
   </style>
 </head>
@@ -95,24 +93,24 @@
 
   <form id="itemForm">
     <label for="name">Item Name:</label>
-    <input type="text" id="name" name="name" required />
+    <input type="text" id="name" required />
 
     <label for="description">Item Description:</label>
-    <textarea id="description" name="description" required></textarea>
+    <textarea id="description" required></textarea>
 
     <label for="price">Price ($):</label>
-    <input type="number" id="price" name="price" step="0.01" min="0" required />
+    <input type="number" id="price" step="0.01" min="0" required />
 
     <label for="stock">Stock Quantity:</label>
-    <input type="number" id="stock" name="stock" min="0" required />
+    <input type="number" id="stock" min="0" required />
 
     <label for="image">Upload Image:</label>
-    <input type="file" id="image" name="image" accept="image/*" />
+    <input type="file" id="image" accept="image/*" />
 
     <button type="submit">Add Item</button>
   </form>
 
-  <table id="itemsTable" style="display:none;">
+  <table id="itemsTable" style="display: none;">
     <thead>
       <tr>
         <th>Image</th>
@@ -123,9 +121,7 @@
         <th>Buy</th>
       </tr>
     </thead>
-    <tbody>
-      <!-- Items added here -->
-    </tbody>
+    <tbody></tbody>
   </table>
 
   <script>
@@ -142,10 +138,8 @@
       let stock = parseInt(form.stock.value);
       const imageInput = form.image;
 
-      // Create new row
       const row = document.createElement('tr');
 
-      // Create cells
       const imageCell = document.createElement('td');
       const nameCell = document.createElement('td');
       const descriptionCell = document.createElement('td');
@@ -153,49 +147,62 @@
       const stockCell = document.createElement('td');
       const buyCell = document.createElement('td');
 
-      // Handle image preview
+      // Image preview
       if (imageInput.files && imageInput.files[0]) {
         const file = imageInput.files[0];
         const img = document.createElement('img');
         const reader = new FileReader();
-        reader.onload = function(e) {
-          img.src = e.target.result;
-        };
+        reader.onload = e => img.src = e.target.result;
         reader.readAsDataURL(file);
         imageCell.appendChild(img);
       } else {
         imageCell.textContent = 'No image';
       }
 
-      // Set other cell contents
       nameCell.textContent = name;
       descriptionCell.textContent = description;
-      descriptionCell.classList.add('description');
       priceCell.textContent = price;
-      stockCell.textContent = stock === 0 ? "OUT OF STOCK" : stock;
+      stockCell.textContent = stock > 0 ? stock : 'OUT OF STOCK';
 
-      // Create Buy button
+      // Buy section
+      const quantityInput = document.createElement('input');
+      quantityInput.type = 'number';
+      quantityInput.value = 1;
+      quantityInput.min = 1;
+
       const buyButton = document.createElement('button');
       buyButton.textContent = 'Buy';
       buyButton.className = 'buy-button';
 
       if (stock === 0) {
         buyButton.disabled = true;
+        quantityInput.disabled = true;
       }
 
       buyButton.addEventListener('click', () => {
-        if (stock > 0) {
-          stock--;
-          stockCell.textContent = stock === 0 ? "OUT OF STOCK" : stock;
-          if (stock === 0) {
-            buyButton.disabled = true;
-          }
+        const quantity = parseInt(quantityInput.value);
+        if (isNaN(quantity) || quantity <= 0) return;
+
+        if (quantity > stock) {
+          alert(`Only ${stock} in stock.`);
+          return;
+        }
+
+        stock -= quantity;
+        stockCell.textContent = stock > 0 ? stock : 'OUT OF STOCK';
+
+        if (stock === 0) {
+          buyButton.disabled = true;
+          quantityInput.disabled = true;
         }
       });
 
-      buyCell.appendChild(buyButton);
+      const buySection = document.createElement('div');
+      buySection.className = 'buy-section';
+      buySection.appendChild(quantityInput);
+      buySection.appendChild(buyButton);
+      buyCell.appendChild(buySection);
 
-      // Append all cells to the row
       row.appendChild(imageCell);
       row.appendChild(nameCell);
       row.appendChild(descriptionCell);
@@ -204,9 +211,7 @@
       row.appendChild(buyCell);
 
       tbody.appendChild(row);
-      if (table.style.display === 'none') {
-        table.style.display = 'table';
-      }
+      table.style.display = 'table';
 
       form.reset();
     });
@@ -214,4 +219,3 @@
 
 </body>
 </html>
-</script>
