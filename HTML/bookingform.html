@@ -34,15 +34,14 @@
     <input type="Quantity" id="Quantity" placeholder="Qty" required>
     <input type="Date" id="Date" placeholder="Match Date" required>
     <div id="error-message" class="error-message" style="color: red; display: none;"></div>
-    <button type="Book" class="signup-btn">Confirm Booking</button>
 </form>
 
 
 <!-- Seat Selection -->
-<div style="display: flex; margin-bottom: 20px; flex-direction: column; gap: 10px;"></div>
-<label for="seatSelect">Select Seat:</label>
-<div id="seatSections">
-  <option value="">-- Choose preferred seat --</option>
+<h3 id="matchTitle"></h3>
+<div id="sectionsContainer"></div>
+<div id="status"></div>
+  <option value=""></option>
 </select>
 </div>
 
@@ -55,15 +54,16 @@
 <!-- Message Area -->
 <div id="bookingMessage"></div>
 
-
-
-
-
 </body>
 </html>
 
 
+
+
 <!-- Calendar Section 
+
+<button type="Book" class="signup-btn">Confirm Booking</button>
+
         <section class="calendar">
             <h2>Match Calendar</h2>
             <div id="calendar-container">
