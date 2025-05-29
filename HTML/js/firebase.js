@@ -1,5 +1,32 @@
-import {
-  getDocs,
+  // import {
+  //   getDocs,
+  //   doc,
+  //   getDoc,
+  //   collection,
+  //   query,
+  //   where,
+  //   runTransaction,
+  //   setDoc,
+  //   updateDoc,
+  //   addDoc,  
+  //   serverTimestamp 
+  // } from "firebase/firestore";
+
+  // import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js'
+  // import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js'
+  // import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  // import { 
+  //   getAuth, 
+  //   createUserWithEmailAndPassword,
+  //   GoogleAuthProvider,
+  //   signInWithPopup,
+  //   OAuthProvider,
+  //   sendEmailVerification
+  // } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  // import { GoogleAuthProvider, signInWithPopup, OAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import { initializeApp } from 'firebase/app';
+import { getFirestore,
   doc,
   getDoc,
   collection,
@@ -8,26 +35,22 @@ import {
   runTransaction,
   setDoc,
   updateDoc,
-  addDoc,  
-  serverTimestamp 
-} from "firebase/firestore";
+  addDoc,
+  serverTimestamp,
+  getDocs} from 'firebase/firestore';
 
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js'
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js'
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { 
-  getAuth, 
+  
+
+
+import { getAuth,
+  onAuthStateChanged,
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
   OAuthProvider,
-  sendEmailVerification
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { GoogleAuthProvider, signInWithPopup, OAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  sendEmailVerification} from 'firebase/auth';
 
-// Export the new functions
-export { GoogleAuthProvider, signInWithPopup, OAuthProvider };
-
+  
 const firebaseConfig = {
   apiKey: "AIzaSyDZVSQAwB1YnKv6Pr_5kbsjvUz074mDsQ0",
   authDomain: "football-club-management-3c136.firebaseapp.com",
@@ -45,7 +68,7 @@ async function bookSeat(match_id, seat_number, user_id) {
   const seatRef = doc(db, `matches/${match_id}/seats/${seat_number}`);
   const bookingRef = collection(db, "bookings");
 
-  try {
+  try { 
     await runTransaction(db, async (transaction) => {
       const seatDoc = await transaction.get(seatRef);
 
@@ -89,27 +112,27 @@ const auth = getAuth(app);
 
 
 // Export your custom functions
-export { db, auth, onAuthStateChanged, bookSeat, recommendAnotherSeat };
-export { auth, createUserWithEmailAndPassword };
-export { 
-  auth, 
+export {   db,
+  auth,
+  // Firestore functions
+  getDocs,
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  runTransaction,
+  setDoc,
+  updateDoc,
+  addDoc,
+  serverTimestamp,
+  // Auth functions
+  onAuthStateChanged,
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
   OAuthProvider,
-  sendEmailVerification
-};
-
-
-
-
-
-
-
-
-
-
-
+  sendEmailVerification };
 
 
 

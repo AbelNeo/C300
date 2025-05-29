@@ -1,6 +1,16 @@
+// Single import statement for all Firebase auth-related functions
+import { 
+  auth, 
+  onAuthStateChanged,
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  OAuthProvider 
+} from './firebase.js';
+
+// Other imports
 import { getAllPlayers } from "./players.js";
-import { auth, onAuthStateChanged } from './firebase.js';
-import { GoogleAuthProvider, signInWithPopup, OAuthProvider, auth} from './firebase.js';
+
+
 
 async function loadAndDisplayPlayers() {
   console.log("Button clicked - function started"); // Debug log
