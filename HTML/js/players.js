@@ -4,7 +4,7 @@ import { db } from "./firebase.js";  // Make sure this import is correct
 export async function getAllPlayers() {
   try {
     // Correct way to reference a collection
-    const playersCollection = collection(db, "players");
+    const playersCollection = collection(db, "Players");
     const querySnapshot = await getDocs(playersCollection);
     
     // Properly extract and return player data
