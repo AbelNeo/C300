@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FootMaster Pro - Club Management</title>
     <link rel="stylesheet" href="css/styles.css">
-  <script type="importmap">
-  {
-    "imports": {
-      "firebase/app": "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js",
-      "firebase/firestore": "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"
-    }
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
   }
-  </script>
+}
+</script>
 <script type="module" src="js\firebase.js"></script>
 <script type="module" src="js\players.js"></script>
 <script type="module" src="js\main.js"></script>
@@ -33,12 +34,12 @@
         <p>Your ultimate football club management solution.</p>
         
 
-<!-- <section class="players-section">
+<section class="players-section">
   <h2>Team Players</h2>
   <button id="refresh-players" class="btn-refresh">Load Players</button>
   <div id="players-container" class="players-grid"></div>
   <div id="debug-output" style="padding: 1rem; background: #f0f0f0;"></div>
-</section> -->
+</section>
 
         <!-- Account-Specific Gallery Section -->
          <section class="account-gallery">
@@ -115,7 +116,7 @@
           </a> -->
     </main>
 
-    <script>
+    <!-- <script>
         // Sample account detection (replace with your actual auth logic)
         function detectAccount() {
             // In a real app, you would check Firebase auth or cookies
@@ -164,7 +165,7 @@
 
         // Initialize when page loads
         window.addEventListener('DOMContentLoaded', detectAccount);
-    </script>
+    </script> -->
 </body>
 </html>
 

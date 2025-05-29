@@ -1,54 +1,8 @@
-  // import {
-  //   getDocs,
-  //   doc,
-  //   getDoc,
-  //   collection,
-  //   query,
-  //   where,
-  //   runTransaction,
-  //   setDoc,
-  //   updateDoc,
-  //   addDoc,  
-  //   serverTimestamp 
-  // } from "firebase/firestore";
 
-  // import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js'
-  // import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js'
-  // import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  // import { 
-  //   getAuth, 
-  //   createUserWithEmailAndPassword,
-  //   GoogleAuthProvider,
-  //   signInWithPopup,
-  //   OAuthProvider,
-  //   sendEmailVerification
-  // } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  // import { GoogleAuthProvider, signInWithPopup, OAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import { initializeApp } from 'firebase/app';
-import { getFirestore,
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  runTransaction,
-  setDoc,
-  updateDoc,
-  addDoc,
-  serverTimestamp,
-  getDocs} from 'firebase/firestore';
-
-  
-
-
-import { getAuth,
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  OAuthProvider,
-  sendEmailVerification} from 'firebase/auth';
+import { getFirestore, doc, getDoc, collection, query, where, runTransaction, setDoc, updateDoc, addDoc, serverTimestamp, getDocs} from 'firebase/firestore';
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   
 const firebaseConfig = {
@@ -61,9 +15,9 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Your custom function remains the same
 async function bookSeat(match_id, seat_number, user_id) {
   const seatRef = doc(db, `matches/${match_id}/seats/${seat_number}`);
   const bookingRef = collection(db, "bookings");
@@ -105,34 +59,26 @@ async function bookSeat(match_id, seat_number, user_id) {
 }
 
 function recommendAnotherSeat(match_id) {
-  // ... (unchanged)
+
+  // Pull locally available seats from dropdown options
+  const seatSelect = document.getElementById("seatSelect");
+  for (let option of seatSelect.options) {
+    if (!option.disabled) {
+      document.getElementById("status").innerText += ` Try seat ${option.value}`;
+      break;
+    }
+  }
 }
 
-const auth = getAuth(app);
+
 
 
 // Export your custom functions
-export {   db,
-  auth,
+export {   db, auth,
   // Firestore functions
-  getDocs,
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  runTransaction,
-  setDoc,
-  updateDoc,
-  addDoc,
-  serverTimestamp,
+  getDocs, doc, getDoc, collection, query, where, runTransaction, setDoc, updateDoc, addDoc, serverTimestamp,
   // Auth functions
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  OAuthProvider,
-  sendEmailVerification };
+  onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification };
 
 
 
@@ -144,7 +90,32 @@ export {   db,
 
 
 
+  // import {
+  //   getDocs,
+  //   doc,
+  //   getDoc,
+  //   collection,
+  //   query,
+  //   where,
+  //   runTransaction,
+  //   setDoc,
+  //   updateDoc,
+  //   addDoc,  
+  //   serverTimestamp 
+  // } from "firebase/firestore";
 
+  // import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js'
+  // import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js'
+  // import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  // import { 
+  //   getAuth, 
+  //   createUserWithEmailAndPassword,
+  //   GoogleAuthProvider,
+  //   signInWithPopup,
+  //   OAuthProvider,
+  //   sendEmailVerification
+  // } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  // import { GoogleAuthProvider, signInWithPopup, OAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 
 
