@@ -29,12 +29,12 @@
 
 <!-- Match Selection -->
 <form class="signup-form" id="signupForm">
-    <input type="Name" id="name" placeholder="Name" required>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="Team_home" id="Team_home" placeholder="Team_home" required>
-    <input type="Team_away" id="Team_away" placeholder="Team_away" required>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="Date" id="Date" placeholder="Match Date" required>
+    <input type="text" id="name" placeholder="Name" readonly required>
+    <input type="email" id="email" placeholder="Email" readonly required>
+    <input type="Team_home" id="Team_home" placeholder="Team Home" readonly required>
+    <input type="Team_away" id="Team_away" placeholder="Team Away" readonly required>
+    <input type="number" id="quantity" placeholder="Qty" required>
+    <input type="Date" id="Date" placeholder="Match Date" readonly required>
     <div id="error-message" class="error-message" style="color: red; display: none;"></div>
 </form>
 
@@ -49,7 +49,7 @@
 
 
 <!-- Book Button -->
-<li class="auth-buttons" style="list-style: none; margin-top: 40px">
+<li class="auth-buttons" style="list-style: none; margin-top: 1px">
     <a href="bookingform.html" class="btn-login" style="text-decoration: none;">Confirm Booking</a>
 </li>
 
