@@ -229,6 +229,45 @@ a {
 .image-segment:hover .image-caption {
     transform: translateY(0);
 }
+/* Add to your existing CSS */
+.no-favorites, .guest-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #800000;
+    font-weight: bold;
+    text-align: center;
+    padding: 20px;
+}
+
+.image-segment img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+/* Dynamic column layout */
+.image-container[data-count="1"] .image-segment {
+    flex: 0 1 100%;
+}
+.image-container[data-count="2"] .image-segment {
+    flex: 0 1 50%;
+}
+.image-container[data-count="3"] .image-segment {
+    flex: 0 1 calc(33.333% - 10px);
+}
+
+
+
+
+
+
+
+
+
+
 
 /* Players Section */
 .players-section {

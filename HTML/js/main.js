@@ -1,65 +1,120 @@
+// Single import statement for all Firebase auth-related functions
+import { 
+  auth, 
+  onAuthStateChanged,
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  OAuthProvider 
+} from './firebase.js';
+
+// Other imports
 import { getAllPlayers } from "./players.js";
-import { auth, onAuthStateChanged } from './firebase.js';
-import { GoogleAuthProvider, signInWithPopup, OAuthProvider, auth} from './firebase.js';
 
-async function loadAndDisplayPlayers() {
-  console.log("Button clicked - function started"); // Debug log
-  
-  try {
-    const debugOutput = document.getElementById('debug-output');
-    debugOutput.innerHTML = "Loading players...";
+async function loadAccountView() {
+  const account = await detectAccount();
+  const accountNameElement = document.getElementById('account-name');
+  const accountTypeElement = document.getElementById('account-type');
+  const imageContainer = document.getElementById('account-image-container');
+
+  if (account.type === 'authenticated') {
+    // Fetch user document from Firestore
+    const userDoc = await getDoc(doc(db, "users", account.uid));
+    const userData = userDoc.data();
     
-    console.log("Fetching players..."); // Debug log
-    const players = await getAllPlayers();
-    console.log("Players fetched:", players); // Debug log
+    accountNameElement.textContent = `Welcome, ${account.displayName}`;
+    accountTypeElement.textContent = 'Your premium content';
     
-    const container = document.getElementById('players-container');
-    if (!container) {
-      throw new Error("Players container not found in DOM");
+    // Clear existing images
+    imageContainer.innerHTML = '';
+    
+    // Add favorite player images (1-3 based on what exists)
+    if (userData.favoritePlayers?.length) {
+      userData.favoritePlayers.slice(0, 3).forEach(imgUrl => {
+        const segment = document.createElement('div');
+        segment.className = 'image-segment';
+        segment.style.backgroundImage = `url(${imgUrl})`;
+        segment.style.backgroundSize = 'cover';
+        segment.style.backgroundPosition = 'center';
+        imageContainer.appendChild(segment);
+      });
+    } else {
+      // Default image if no favorites
+      const segment = document.createElement('div');
+      segment.className = 'image-segment';
+      segment.innerHTML = `<p class="no-favorites">Select your favorite players in settings</p>`;
+      imageContainer.appendChild(segment);
     }
-
-    if (!players || players.length === 0) {
-      container.innerHTML = '<p class="no-players">No players found in database</p>';
-      debugOutput.innerHTML = 'No players found in database';
-      return;
-    }
-
-    container.innerHTML = players.map(player => `
-      <div class="player-card">
-        <h3>${player.Name || 'Unnamed Player'}</h3>
-        <p>Position: ${player.Role || 'No position specified'}</p>
-        ${player.JerseyNumber ? `<p>Jersey: ${player.JerseyNumber}</p>` : ''}
+    
+  } else {
+    accountNameElement.textContent = 'Welcome, Guest';
+    accountTypeElement.textContent = 'Sign in for personalized content';
+    imageContainer.innerHTML = `
+      <div class="image-segment" style="background: #f5f5f5;">
+        <p class="guest-message">Sign in to see your favorite players</p>
       </div>
-    `).join('');
-
-    debugOutput.innerHTML = `Successfully loaded ${players.length} player(s)`;
-    console.table(players); // View detailed data in console
-
-  } catch (error) {
-    console.error("Full error details:", error); // Detailed error
-    const debugOutput = document.getElementById('debug-output');
-    debugOutput.innerHTML = `
-      <p style="color: red">Error loading players</p>
-      <p>${error.message}</p>
     `;
   }
 }
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-  console.log("DOM fully loaded"); // Debug log
+// async function loadAndDisplayPlayers() {
+//   console.log("Button clicked - function started"); // Debug log
   
-  const refreshBtn = document.getElementById('refresh-players');
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', loadAndDisplayPlayers);
-    console.log("Event listener attached to button"); // Debug log
-  } else {
-    console.error("Refresh button not found in DOM!");
-  }
+//   try {
+//     const debugOutput = document.getElementById('debug-output');
+//     debugOutput.innerHTML = "Loading players...";
+    
+//     console.log("Fetching players..."); // Debug log
+//     const players = await getAllPlayers();
+//     console.log("Players fetched:", players); // Debug log
+    
+//     const container = document.getElementById('players-container');
+//     if (!container) {
+//       throw new Error("Players container not found in DOM");
+//     }
 
-  // Load immediately on page load
-  loadAndDisplayPlayers();
-});
+//     if (!players || players.length === 0) {
+//       container.innerHTML = '<p class="no-players">No players found in database</p>';
+//       debugOutput.innerHTML = 'No players found in database';
+//       return;
+//     }
+
+//     container.innerHTML = players.map(player => `
+//       <div class="player-card">
+//         <h3>${player.Name || 'Unnamed Player'}</h3>
+//         <p>Position: ${player.Role || 'No position specified'}</p>
+//         ${player.JerseyNumber ? `<p>Jersey: ${player.JerseyNumber}</p>` : ''}
+//       </div>
+//     `).join('');
+
+//     debugOutput.innerHTML = `Successfully loaded ${players.length} player(s)`;
+//     console.table(players); // View detailed data in console
+
+//   } catch (error) {
+//     console.error("Full error details:", error); // Detailed error
+//     const debugOutput = document.getElementById('debug-output');
+//     debugOutput.innerHTML = `
+//       <p style="color: red">Error loading players</p>
+//       <p>${error.message}</p>
+//     `;
+//   }
+// }
+
+// // Initialize
+// document.addEventListener('DOMContentLoaded', () => {
+//   console.log("DOM fully loaded"); // Debug log
+  
+//   const refreshBtn = document.getElementById('refresh-players');
+//   if (refreshBtn) {
+//     refreshBtn.addEventListener('click', loadAndDisplayPlayers);
+//     console.log("Event listener attached to button"); // Debug log
+//   } else {
+//     console.error("Refresh button not found in DOM!");
+//   }
+
+//   // Load immediately on page load
+//   loadAndDisplayPlayers();
+// });
+
 
 
 // Google Sign-In
