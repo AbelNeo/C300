@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Error</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header>
+        <navbar-component></navbar-component>
+    </header>
+
+    <main class="container">
+        <div class="error-message">
+            <h1>Upload Failed</h1>
+            <p>There was an error uploading your file: <strong><%= error %></strong></p>
+            <a href="/upload-media" class="btn-primary">Try Again</a>
+        </div>
+    </main>
+</body>
+</html>

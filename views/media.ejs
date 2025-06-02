@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Uploaded Media</title>
+</head>
+<body>
+  <h1>Uploaded Media</h1>
+
+  <form action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="text" name="title" placeholder="Title" required />
+    <input type="file" name="media" required />
+    <button type="submit">Upload</button>
+  </form>
+
+  <% media.forEach(file => { %>
+    <div style="margin-top: 20px;">
+      <h3><%= file.title %></h3>
+      <% if (file.type === 'image') { %>
+        <img src="<%= file.url %>" width="300" />
+      <% } else if (file.type === 'video') { %>
+        <video width="400" controls>
+          <source src="<%= file.url %>" type="video/mp4">
+        </video>
+      <% } %>
+    </div>
+  <% }) %>
+</body>
+</html>
