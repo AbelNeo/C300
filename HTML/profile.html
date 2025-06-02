@@ -15,11 +15,121 @@
   }
 }
 </script>
+<script type="module" src="js\firebase.js"></script>
+<script type="module" src="js\players.js"></script>
+<script type="module" src="js\main.js"></script>
+<script type="module" src="components\navbar-component.js" ></script>
 </head>
 <body>
     <header>
         <navbar-component></navbar-component>
     </header>
+
+             <!-- <section class="account-gallery">
+            <div class="account-info">
+                <h2 id="account-name">Welcome Back, Manager!</h2>
+                <p id="account-type">Your premium content is ready</p>
+            </div>
+            
+            <div class="image-container" id="account-image-container">
+              
+              <div class="image-segment" style="background-image: url('../images/SakaHalfBody.jpeg');"></div>
+              <div class="image-segment"><img src="../images/SakaHalfBody.jpeg" alt="Description of image"></div>
+              <div class="image-segment" style="background-image: url('../images/SakaHalfBody.jpeg');"></div>
+
+            </div>
+        </section>  -->
+
+
+
+
+<article class="players-section">
+    <p class="section-title">
+        MY PLAYERS
+        <span class="player-count">(0)</span>
+    </p>
+    
+    <div class="divider"></div>
+    
+    <ul class="players-list">
+        <li class="player-card">
+            <a class="player-link" href="followings.html">
+                <div class="player-content">
+                    <div class="player-image">
+                        <img alt="Player placeholder" 
+                             decoding="async" 
+                             loading="lazy" 
+                             width="48" 
+                             height="48"
+                             class="player-img"
+                             src="https://image-service.onefootball.com/transform?w=96&dpr=2&image=https://images.onefootball.com/cw/icons/my-interests-empty-dark.svg">
+                    </div>
+                    <p class="player-name"></p>
+                    <p class="player-action">Follow</p>
+                </div>
+            </a>
+        </li>
+        
+        <!-- Repeat for other player cards -->
+        <li class="player-card">
+            <!-- Same structure as above -->
+        </li>
+        <li class="player-card">
+            <!-- Same structure as above -->
+        </li>
+    </ul>
+</article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- <article class="MyInterest">
+        <p class="MyInterestTitle">MY PLAYERS
+            <span class="MyInterestCount">(<!-- 0<!-- )
+            </span>
+        </p>
+    <div class="Separator">
+    </div>
+<ul class="MyInterestEntitiesGallery_entitiesGalleryList__nbuCF"><li class="MyInterestEntitiesGallery_entitiesGalleryListElement__VWvG_"><a class="MyInterestEntityLink_myInterestEntityLink__4Uil7" href="/followings/players"><div class="MyInterestEntity_myInterestEntity__19hAv"><div class="MyInterestEntity_myInterestEntityLogo__nvL93"><img alt="https://images.onefootball.com/cw/icons/my-interests-empty-light.svg" decoding="async" loading="lazy" width="48" height="48" data-nimg="1" class="MyInterestEntity_myInterestEntityLogoImage__M4AXI" style="color:transparent" srcset="https://image-service.onefootball.com/transform?w=48&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/my-interests-empty-dark.svg 1x, https://image-service.onefootball.com/transform?w=96&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/my-interests-empty-dark.svg 2x" src="https://image-service.onefootball.com/transform?w=96&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/my-interests-empty-dark.svg"></div><p class="MyInterestEntity_myInterestEntityTitle__g4PS4"></p><p class="MyInterestEntity_myInterestEntitySubtitle__aRmzq">Follow</p></div></a></li><li class="MyInterestEntitiesGallery_entitiesGalleryListElement__VWvG_"><a class="MyInterestEntityLink_myInterestEntityLink__4Uil7" href="/followings/players"><div class="MyInterestEntity_myInterestEntity__19hAv"><div class="MyInterestEntity_myInterestEntityLogo__nvL93"><img alt="https://images.onefootball.com/cw/icons/my-interests-empty-light.svg" decoding="async" loading="lazy" width="48" height="48" data-nimg="1" class="MyInterestEntity_myInterestEntityLogoImage__M4AXI" style="color:transparent" srcset="https://image-service.onefootball.com/transform?w=48&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/my-interests-empty-dark.svg 1x, https://image-service.onefootball.com/transform?w=96&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/my-interests-empty-dark.svg 2x" src="https://image-service.onefootball.com/transform?w=96&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/my-interests-empty-dark.svg"></div><p class="MyInterestEntity_myInterestEntityTitle__g4PS4"></p><p class="MyInterestEntity_myInterestEntitySubtitle__aRmzq">Follow</p></div></a></li><li class="MyInterestEntitiesGallery_entitiesGalleryListElement__VWvG_"><a class="MyInterestEntityLink_myInterestEntityLink__4Uil7" href="/followings/players"><div class="MyInterestEntity_myInterestEntity__19hAv"><div class="MyInterestEntity_myInterestEntityLogo__nvL93"><img alt="https://images.onefootball.com/cw/icons/my-interests-empty-light.svg" decoding="async" loading="lazy" width="48" height="48" data-nimg="1" class="MyInterestEntity_myInterestEntityLogoImage__M4AXI" style="color:transparent" srcset="https://image-service.onefootball.com/transform?w=48&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/my-interests-empty-dark.svg 1x, https://image-service.onefootball.com/transform?w=96&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/my-interests-empty-dark.svg 2x" src="https://image-service.onefootball.com/transform?w=96&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/my-interests-empty-dark.svg"></div><p class="MyInterestEntity_myInterestEntityTitle__g4PS4"></p><p class="MyInterestEntity_myInterestEntitySubtitle__aRmzq">Follow</p></div></a></li></ul></article> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  </body>
 </html>
