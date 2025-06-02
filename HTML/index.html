@@ -34,12 +34,12 @@
         <p>Your ultimate football club management solution.</p>
         
 
-<section class="players-section">
+<!-- <section class="players-section">
   <h2>Team Players</h2>
   <button id="refresh-players" class="btn-refresh">Load Players</button>
   <div id="players-container" class="players-grid"></div>
   <div id="debug-output" style="padding: 1rem; background: #f0f0f0;"></div>
-</section>
+</section> -->
 
         <!-- Account-Specific Gallery Section -->
          <section class="account-gallery">
@@ -50,7 +50,7 @@
             
             <div class="image-container" id="account-image-container">
               
-              <div class="image-segment" style="background-image: src='../images/SakaHalfBody.jpeg';"></div>
+              <div class="image-segment" style="background-image: url('../images/SakaHalfBody.jpeg');"></div>
               <div class="image-segment"><img src="../images/SakaHalfBody.jpeg" alt="Description of image"></div>
               <div class="image-segment" style="background-image: url('../images/SakaHalfBody.jpeg');"></div>
 
@@ -168,9 +168,70 @@
             </picture>
             <div class="play-button"></div>
           </a> -->
+<!-- Upload Media Section -->
+<section class="upload-section">
+  <h2>Share Your Media</h2>
+  <p>Upload images or videos to share with the community</p>
+<a href="/HTML/upload-media.html" class="btn-upload">Upload Media</a>
+
+</section>
+
+    </main>
+
+    <script>
+        // Sample account detection (replace with your actual auth logic)
+        function detectAccount() {
+            // In a real app, you would check Firebase auth or cookies
+            const urlParams = new URLSearchParams(window.location.search);
+            const accountParam = urlParams.get('account') || 'guest'; 
+            
+            loadAccountView(accountParam);
+        }
+
+        // Account-specific content
+        function loadAccountView(accountType) {
+            const accountData = {
+                user: {
+                    name: "Premium Member",
+                    message: "Your exclusive content is ready",
+                    images: [
+                        src='../images/SakaHalfBody.jpeg',
+                        src='../images/NetoHalfBody.jpeg',
+                        'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
+                    ]
+                },
+                guest: {
+                    name: "Standard Member",
+                    message: "Upgrade for premium content"
+                }
+            };
+
+            const account = accountData[accountType] || accountData.guest;
+            
+            // Update account info
+            document.getElementById('account-name').textContent = `Welcome ${account.name}`;
+            document.getElementById('account-type').textContent = account.message;
+            
+            // Update images
+            const container = document.getElementById('account-image-container');
+            container.innerHTML = '';
+            
+            account.images.forEach(imageUrl => {
+                const segment = document.createElement('div');
+                segment.className = 'image-segment';
+                segment.style.backgroundImage = `url(${imageUrl})`;
+                container.appendChild(segment);
+            });
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', detectAccount);
+    </script>
+</body>
+</html>
 
 
 
                 <!-- <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
                 <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
-                <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div> -->
+                <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div> -->  

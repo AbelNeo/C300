@@ -43,7 +43,7 @@ if (signupForm) {
       
       showSuccess('Account created! Please check your email for verification.');
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
+        window.location.href = 'index.html';
       }, 3000);
       
     } catch (error) {
@@ -67,7 +67,7 @@ if (googleBtn) {
       }
       
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
+        window.location.href = 'index.html';
       }, 1000);
       
     } catch (error) {
@@ -88,7 +88,7 @@ if (appleBtn) {
       }
       
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
+        window.location.href = 'index.html';
       }, 1000);
       
     } catch (error) {
@@ -164,7 +164,7 @@ function showSuccess(message) {
 //         const userCredential = await signInWithEmailAndPassword(auth, email, password);
 //         const user = userCredential.user;
         
-//         // Redirect to dashboard after successful login
+//         // Redirect to index after successful login
 //         window.location.href = 'index.html';
 //     } catch (error) {
 //         handleLoginError(error);
