@@ -28,6 +28,8 @@ app.engine('html', require('ejs').renderFile);
 app.use(express.static('public'));
 app.use('/images/', express.static('images'));
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'HTML')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // MySQL Connection
 const connection = mysql.createConnection({
@@ -74,10 +76,8 @@ app.get('/', (req, res) => {
   });
 });
 
-// Upload page
-app.get('/upload-media', (req, res) => {
-  res.render('upload-media');
-});
+
+
 
 // Product details
 app.get('/product/:id', (req, res) => {
@@ -210,6 +210,8 @@ app.post('/cart/:id', (req, res) => {
   });
 });
 
+
+
 // User registration
 app.get('/register', (req, res) => {
   res.render('register');
@@ -228,34 +230,33 @@ app.post('/register', (req, res) => {
   });
 });
 
-// ==================== Firebase File Upload Routes ====================
+// Serve the upload form
+app.get('/HTML/upload-media', (req, res) => {
+  res.sendFile(path.join(__dirname, 'HTML', 'upload-media.html'));
+});
 
-// Upload single file to Firebase
-app.post('/upload-media', firebaseUpload.single('media'), async (req, res) => {
+// Handle file uploads
+app.post('/HTML/upload-media', firebaseUpload.single('media'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
 
   try {
-    // Generate a unique filename
     const fileName = `${Date.now()}_${req.file.originalname}`;
     const file = bucket.file(fileName);
 
-    // Upload to Firebase Storage
     await file.save(req.file.buffer, {
       metadata: {
         contentType: req.file.mimetype,
       },
     });
 
-    // Get the public URL
     const [url] = await file.getSignedUrl({
       action: 'read',
       expires: '03-01-2500',
     });
 
-    // Save metadata to Firestore
-    const fileRef = await db.collection('files').add({
+    await db.collection('files').add({
       originalName: req.file.originalname,
       fileName: fileName,
       size: req.file.size,
@@ -264,19 +265,19 @@ app.post('/upload-media', firebaseUpload.single('media'), async (req, res) => {
       uploadDate: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    res.redirect('/upload-success');
+    res.json({ success: true, url: url });
   } catch (error) {
     console.error(error);
-    res.status(500).render('upload-error', { error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Upload success page
+// Success page
 app.get('/upload-success', (req, res) => {
-  res.render('upload-success');
+  res.render('upload-success.html');
 });
 
-// Get all files from Firestore
+
 app.get('/files', async (req, res) => {
   try {
     const snapshot = await db.collection('files').get();
@@ -290,7 +291,7 @@ app.get('/files', async (req, res) => {
   }
 });
 
-// Delete a file from Storage & Firestore
+
 app.delete('/files/:id', async (req, res) => {
   try {
     const doc = await db.collection('files').doc(req.params.id).get();
@@ -301,10 +302,10 @@ app.delete('/files/:id', async (req, res) => {
     const fileData = doc.data();
     const file = bucket.file(fileData.fileName);
 
-    // Delete from Firebase Storage
+
     await file.delete();
 
-    // Delete from Firestore
+
     await db.collection('files').doc(req.params.id).delete();
 
     res.json({ message: 'File deleted successfully', deletedFile: fileData });
@@ -313,11 +314,11 @@ app.delete('/files/:id', async (req, res) => {
   }
 });
 
-// ==================== Start Server ====================
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`MySQL Product Management: http://localhost:${PORT}`);
-  console.log(`Firebase File Upload: POST http://localhost:${PORT}/upload-media`);
+  console.log(`Firebase File Upload: POST http://localhost:${PORT}/HTML/upload-media`);
 });
