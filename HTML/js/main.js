@@ -39,7 +39,6 @@ const NavbarAuth = {
             ${user.displayName || 'Profile'}
           </a>
           <a href="#" id="logout-btn" class="btn-login">Logout</a>
-          <a href="bookingconfirmation.html" class="btn-login">My Bookings</a>
         `;
         
         document.getElementById('logout-btn')?.addEventListener('click', (e) => {
@@ -54,6 +53,7 @@ const NavbarAuth = {
       if (authButtons) {
         authButtons.innerHTML = `
           <a href="sign-in.html" class="btn-login">Login</a>
+          
           <a href="sign-up.html" class="btn-login">Join</a>
         `;
       }
@@ -129,74 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
   NavbarAuth.init();
   setupAuthHandlers();
   });
-
-
-// // Navbar Auth Manager
-// const NavbarAuth = {
-//   init: function() {
-//     // Watch for auth state changes
-//     onAuthStateChanged(auth, (user) => {
-//       this.updateNavbar(!!user);
-//     });
-//   },
-
-//   updateNavbar: function(isLoggedIn) {
-//     const navLinks = document.getElementById('nav-links');
-//     const authButtons = navLinks.querySelector('.auth-buttons');
-//     const profileLink = navLinks.querySelector('a[href="profile.html"]');
-    
-//     if (isLoggedIn) {
-//       // Replace auth buttons with profile/logout
-//       if (authButtons) {
-//         authButtons.innerHTML = `
-//           <a href="profile.html" id="logout-btn" class="btn-login">Profile logo</a>
-//           <a href="bookingconfirmation.html" class="btn-login">My Bookings</a>
-//         `;
-        
-//         // Add logout handler
-//         document.getElementById('logout-btn').addEventListener('click', (e) => {
-//           e.preventDefault();
-//           auth.signOut();
-//         });
-//       }
-      
-//       // Update profile link if exists
-//       if (profileLink) {
-//         profileLink.textContent = 'My Bookings';
-//       }
-//     } else {
-//       // Restore original auth buttons
-//       if (authButtons) {
-//         authButtons.innerHTML = `
-//           <a href="sign-in.html" class="btn-login">Login</a>
-//           <a href="sign-up.html" class="btn-login">Join</a>
-//         `;
-//       }
-      
-//       // Restore profile link text if exists
-//       if (profileLink) {
-//         profileLink.textContent = 'View purchases';
-//       }
-//     }
-//   }
-// };
-
-// // Initialize when DOM is ready
-// document.addEventListener('DOMContentLoaded', () => {
-//   NavbarAuth.init();
-// });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

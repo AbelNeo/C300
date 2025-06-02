@@ -974,3 +974,73 @@ background-color: #600000;
     padding: 10px;
   }
 }
+
+
+
+
+
+
+/* Following Player Section */
+.players-section {
+        display: flex;
+    flex-direction: column;
+    margin-top: 1.5em;
+}
+
+.section-title {
+    /* Your existing .MyInterestTitle styles */
+}
+
+.player-count {
+    /* Your existing .MyInterestCount styles */
+}
+
+.divider {
+    /* Your existing .Separator styles */
+}
+
+/* Players list */
+.players-list {
+    /* Your existing .MyInterestEntitiesGallery_entitiesGalleryList__nbuCF styles */
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 1rem;
+}
+
+.player-card {
+    /* Your existing .MyInterestEntitiesGallery_entitiesGalleryListElement__VWvG_ styles */
+}
+
+.player-link {
+    /* Your existing .MyInterestEntityLink_myInterestEntityLink__4Uil7 styles */
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Player content */
+.player-content {
+    /* Your existing .MyInterestEntity_myInterestEntity__19hAv styles */
+    text-align: center;
+}
+
+.player-image {
+    /* Your existing .MyInterestEntity_myInterestEntityLogo__nvL93 styles */
+}
+
+.player-img {
+    /* Your existing .MyInterestEntity_myInterestEntityLogoImage__M4AXI styles */
+    border-radius: 50%;
+}
+
+.player-name {
+    /* Your existing .MyInterestEntity_myInterestEntityTitle__g4PS4 styles */
+    margin: 0.5rem 0 0;
+}
+
+.player-action {
+    /* Your existing .MyInterestEntity_myInterestEntitySubtitle__aRmzq styles */
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0.25rem 0 0;
+}
