@@ -1,6 +1,9 @@
 // Single import statement for all Firebase auth-related functions
 import { 
   auth, 
+  doc,
+  getDoc,
+  getDocs,
   onAuthStateChanged,
   GoogleAuthProvider, 
   signInWithPopup, 
@@ -187,6 +190,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
+
+
+
+
+
+
+
+
+
 async function loadAccountView() {
   const account = await detectAccount();
   const accountNameElement = document.getElementById('account-name');
@@ -320,13 +333,6 @@ async function loadAccountView() {
 //     }
 // });
 
-function showError(message) {
-    const errorElement = document.getElementById('error-message');
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
-    }
-}
 
 // Real account detection
 function detectAccount() {
@@ -349,29 +355,6 @@ function detectAccount() {
       }
     });
   });
-}
-
-// Updated account view loader
-async function loadAccountView() {
-  const account = await detectAccount();
-  
-  const accountNameElement = document.getElementById('account-name');
-  const accountTypeElement = document.getElementById('account-type');
-  
-  if (account.type === 'authenticated') {
-    accountNameElement.textContent = `Welcome, ${account.displayName}`;
-    accountTypeElement.textContent = 'Premium Member';
-    accountTypeElement.style.color = '#800000';
-    
-    // Load premium features
-    document.querySelectorAll('.premium-feature').forEach(el => {
-      el.style.display = 'block';
-    });
-  } else {
-    accountNameElement.textContent = 'Welcome, Guest';
-    accountTypeElement.textContent = 'Sign in for premium features';
-    accountTypeElement.style.color = '#666';
-  }
 }
 
 // Initialize when page loads
