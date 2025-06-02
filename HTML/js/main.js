@@ -4,11 +4,188 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider, 
   signInWithPopup, 
-  OAuthProvider 
+  OAuthProvider,
+  signOut
 } from './firebase.js';
 
 // Other imports
 import { getAllPlayers } from "./players.js";
+
+// Navbar Auth Manager - Enhanced version
+const NavbarAuth = {
+  init: function() {
+    // Watch for auth state changes
+    onAuthStateChanged(auth, (user) => {
+      this.updateNavbar(user);
+      this.updateAccountView(user);
+    });
+  },
+
+  updateNavbar: function(user) {
+    const navLinks = document.getElementById('nav-links');
+    if (!navLinks) return;
+    
+    const authButtons = navLinks.querySelector('.auth-buttons');
+    const profileLink = navLinks.querySelector('a[href="profile.html"]');
+    
+    if (user) {
+      // User is logged in
+      if (authButtons) {
+        authButtons.innerHTML = `
+          <a href="profile.html" class="btn-login">
+            ${user.displayName || 'Profile'}
+          </a>
+          <a href="#" id="logout-btn" class="btn-login">Logout</a>
+          <a href="bookingconfirmation.html" class="btn-login">My Bookings</a>
+        `;
+        
+        document.getElementById('logout-btn')?.addEventListener('click', (e) => {
+          e.preventDefault();
+          signOut(auth).then(() => {
+            window.location.reload(); // Ensures clean state
+          });
+        });
+      }
+    } else {
+      // User is logged out
+      if (authButtons) {
+        authButtons.innerHTML = `
+          <a href="sign-in.html" class="btn-login">Login</a>
+          <a href="sign-up.html" class="btn-login">Join</a>
+        `;
+      }
+    }
+  },
+
+  updateAccountView: function(user) {
+    const accountNameElement = document.getElementById('account-name');
+    const accountTypeElement = document.getElementById('account-type');
+    
+    if (!accountNameElement || !accountTypeElement) return;
+    
+    if (user) {
+      accountNameElement.textContent = `Welcome, ${user.displayName || 'User'}`;
+      accountTypeElement.textContent = 'Premium Member';
+      accountTypeElement.style.color = '#800000';
+      
+      // Show premium features
+      document.querySelectorAll('.premium-feature').forEach(el => {
+        el.style.display = 'block';
+      });
+    } else {
+      accountNameElement.textContent = 'Welcome, Guest';
+      accountTypeElement.textContent = 'Sign in for premium features';
+      accountTypeElement.style.color = '#666';
+      
+      // Hide premium features
+      document.querySelectorAll('.premium-feature').forEach(el => {
+        el.style.display = 'none';
+      });
+    }
+  }
+};
+
+// Authentication Handlers
+function setupAuthHandlers() {
+  // Google Sign-In
+  document.querySelector('.google-btn')?.addEventListener('click', async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      window.location.href = 'index.html'; // Refresh to update all states
+    } catch (error) {
+      showError(error.message);
+    }
+  });
+
+  // Apple Sign-In
+  document.querySelector('.apple-btn')?.addEventListener('click', async () => {
+    const provider = new OAuthProvider('apple.com');
+    try {
+      await signInWithPopup(auth, provider);
+      window.location.href = 'index.html';
+    } catch (error) {
+      showError(error.message);
+    }
+  });
+}
+
+function showError(message) {
+  const errorElement = document.getElementById('error-message');
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+    setTimeout(() => {
+      errorElement.style.display = 'none';
+    }, 5000);
+  }
+}
+
+// Initialize everything when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  NavbarAuth.init();
+  setupAuthHandlers();
+  });
+
+
+// // Navbar Auth Manager
+// const NavbarAuth = {
+//   init: function() {
+//     // Watch for auth state changes
+//     onAuthStateChanged(auth, (user) => {
+//       this.updateNavbar(!!user);
+//     });
+//   },
+
+//   updateNavbar: function(isLoggedIn) {
+//     const navLinks = document.getElementById('nav-links');
+//     const authButtons = navLinks.querySelector('.auth-buttons');
+//     const profileLink = navLinks.querySelector('a[href="profile.html"]');
+    
+//     if (isLoggedIn) {
+//       // Replace auth buttons with profile/logout
+//       if (authButtons) {
+//         authButtons.innerHTML = `
+//           <a href="profile.html" id="logout-btn" class="btn-login">Profile logo</a>
+//           <a href="bookingconfirmation.html" class="btn-login">My Bookings</a>
+//         `;
+        
+//         // Add logout handler
+//         document.getElementById('logout-btn').addEventListener('click', (e) => {
+//           e.preventDefault();
+//           auth.signOut();
+//         });
+//       }
+      
+//       // Update profile link if exists
+//       if (profileLink) {
+//         profileLink.textContent = 'My Bookings';
+//       }
+//     } else {
+//       // Restore original auth buttons
+//       if (authButtons) {
+//         authButtons.innerHTML = `
+//           <a href="sign-in.html" class="btn-login">Login</a>
+//           <a href="sign-up.html" class="btn-login">Join</a>
+//         `;
+//       }
+      
+//       // Restore profile link text if exists
+//       if (profileLink) {
+//         profileLink.textContent = 'View purchases';
+//       }
+//     }
+//   }
+// };
+
+// // Initialize when DOM is ready
+// document.addEventListener('DOMContentLoaded', () => {
+//   NavbarAuth.init();
+// });
+
+
+
+
 
 async function loadAccountView() {
   const account = await detectAccount();
@@ -115,35 +292,33 @@ async function loadAccountView() {
 //   loadAndDisplayPlayers();
 // });
 
+// // Google Sign-In
+// document.querySelector('.google-btn')?.addEventListener('click', async () => {
+//     const provider = new GoogleAuthProvider();
+//     try {
+//         const result = await signInWithPopup(auth, provider);
+//         const user = result.user;
+//         console.log('Google sign-in success:', user);
+//         window.location.href = 'index.html';
+//     } catch (error) {
+//         console.error('Google sign-in error:', error);
+//         showError(error.message);
+//     }
+// });
 
-
-// Google Sign-In
-document.querySelector('.google-btn')?.addEventListener('click', async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        console.log('Google sign-in success:', user);
-        window.location.href = 'dashboard.html';
-    } catch (error) {
-        console.error('Google sign-in error:', error);
-        showError(error.message);
-    }
-});
-
-// Apple Sign-In
-document.querySelector('.apple-btn')?.addEventListener('click', async () => {
-    const provider = new OAuthProvider('apple.com');
-    try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        console.log('Apple sign-in success:', user);
-        window.location.href = 'dashboard.html';
-    } catch (error) {
-        console.error('Apple sign-in error:', error);
-        showError(error.message);
-    }
-});
+// // Apple Sign-In
+// document.querySelector('.apple-btn')?.addEventListener('click', async () => {
+//     const provider = new OAuthProvider('apple.com');
+//     try {
+//         const result = await signInWithPopup(auth, provider);
+//         const user = result.user;
+//         console.log('Apple sign-in success:', user);
+//         window.location.href = 'index.html';
+//     } catch (error) {
+//         console.error('Apple sign-in error:', error);
+//         showError(error.message);
+//     }
+// });
 
 function showError(message) {
     const errorElement = document.getElementById('error-message');
