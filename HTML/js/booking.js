@@ -22,19 +22,29 @@ document.addEventListener('DOMContentLoaded', function () {
             id: doc.id,
             title: `${match.team_home} vs ${match.team_away}`,
             start: match_date.toDate(),
-          };
-        });
+            extendedProps: {
+              team_home: match.team_home,
+              team_away: match.team_away
+          }
+        };
         successCallback(events);
       } catch (error) {
         console.error('Error loading matches:', error);
         failureCallback(error);
       }
-    },
+    };
     eventClick: function(info) {
+      const match = info.event.extendedProps;
       const match_id = info.event.id;
-      window.location.href = `bookingform.html?match_id=${match_id}`;
+      const urlParams = new URLSearchParams({
+        match_id: match_id,
+        date: info.event.start.toISOString(),
+        team_home: match.team_home,
+        team_away: match.team_away
+      });
+      window.location.href = `bookingform.html?${urlParams.toString()}`;
     }
-  });
+  
 
   calendar.render();
 });
@@ -135,5 +145,5 @@ bookButton.addEventListener('click', async () => {
       messageArea.textContent = 'Booking failed. Please try again.';
     }
   }
+})
 });
-

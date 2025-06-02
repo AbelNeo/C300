@@ -29,41 +29,43 @@
 
 <!-- Match Selection -->
 <form class="signup-form" id="signupForm">
-    <input type="Name" id="name" placeholder="Name" required>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="Quantity" id="Quantity" placeholder="Qty" required>
-    <input type="Date" id="Date" placeholder="Match Date" required>
+    <input type="text" id="name" placeholder="Name" readonly required>
+    <input type="email" id="email" placeholder="Email" readonly required>
+    <input type="Team_home" id="Team_home" placeholder="Team Home" readonly required>
+    <input type="Team_away" id="Team_away" placeholder="Team Away" readonly required>
+    <input type="number" id="quantity" placeholder="Qty" required>
+    <input type="Date" id="Date" placeholder="Match Date" readonly required>
     <div id="error-message" class="error-message" style="color: red; display: none;"></div>
-    <button type="Book" class="signup-btn">Confirm Booking</button>
 </form>
 
 
 <!-- Seat Selection -->
-<div style="display: flex; margin-bottom: 20px; flex-direction: column; gap: 10px;"></div>
-<label for="seatSelect">Select Seat:</label>
-<div id="seatSections">
-  <option value="">-- Choose preferred seat --</option>
+<h3 id="matchTitle"></h3>
+<div id="sectionsContainer"></div>
+<div id="status"></div>
+  <option value=""></option>
 </select>
 </div>
 
 
 <!-- Book Button -->
-<li class="auth-buttons" style="list-style: none; margin-top: 40px">
+<li class="auth-buttons" style="list-style: none; margin-top: 1px">
     <a href="bookingform.html" class="btn-login" style="text-decoration: none;">Confirm Booking</a>
 </li>
 
 <!-- Message Area -->
 <div id="bookingMessage"></div>
 
-
-
-
-
 </body>
 </html>
 
 
+
+
 <!-- Calendar Section 
+
+<button type="Book" class="signup-btn">Confirm Booking</button>
+
         <section class="calendar">
             <h2>Match Calendar</h2>
             <div id="calendar-container">
