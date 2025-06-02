@@ -179,54 +179,54 @@
     </main>
 
     <script>
-        // Sample account detection (replace with your actual auth logic)
-        function detectAccount() {
-            // In a real app, you would check Firebase auth or cookies
-            const urlParams = new URLSearchParams(window.location.search);
-            const accountParam = urlParams.get('account') || 'guest'; 
+        // // Sample account detection (replace with your actual auth logic)
+        // function detectAccount() {
+        //     // In a real app, you would check Firebase auth or cookies
+        //     const urlParams = new URLSearchParams(window.location.search);
+        //     const accountParam = urlParams.get('account') || 'guest'; 
             
-            loadAccountView(accountParam);
-        }
+        //     loadAccountView(accountParam);
+        // }
 
-        // Account-specific content
-        function loadAccountView(accountType) {
-            const accountData = {
-                user: {
-                    name: "Premium Member",
-                    message: "Your exclusive content is ready",
-                    images: [
-                        src='../images/SakaHalfBody.jpeg',
-                        src='../images/NetoHalfBody.jpeg',
-                        'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
-                    ]
-                },
-                guest: {
-                    name: "Standard Member",
-                    message: "Upgrade for premium content"
-                }
-            };
+    //     // Account-specific content
+    //     function loadAccountView(accountType) {
+    //         const accountData = {
+    //             user: {
+    //                 name: "Premium Member",
+    //                 message: "Your exclusive content is ready",
+    //                 images: [
+    //                     src='../images/SakaHalfBody.jpeg',
+    //                     src='../images/NetoHalfBody.jpeg',
+    //                     'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
+    //                 ]
+    //             },
+    //             guest: {
+    //                 name: "Standard Member",
+    //                 message: "Upgrade for premium content"
+    //             }
+    //         };
 
-            const account = accountData[accountType] || accountData.guest;
+    //         const account = accountData[accountType] || accountData.guest;
             
-            // Update account info
-            document.getElementById('account-name').textContent = `Welcome ${account.name}`;
-            document.getElementById('account-type').textContent = account.message;
+    //         // Update account info
+    //         document.getElementById('account-name').textContent = `Welcome ${account.name}`;
+    //         document.getElementById('account-type').textContent = account.message;
             
-            // Update images
-            const container = document.getElementById('account-image-container');
-            container.innerHTML = '';
+    //         // Update images
+    //         const container = document.getElementById('account-image-container');
+    //         container.innerHTML = '';
             
-            account.images.forEach(imageUrl => {
-                const segment = document.createElement('div');
-                segment.className = 'image-segment';
-                segment.style.backgroundImage = `url(${imageUrl})`;
-                container.appendChild(segment);
-            });
-        }
+    //         account.images.forEach(imageUrl => {
+    //             const segment = document.createElement('div');
+    //             segment.className = 'image-segment';
+    //             segment.style.backgroundImage = `url(${imageUrl})`;
+    //             container.appendChild(segment);
+    //         });
+    //     }
 
-        // Initialize when page loads
-        window.addEventListener('DOMContentLoaded', detectAccount);
-    </script>
+    //     // Initialize when page loads
+    //     window.addEventListener('DOMContentLoaded', detectAccount);
+ </script>
 </body>
 </html>
 
