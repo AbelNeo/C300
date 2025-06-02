@@ -1,5 +1,4 @@
 
-
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, getDoc, collection, query, where, runTransaction, setDoc, updateDoc, addDoc, serverTimestamp, getDocs} from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification, signOut} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";

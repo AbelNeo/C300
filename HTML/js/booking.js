@@ -1,8 +1,21 @@
-import { db, collection, getDocs, doc, getDoc, setDoc, updateDoc, runTransaction, recommendAnotherSeat } from './firebase.js';
 import { FullCalendar } from 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, getDoc, collection, query, where, runTransaction, setDoc, updateDoc, addDoc, serverTimestamp, getDocs} from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDZVSQAwB1YnKv6Pr_5kbsjvUz074mDsQ0",
+  authDomain: "football-club-management-3c136.firebaseapp.com",
+  projectId: "football-club-management-3c136",
+  storageBucket: "football-club-management-3c136.appspot.com",
+  messagingSenderId: "388394869174",
+  appId: "1:388394869174:web:ec8f93ab8fb685e9846117"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 
 const matchSelect = document.getElementById('matchSelect');
@@ -25,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
           return {
             id: doc.id,
             title: `${match.team_home} vs ${match.team_away}`,
-            start: match_date.toDate(),
+            start: match.match_date.toDate(),
             extendedProps: {
               team_home: match.team_home,
               team_away: match.team_away
@@ -48,9 +61,30 @@ document.addEventListener('DOMContentLoaded', function () {
         team_away: match.team_away
       });
       window.location.href = `bookingform.html?${urlParams.toString()}`;
-    }
-  });
-  
+      }
+    },
+    dateClick: async function(info) {
+      const selectedDate = info.dateStr;
+    // Fetch events again from Firestore for this specific date
+      const snapshot = await getDocs(collection(db,'matches'));
+      const eventsOnDate = snapshot.docs.filter(doc => {
+        const match = doc.data();
+        const matchDate = match.matchDate.toDate().toISOString().split('T')[0];
+        return matchDate === selectedDate;
+      });
+
+  if (eventsOnDate.length > 0) {
+    let popupContent = '';
+    eventsOnDate.forEach(doc => {
+      const match = doc.data();
+      popupContent += `${match.team_home} vs ${match.team_away}\n`;
+    });
+    alert(`Matches on ${selectedDate}:\n${popupContent}`);
+  } else {
+    alert(`No matches on ${selectedDate}`);
+  }
+}
+
   calendar.render();
 });
 
@@ -151,3 +185,15 @@ bookButton.addEventListener('click', async () => {
     }
   }
 });
+
+
+// Export your custom functions
+export {   db, auth,
+  // Firestore functions
+  getDocs, doc, getDoc, collection, query, where, runTransaction, setDoc, updateDoc, addDoc, serverTimestamp,
+  // Auth functions
+  onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification };
+
+
+
+
