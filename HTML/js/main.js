@@ -183,10 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
 //   NavbarAuth.init();
 // });
 
-
-
-
-
 async function loadAccountView() {
   const account = await detectAccount();
   const accountNameElement = document.getElementById('account-name');
