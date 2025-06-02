@@ -1,5 +1,9 @@
 import { db, collection, getDocs, doc, getDoc, setDoc, updateDoc, runTransaction, recommendAnotherSeat } from './firebase.js';
 import { FullCalendar } from 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'
+import { initializeApp } from 'firebase/app';
+import { getFirestore, doc, getDoc, collection, query, where, runTransaction, setDoc, updateDoc, addDoc, serverTimestamp, getDocs} from 'firebase/firestore';
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
 
 const matchSelect = document.getElementById('matchSelect');
 const seatSelect = document.getElementById('seatSelect');
@@ -9,8 +13,8 @@ const messageArea = document.getElementById('messageArea');
 //calendar code
 document.addEventListener('DOMContentLoaded', function () {
   const db = firebase.firestore();
-
   const calendarEl = document.getElementById('calendar');
+
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
     events: async function(fetchInfo, successCallback, failureCallback) {
@@ -27,12 +31,13 @@ document.addEventListener('DOMContentLoaded', function () {
               team_away: match.team_away
           }
         };
+      });
         successCallback(events);
       } catch (error) {
         console.error('Error loading matches:', error);
         failureCallback(error);
       }
-    };
+    },
     eventClick: function(info) {
       const match = info.event.extendedProps;
       const match_id = info.event.id;
@@ -44,8 +49,8 @@ document.addEventListener('DOMContentLoaded', function () {
       });
       window.location.href = `bookingform.html?${urlParams.toString()}`;
     }
+  });
   
-
   calendar.render();
 });
 
@@ -145,5 +150,4 @@ bookButton.addEventListener('click', async () => {
       messageArea.textContent = 'Booking failed. Please try again.';
     }
   }
-})
 });
