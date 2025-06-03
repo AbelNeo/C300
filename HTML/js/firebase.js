@@ -1,7 +1,7 @@
 
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, getDoc, collection, query, where, runTransaction, setDoc, updateDoc, addDoc, serverTimestamp, getDocs} from 'firebase/firestore';
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification, signOut} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification, signOut, setPersistence, browserLocalPersistence} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
   
 const firebaseConfig = {
@@ -14,7 +14,12 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+// Initialize Auth with persistence
 const auth = getAuth(app);
+setPersistence(auth, browserLocalPersistence)
+  .catch((error) => {
+    console.error("Error setting auth persistence:", error);
+  });
 const db = getFirestore(app);
 
 async function bookSeat(match_id, seat_number, user_id) {

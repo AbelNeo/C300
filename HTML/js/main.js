@@ -39,7 +39,7 @@ const NavbarAuth = {
           <a href="profile.html" class="btn-login">
             ${user.displayName || 'Profile'}
           </a>
-          <a href="#" id="logout-btn" class="btn-login">Logout</a>
+          <a href="index.html" id="logout-btn" class="btn-login">Logout</a>
         `;
         
         document.getElementById('logout-btn')?.addEventListener('click', (e) => {
