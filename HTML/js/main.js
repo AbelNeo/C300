@@ -1,5 +1,6 @@
 // Single import statement for all Firebase auth-related functions
 import { 
+  db,
   auth, 
   doc,
   getDoc,
@@ -12,7 +13,7 @@ import {
 } from './firebase.js';
 
 // Other imports
-import { getAllPlayers } from "./players.js";
+import { getFavoritePlayer } from "./players.js";
 
 // Navbar Auth Manager - Enhanced version
 const NavbarAuth = {
@@ -163,7 +164,7 @@ async function loadAccountView() {
       // Default image if no favorites
       const segment = document.createElement('div');
       segment.className = 'image-segment';
-      segment.innerHTML = `<p class="no-favorites">Select your favorite players in settings</p>`;
+      segment.innerHTML = `<p class="no-favorites">Select your favorite players in Profile</p>`;
       imageContainer.appendChild(segment);
     }
     
@@ -172,98 +173,81 @@ async function loadAccountView() {
     accountTypeElement.textContent = 'Sign in for personalized content';
     imageContainer.innerHTML = `
       <div class="image-segment" style="background: #f5f5f5;">
-        <p class="guest-message">Sign in to see your favorite players</p>
+        <p class="guest-message">Sign in to follow your favorite players</p>
       </div>
     `;
   }
 }
 
-// async function loadAndDisplayPlayers() {
-//   console.log("Button clicked - function started"); // Debug log
+
+
+
+
+
+
+async function loadAndDisplayPlayers() {
+  console.log("Button clicked - function started"); // Debug log
   
-//   try {
-//     const debugOutput = document.getElementById('debug-output');
-//     debugOutput.innerHTML = "Loading players...";
+  try {
+    const debugOutput = document.getElementById('debug-output');
+    debugOutput.innerHTML = "Loading players...";
     
-//     console.log("Fetching players..."); // Debug log
-//     const players = await getAllPlayers();
-//     console.log("Players fetched:", players); // Debug log
+    console.log("Fetching players..."); // Debug log
+    const players = await getFavoritePlayer();
+    console.log("Players fetched:", players); // Debug log
     
-//     const container = document.getElementById('players-container');
-//     if (!container) {
-//       throw new Error("Players container not found in DOM");
-//     }
+    const container = document.getElementById('players-container');
+    if (!container) {
+      throw new Error("Players container not found in DOM");
+    }
 
-//     if (!players || players.length === 0) {
-//       container.innerHTML = '<p class="no-players">No players found in database</p>';
-//       debugOutput.innerHTML = 'No players found in database';
-//       return;
-//     }
+    if (!players || players.length === 0) {
+      container.innerHTML = '<p class="no-players">No players found in database</p>';
+      debugOutput.innerHTML = 'No players found in database';
+      return;
+    }
 
-//     container.innerHTML = players.map(player => `
-//       <div class="player-card">
-//         <h3>${player.Name || 'Unnamed Player'}</h3>
-//         <p>Position: ${player.Role || 'No position specified'}</p>
-//         ${player.JerseyNumber ? `<p>Jersey: ${player.JerseyNumber}</p>` : ''}
-//       </div>
-//     `).join('');
+    container.innerHTML = players.map(player => `
+      <div class="player-card">
+        <h3>${player.Name || 'Unnamed Player'}</h3>
+        <p>Position: ${player.Role || 'No position specified'}</p>
+        ${player.JerseyNumber ? `<p>Jersey: ${player.JerseyNumber}</p>` : ''}
+      </div>
+    `).join('');
 
-//     debugOutput.innerHTML = `Successfully loaded ${players.length} player(s)`;
-//     console.table(players); // View detailed data in console
+    debugOutput.innerHTML = `Successfully loaded ${players.length} player(s)`;
+    console.table(players); // View detailed data in console
 
-//   } catch (error) {
-//     console.error("Full error details:", error); // Detailed error
-//     const debugOutput = document.getElementById('debug-output');
-//     debugOutput.innerHTML = `
-//       <p style="color: red">Error loading players</p>
-//       <p>${error.message}</p>
-//     `;
-//   }
-// }
+  } catch (error) {
+    console.error("Full error details:", error); // Detailed error
+    const debugOutput = document.getElementById('debug-output');
+    debugOutput.innerHTML = `
+      <p style="color: red">Error loading players</p>
+      <p>${error.message}</p>
+    `;
+  }
+}
 
-// // Initialize
-// document.addEventListener('DOMContentLoaded', () => {
-//   console.log("DOM fully loaded"); // Debug log
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("DOM fully loaded"); // Debug log
   
-//   const refreshBtn = document.getElementById('refresh-players');
-//   if (refreshBtn) {
-//     refreshBtn.addEventListener('click', loadAndDisplayPlayers);
-//     console.log("Event listener attached to button"); // Debug log
-//   } else {
-//     console.error("Refresh button not found in DOM!");
-//   }
+  const refreshBtn = document.getElementById('refresh-players');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', loadAndDisplayPlayers);
+    console.log("Event listener attached to button"); // Debug log
+  } else {
+    console.error("Refresh button not found in DOM!");
+  }
 
-//   // Load immediately on page load
-//   loadAndDisplayPlayers();
-// });
+  // Load immediately on page load
+  loadAndDisplayPlayers();
+});
 
-// // Google Sign-In
-// document.querySelector('.google-btn')?.addEventListener('click', async () => {
-//     const provider = new GoogleAuthProvider();
-//     try {
-//         const result = await signInWithPopup(auth, provider);
-//         const user = result.user;
-//         console.log('Google sign-in success:', user);
-//         window.location.href = 'index.html';
-//     } catch (error) {
-//         console.error('Google sign-in error:', error);
-//         showError(error.message);
-//     }
-// });
 
-// // Apple Sign-In
-// document.querySelector('.apple-btn')?.addEventListener('click', async () => {
-//     const provider = new OAuthProvider('apple.com');
-//     try {
-//         const result = await signInWithPopup(auth, provider);
-//         const user = result.user;
-//         console.log('Apple sign-in success:', user);
-//         window.location.href = 'index.html';
-//     } catch (error) {
-//         console.error('Apple sign-in error:', error);
-//         showError(error.message);
-//     }
-// });
+
+
+
 
 
 // Real account detection
