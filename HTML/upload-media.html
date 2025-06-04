@@ -151,84 +151,44 @@
         </section>
     </main>
 
-    <script>
-        document.getElementById('uploadForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const fileInput = document.getElementById('media');
-            const file = fileInput.files[0];
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('uploadProgress');
-            const progressText = document.getElementById('progressText');
-            const statusMessage = document.getElementById('statusMessage');
-            
-            if (!file) {
-                statusMessage.innerHTML = '<div class="error-message">Please select a file to upload</div>';
-                return;
-            }
-            
-            // Validate file size (50MB max)
-            if (file.size > 50 * 1024 * 1024) {
-                statusMessage.innerHTML = '<div class="error-message">File size exceeds 50MB limit</div>';
-                return;
-            }
-            
-            const formData = new FormData();
-            formData.append('media', file);
-            
-            progressContainer.style.display = 'block';
-            statusMessage.innerHTML = '';
-            
-            const xhr = new XMLHttpRequest();
-            
-            // Progress tracking
-            xhr.upload.addEventListener('progress', (event) => {
-                if (event.lengthComputable) {
-                    const percentComplete = (event.loaded / event.total) * 100;
-                    progressBar.value = percentComplete;
-                    progressText.textContent = `${Math.round(percentComplete)}%`;
-                }
-            });
-            
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    progressContainer.style.display = 'none';
-                    
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        statusMessage.innerHTML = `
-                            <div class="success-message">
-                                <h3>Upload Successful!</h3>
-                                <p>Your file has been uploaded successfully.</p>
-                                <p>File URL: <a href="${response.url}" target="_blank">View File</a></p>
-                                <a href="/" class="btn-primary">Return to Home</a>
-                                <a href="/upload-media" class="btn-primary" style="margin-left: 10px;">Upload Another</a>
-                            </div>
-                        `;
-                        document.getElementById('uploadForm').reset();
-                    } else {
-                        let errorMessage = 'An error occurred during upload';
-                        try {
-                            const errorResponse = JSON.parse(xhr.responseText);
-                            errorMessage = errorResponse.error || errorMessage;
-                        } catch (e) {
-                            console.error('Error parsing error response:', e);
-                        }
-                        
-                        statusMessage.innerHTML = `
-                            <div class="error-message">
-                                <h3>Upload Failed</h3>
-                                <p>${errorMessage}</p>
-                                <button onclick="window.location.reload()" class="btn-primary">Try Again</button>
-                            </div>
-                        `;
-                    }
-                }
-            };
-            
-            xhr.open('POST', '/upload-media', true);
-            xhr.send(formData);
-        });
-    </script>
+<!-- In your existing upload-media.html, modify the script section: -->
+<script>
+  // Get the selected date from URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const selectedDate = urlParams.get('date');
+  
+  // Display the selected date if it exists
+  if (selectedDate) {
+    const titleElement = document.querySelector('.upload-section h1');
+    titleElement.textContent += ` for ${selectedDate}`;
+    
+    // You can also add the date to your form data when uploading
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const fileInput = document.getElementById('media');
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        document.getElementById('statusMessage').innerHTML = '<div class="error-message">Please select a file to upload</div>';
+        return;
+      }
+      
+      // Validate file size (50MB max)
+      if (file.size > 50 * 1024 * 1024) {
+        document.getElementById('statusMessage').innerHTML = '<div class="error-message">File size exceeds 50MB limit</div>';
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append('media', file);
+      formData.append('date', selectedDate); // Add the date to the form data
+      
+      // Rest of your upload code...
+      // When redirecting to success page, include the date:
+      window.location.href = `upload-success.html?date=${encodeURIComponent(selectedDate)}`;
+    });
+  }
+</script>
 </body>
 </html>

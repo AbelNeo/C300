@@ -26,24 +26,10 @@
     </header>
 
     <main class="container">
-        <h1 id="successTitle">Upload Successful!</h1>
-        <p>Your file has been uploaded successfully.</p>
-        <a href="index.html" class="btn-primary">Return to Home</a>
-        <a href="upload-media.html" class="btn-primary">Upload Another File</a>
-    </main>
-
-    <script>
-        // Wait for DOM to be fully loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get the selected date from URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const selectedDate = urlParams.get('date');
-            
-            if (selectedDate) {
-                const mainTitle = document.getElementById('successTitle');
-                mainTitle.textContent += ` for ${selectedDate}`;
-            }
-        });
-    </script>
+    <h1>Upload Successful!</h1>
+    <p>Your file has been uploaded successfully.</p>
+    <a href="index.html" class="btn-primary">Return to Home</a>
+    <a href="upload-media.html" class="btn-primary">Upload Another File</a>
+</main>
 </body>
 </html>
