@@ -47,13 +47,59 @@
         <h1>Match Calendar</h1>
         <div id="calendar"></div>
 
-        <div class="legend"></div>
-                <li class="auth-buttons" style="list-style: none;">
-                    <a href="bookingform.html" class="btn-login" style="text-decoration: none;">Buy match tickets</a>
-            </li>
+      <div id="dateForm" style="display: none;">
+  <h3>Selected Date: <span id="selectedDate"></span></h3>
+  <a id="uploadLink" href="#" class="btn-login" style="text-decoration: none; margin-top: 15px; display: inline-block;">Upload Media for this Date</a>
+</div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+      var selectedDate = null;
+      
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        dateClick: function(info) {
+          // Remove previous selection
+          document.querySelectorAll('.selected-date').forEach(el => {
+            el.classList.remove('selected-date');
+          });
+          
+          // Add selection to clicked date
+          info.dayEl.classList.add('selected-date');
+          
+          // Store the selected date
+          selectedDate = info.dateStr;
+          
+          // Show the form and set the date
+          document.getElementById('dateForm').style.display = 'block';
+          document.getElementById('selectedDate').textContent = info.dateStr;
+          
+          // Set the upload link with the date parameter
+          document.getElementById('uploadLink').href = 
+            `upload-media.html?date=${encodeURIComponent(info.dateStr)}`;
+        },
+        eventClick: function(info) {
+          // Optional: handle if you click on an event instead of a date
+          info.jsEvent.preventDefault();
+        }
+        </script>
+      });
+    })
+
+      <div class="legend"></div>
+      <ul>
+        <li class="auth-buttons" style="list-style: none;">
+          <a href="bookingform.html" class="btn-login" style="text-decoration: none;">Buy match tickets</a>
+        </li>
+      </ul>
 
 </body>  
 </html>
+
+
+
 
 
 
