@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shop</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    #searchBar {
+      max-width: 400px;
+      margin: 10px auto 30px;
+      display: block;
+      padding: 10px;
+      font-size: 1em;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .price {
+      color: #e67e22;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+
+    .stock {
+      font-size: 0.9em;
+      color: #555;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+    }
+
+    .modal-content img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+
+    .modal-content .thumbnail-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .modal-content .thumbnail-container img {
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .modal-content .thumbnail-container img.selected {
+      border-color: #27ae60;
+    }
+
+    .modal h2 {
+      margin-top: 0;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px; right: 15px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px; height: 30px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .add-to-cart {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .add-to-cart input {
+      width: 60px;
+      padding: 5px;
+    }
+
+    .add-to-cart button {
+      padding: 8px 12px;
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Shop</h1>
+  <input type="text" id="searchBar" placeholder="Search products...">
+
+  <div class="product-grid" id="productGrid"></div>
+
+  <!-- Modal -->
+  <div class="modal" id="productModal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">×</button>
+      <img id="mainImage" src="" alt="">
+      <div class="thumbnail-container" id="thumbnails"></div>
+      <h2 id="modalName"></h2>
+      <p id="modalDescription"></p>
+      <div class="price" id="modalPrice"></div>
+      <div class="stock" id="modalStock"></div>
+      <div class="add-to-cart">
+        <input type="number" id="modalQuantity" value="1" min="1">
+        <button onclick="addToCart()">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const items = JSON.parse(localStorage.getItem('storeItems') || '[]');
+    let currentItem = null;
+
+    const grid = document.getElementById('productGrid');
+    const searchBar = document.getElementById('searchBar');
+
+    function displayProducts(filter = '') {
+      grid.innerHTML = '';
+      const filtered = items.filter(item =>
+        item.name.toLowerCase().includes(filter.toLowerCase()) ||
+        item.description.toLowerCase().includes(filter.toLowerCase())
+      );
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<p style="text-align:center;">No products found.</p>';
+        return;
+      }
+
+      filtered.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => openModal(index);
+
+        const img = document.createElement('img');
+        img.src = item.images?.[0] || '';
+        card.appendChild(img);
+
+        const name = document.createElement('h3');
+        name.textContent = item.name;
+        card.appendChild(name);
+
+        const price = document.createElement('div');
+        price.className = 'price';
+        price.textContent = `$${item.price}`;
+        card.appendChild(price);
+
+        const stock = document.createElement('div');
+        stock.className = 'stock';
+        stock.textContent = item.stock > 0 ? `${item.stock} in stock` : 'Out of stock';
+        card.appendChild(stock);
+
+        grid.appendChild(card);
+      });
+    }
+
+    function openModal(index) {
+      currentItem = { ...items[index], index };
+      const modal = document.getElementById('productModal');
+      modal.style.display = 'flex';
+
+      document.getElementById('mainImage').src = currentItem.images[0];
+      document.getElementById('modalName').textContent = currentItem.name;
+      document.getElementById('modalDescription').textContent = currentItem.description;
+      document.getElementById('modalPrice').textContent = `$${currentItem.price}`;
+      document.getElementById('modalStock').textContent = currentItem.stock > 0
+        ? `${currentItem.stock} in stock` : 'Out of stock';
+      document.getElementById('modalQuantity').value = 1;
+
+      const thumbnails = document.getElementById('thumbnails');
+      thumbnails.innerHTML = '';
+      currentItem.images.forEach((imgSrc, i) => {
+        const thumb = document.createElement('img');
+        thumb.src = imgSrc;
+        if (i === 0) thumb.classList.add('selected');
+        thumb.onclick = () => {
+          document.querySelectorAll('#thumbnails img').forEach(img => img.classList.remove('selected'));
+          thumb.classList.add('selected');
+          document.getElementById('mainImage').src = imgSrc;
+        };
+        thumbnails.appendChild(thumb);
+      });
+    }
+
+    function closeModal() {
+      document.getElementById('productModal').style.display = 'none';
+    }
+
+    function addToCart() {
+      const quantity = parseInt(document.getElementById('modalQuantity').value);
+      if (!quantity || quantity <= 0) return alert('Enter a valid quantity');
+
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const existing = cart.find(c => c.name === currentItem.name);
+
+      if (existing) {
+        existing.quantity += quantity;
+      } else {
+        cart.push({
+          name: currentItem.name,
+          price: currentItem.price,
+          image: currentItem.images[0],
+          quantity
+        });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert('Added to cart!');
+      closeModal();
+    }
+
+    searchBar.addEventListener('input', e => {
+      displayProducts(e.target.value);
+    });
+
+    displayProducts();
+  </script>
+
+</body>
+</html>
