@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href= "css/styles.css"</link>
+  <title>Shop</title>
+
+      <script type="module" src="components\navbar-component.js" ></script>
+  </script>
+  
+</head>
+<body>
+
+  <h1>Shop</h1>
+  <input type="text" id="searchBar" placeholder="Search products...">
+
+  <div class="product-grid" id="productGrid"></div>
+
+  <!-- Modal -->
+  <div class="modal" id="productModal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">×</button>
+      <img id="mainImage" src="" alt="">
+      <div class="thumbnail-container" id="thumbnails"></div>
+      <h2 id="modalName"></h2>
+      <p id="modalDescription"></p>
+      <div class="price" id="modalPrice"></div>
+      <div class="stock" id="modalStock"></div>
+      <div class="add-to-cart">
+        <input type="number" id="modalQuantity" value="1" min="1">
+        <button onclick="addToCart()">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const items = JSON.parse(localStorage.getItem('storeItems') || '[]');
+    let currentItem = null;
+
+    const grid = document.getElementById('productGrid');
+    const searchBar = document.getElementById('searchBar');
+
+    function displayProducts(filter = '') {
+      grid.innerHTML = '';
+      const filtered = items.filter(item =>
+        item.name.toLowerCase().includes(filter.toLowerCase()) ||
+        item.description.toLowerCase().includes(filter.toLowerCase())
+      );
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<p style="text-align:center;">No products found.</p>';
+        return;
+      }
+
+      filtered.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => openModal(index);
+
+        const img = document.createElement('img');
+        img.src = item.images?.[0] || '';
+        card.appendChild(img);
+
+        const name = document.createElement('h3');
+        name.textContent = item.name;
+        card.appendChild(name);
+
+        const price = document.createElement('div');
+        price.className = 'price';
+        price.textContent = `$${item.price}`;
+        card.appendChild(price);
+
+        const stock = document.createElement('div');
+        stock.className = 'stock';
+        stock.textContent = item.stock > 0 ? `${item.stock} in stock` : 'Out of stock';
+        card.appendChild(stock);
+
+        grid.appendChild(card);
+      });
+    }
+
+    function openModal(index) {
+      currentItem = { ...items[index], index };
+      const modal = document.getElementById('productModal');
+      modal.style.display = 'flex';
+
+      document.getElementById('mainImage').src = currentItem.images[0];
+      document.getElementById('modalName').textContent = currentItem.name;
+      document.getElementById('modalDescription').textContent = currentItem.description;
+      document.getElementById('modalPrice').textContent = `$${currentItem.price}`;
+      document.getElementById('modalStock').textContent = currentItem.stock > 0
+        ? `${currentItem.stock} in stock` : 'Out of stock';
+      document.getElementById('modalQuantity').value = 1;
+
+      const thumbnails = document.getElementById('thumbnails');
+      thumbnails.innerHTML = '';
+      currentItem.images.forEach((imgSrc, i) => {
+        const thumb = document.createElement('img');
+        thumb.src = imgSrc;
+        if (i === 0) thumb.classList.add('selected');
+        thumb.onclick = () => {
+          document.querySelectorAll('#thumbnails img').forEach(img => img.classList.remove('selected'));
+          thumb.classList.add('selected');
+          document.getElementById('mainImage').src = imgSrc;
+        };
+        thumbnails.appendChild(thumb);
+      });
+    }
+
+    function closeModal() {
+      document.getElementById('productModal').style.display = 'none';
+    }
+
+    function addToCart() {
+      const quantity = parseInt(document.getElementById('modalQuantity').value);
+      if (!quantity || quantity <= 0) return alert('Enter a valid quantity');
+
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const existing = cart.find(c => c.name === currentItem.name);
+
+      if (existing) {
+        existing.quantity += quantity;
+      } else {
+        cart.push({
+          name: currentItem.name,
+          price: currentItem.price,
+          image: currentItem.images[0],
+          quantity
+        });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert('Added to cart!');
+      closeModal();
+    }
+
+    searchBar.addEventListener('input', e => {
+      displayProducts(e.target.value);
+    });
+
+    displayProducts();
+  </script>
+
+</body>
+</html>

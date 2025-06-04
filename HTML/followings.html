@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Footmaster Pro - Match Calendar</title>
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/main.min.css' rel='stylesheet' />
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/booking.js"></script>
+  <script src="/js/firebase.js"></script>
+  <script type="module" src="components\navbar-component.js" ></script>
+ 
+
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+  }
+}
+</script>
+<script type="module" src="js\firebase.js"></script>
+<script type="module" src="js\players.js"></script>
+<script type="module" src="js\main.js"></script>
+<script type="module" src="components\navbar-component.js" ></script>
+
+
+    <header>
+ <navbar-component></navbar-component>
+    </header>
+
+
+<article class="players-section">
+    <p class="section-title">
+        MY FAVORITE PLAYERS
+        <span class="player-count">(0)</span>
+    </p>
+    
+    <div class="divider"></div>
+    
+    <!-- Search input for finding players -->
+    <div class="player-search">
+        <input type="text" id="playerSearch" placeholder="Search players...">
+        <button id="searchBtn">Search</button>
+    </div>
+    
+    <!-- Search results container -->
+    <div id="searchResults" class="search-results"></div>
+    
+    <!-- Current favorites list -->
+    <ul class="players-list" id="favoritesList">
+        <!-- This will be populated dynamically -->
+    </ul>
+</article>
+<body>    <div class="search-container">
+    <input type="text" id="playerSearchInput" placeholder="Search players...">
+    <button id="searchButton">Search</button>
+    <div id="searchResults" class="search-results"></div>
+    </div>
+</body>
+
+
+
+<!-- 
+<script type="module">
+import { auth, db } from './js/firebase.js';
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+// DOM Elements
+const favoritesList = document.getElementById('favoritesList');
+const playerCount = document.querySelector('.player-count');
+const playerSearch = document.getElementById('playerSearch');
+const searchBtn = document.getElementById('searchBtn');
+const searchResults = document.getElementById('searchResults');
+
+// Current user's favorites
+let currentFavorites = [];
+
+// Load user's favorite players
+async function loadFavorites(userId) {
+    try {
+        const userDoc = await getDoc(doc(db, 'Accounts', userId));
+        if (userDoc.exists()) {
+            currentFavorites = userDoc.data().favoritePlayers || [];
+            playerCount.textContent = `(${currentFavorites.length}/3)`;
+            renderFavorites();
+        }
+    } catch (error) {
+        console.error("Error loading favorites:", error);
+    }
+}
+
+// Render favorite players list
+function renderFavorites() {
+    favoritesList.innerHTML = '';
+    
+    if (currentFavorites.length === 0) {
+        favoritesList.innerHTML = '<li class="empty-message">No favorite players yet</li>';
+        return;
+    }
+    
+    currentFavorites.forEach(playerId => {
+        const playerCard = createPlayerCard(playerId, true);
+        favoritesList.appendChild(playerCard);
+    });
+}
+
+// Add a favorite player
+async function addFavoritePlayer(playerId, playerName) {
+    const user = auth.currentUser;
+    if (!user) return;
+    
+    try {
+        // Check if already favorited
+        if (currentFavorites.includes(playerId)) {
+            alert('This player is already in your favorites!');
+            return;
+        }
+        
+        // Check if reached maximum
+        if (currentFavorites.length >= 3) {
+            alert('You can only have 3 favorite players maximum!');
+            return;
+        }
+        
+        // Add to Firestore
+        await updateDoc(doc(db, 'Accounts', user.uid), {
+            favoritePlayers: arrayUnion(playerId)
+        });
+        
+        // Update local state
+        currentFavorites.push(playerId);
+        playerCount.textContent = `(${currentFavorites.length}/3)`;
+        renderFavorites();
+        
+        console.log('Player added to favorites:', playerId);
+    } catch (error) {
+        console.error('Error adding favorite player:', error);
+        alert('Failed to add player to favorites');
+    }
+}
+
+// Remove a favorite player
+async function removeFavoritePlayer(playerId) {
+    const user = auth.currentUser;
+    if (!user) return;
+    
+    try {
+        await updateDoc(doc(db, 'Accounts', user.uid), {
+            favoritePlayers: arrayRemove(playerId)
+        });
+        
+        // Update local state
+        currentFavorites = currentFavorites.filter(id => id !== playerId);
+        playerCount.textContent = `(${currentFavorites.length}/3)`;
+        renderFavorites();
+        
+        console.log('Player removed from favorites:', playerId);
+    } catch (error) {
+        console.error('Error removing favorite player:', error);
+        alert('Failed to remove player from favorites');
+    }
+}
+
+// Create player card element
+function createPlayerCard(playerId, isFavorite = false) {
+    const li = document.createElement('li');
+    li.className = 'player-card';
+    li.dataset.playerId = playerId;
+    
+    // In a real app, you would fetch actual player data here
+    const playerName = "Player " + playerId; // Replace with actual player name
+    
+    li.innerHTML = `
+        <div class="player-content">
+            <div class="player-image">
+                <img src="https://via.placeholder.com/48" alt="${playerName}">
+            </div>
+            <p class="player-name">${playerName}</p>
+            <p class="player-action">${isFavorite ? 'Remove' : 'Add'}</p>
+        </div>
+    `;
+    
+    const actionBtn = li.querySelector('.player-action');
+    actionBtn.addEventListener('click', () => {
+        if (isFavorite) {
+            removeFavoritePlayer(playerId);
+        } else {
+            addFavoritePlayer(playerId, playerName);
+        }
+    });
+    
+    return li;
+}
+
+// Search functionality (simplified - you'll need to connect to your player data)
+function setupSearch() {
+    searchBtn.addEventListener('click', async () => {
+        const searchTerm = playerSearch.value.trim();
+        if (!searchTerm) return;
+        
+        // In a real app, you would search your players collection here
+        // This is just a mock implementation
+        searchResults.innerHTML = '<div class="loading">Searching players...</div>';
+        
+        // Simulate API call
+        setTimeout(() => {
+            const mockResults = [
+                { id: 'p1', name: `${searchTerm} Player 1` },
+                { id: 'p2', name: `${searchTerm} Player 2` },
+                { id: 'p3', name: `${searchTerm} Player 3` }
+            ];
+            
+            displaySearchResults(mockResults);
+        }, 500);
+    });
+}
+
+// Display search results
+function displaySearchResults(players) {
+    searchResults.innerHTML = '';
+    
+    if (players.length === 0) {
+        searchResults.innerHTML = '<div class="no-results">No players found</div>';
+        return;
+    }
+    
+    players.forEach(player => {
+        const playerCard = createPlayerCard(player.id, currentFavorites.includes(player.id));
+        searchResults.appendChild(playerCard);
+    });
+}
+
+// Initialize the page when loaded
+document.addEventListener('DOMContentLoaded', () => {
+    initProfile();
+    setupSearch();
+});
+</script> -->
