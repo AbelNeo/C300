@@ -9,27 +9,32 @@
   <link rel="stylesheet" href="css/styles.css">
   <script type="module" src="js/booking.js"></script>
   <script src="/js/firebase.js"></script>
-  <script type="module" src="components\navbar-component.js" ></script>
- 
-
-<script type="importmap">
-  {
-    "imports": {
-      "firebase/app": "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js",
-      "firebase/firestore": "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"
-    }
-  }
-</script>
+  <script type="module" src="components/navbar-component.js"></script>
+</head>
 <body>
     <header>
         <navbar-component></navbar-component>
     </header>
 
     <main class="container">
-        <h1>Upload Successful!</h1>
+        <h1 id="successTitle">Upload Successful!</h1>
         <p>Your file has been uploaded successfully.</p>
-        <a href="/HTML/index.html" class="btn-primary">Return to Home</a>
-        <a href="/HTML/upload-media.html" class="btn-primary">Upload Another File</a>
+        <a href="index.html" class="btn-primary">Return to Home</a>
+        <a href="upload-media.html" class="btn-primary">Upload Another File</a>
     </main>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the selected date from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedDate = urlParams.get('date');
+            
+            if (selectedDate) {
+                const mainTitle = document.getElementById('successTitle');
+                mainTitle.textContent += ` for ${selectedDate}`;
+            }
+        });
+    </script>
 </body>
 </html>
