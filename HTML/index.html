@@ -1,287 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shop</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #f5f5f5;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    #searchBar {
-      max-width: 400px;
-      margin: 10px auto 30px;
-      display: block;
-      padding: 10px;
-      font-size: 1em;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .card {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      padding: 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-    }
-
-    .card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-
-    .price {
-      color: #e67e22;
-      font-weight: bold;
-      margin: 5px 0;
-    }
-
-    .stock {
-      font-size: 0.9em;
-      color: #555;
-    }
-
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 600px;
-      position: relative;
-    }
-
-    .modal-content img {
-      width: 100%;
-      max-height: 300px;
-      object-fit: contain;
-      margin-bottom: 10px;
-    }
-
-    .modal-content .thumbnail-container {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .modal-content .thumbnail-container img {
-      width: 60px;
-      height: 60px;
-      cursor: pointer;
-      border: 2px solid transparent;
-    }
-
-    .modal-content .thumbnail-container img.selected {
-      border-color: #27ae60;
-    }
-
-    .modal h2 {
-      margin-top: 0;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 10px; right: 15px;
-      background: #e74c3c;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 30px; height: 30px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .add-to-cart {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .add-to-cart input {
-      width: 60px;
-      padding: 5px;
-    }
-
-    .add-to-cart button {
-      padding: 8px 12px;
-      background-color: #27ae60;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FootMaster Pro - Club Management</title>
+    <link rel="stylesheet" href="css/styles.css">
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+  }
+}
+</script>
+<script type="module" src="js\firebase.js"></script>
+<script type="module" src="js\players.js"></script>
+<script type="module" src="js\main.js"></script>
+<script type="module" src="components\navbar-component.js" ></script>
 </head>
+
+
+
+
 <body>
+    <header>
+ <navbar-component></navbar-component>
+    </header>
 
-  <h1>Shop</h1>
-  <input type="text" id="searchBar" placeholder="Search products...">
+    
+    <main class="container">
+        <h1>Welcome to FootMaster Pro</h1>
+        <p>Your ultimate football club management solution.</p>
 
-  <div class="product-grid" id="productGrid"></div>
 
-  <!-- Modal -->
-  <div class="modal" id="productModal">
-    <div class="modal-content">
-      <button class="close-btn" onclick="closeModal()">×</button>
-      <img id="mainImage" src="" alt="">
-      <div class="thumbnail-container" id="thumbnails"></div>
-      <h2 id="modalName"></h2>
-      <p id="modalDescription"></p>
-      <div class="price" id="modalPrice"></div>
-      <div class="stock" id="modalStock"></div>
-      <div class="add-to-cart">
-        <input type="number" id="modalQuantity" value="1" min="1">
-        <button onclick="addToCart()">Add to Cart</button>
-      </div>
-    </div>
-  </div>
+<!-- <section class="players-section">
+  <h2>Team Players</h2>
+  <button id="refresh-players" class="btn-refresh">Load Players</button>
+  <div id="players-container" class="players-grid"></div>
+  <div id="debug-output" style="padding: 1rem; background: #f0f0f0;"></div>
+</section> -->
 
-  <script>
-    const items = JSON.parse(localStorage.getItem('storeItems') || '[]');
-    let currentItem = null;
 
-    const grid = document.getElementById('productGrid');
-    const searchBar = document.getElementById('searchBar');
+        <!-- Account-Specific Gallery Section -->
+         <section class="account-gallery">
+            <div class="account-info">
+                <h2 id="account-name">Welcome Back, Manager!</h2>
+                <p id="account-type">Your premium content is ready</p>
+            </div>
+            
+            <div class="image-container" id="account-image-container">
+              
+              <!-- <div class="image-segment" style="background-image: url('../images/SakaHalfBody.jpeg');"></div>
+              <div class="image-segment"><img src="../images/SakaHalfBody.jpeg" alt="Description of image"></div>
+              <div class="image-segment" style="background-image: url('../images/SakaHalfBody.jpeg');"></div> -->
 
-    function displayProducts(filter = '') {
-      grid.innerHTML = '';
-      const filtered = items.filter(item =>
-        item.name.toLowerCase().includes(filter.toLowerCase()) ||
-        item.description.toLowerCase().includes(filter.toLowerCase())
-      );
+            </div>
+        </section> 
+    </main>
 
-      if (filtered.length === 0) {
-        grid.innerHTML = '<p style="text-align:center;">No products found.</p>';
-        return;
-      }
+    <!-- <script>
+        // Sample account detection (replace with your actual auth logic)
+        function detectAccount() {
+            // In a real app, you would check Firebase auth or cookies
+            const urlParams = new URLSearchParams(window.location.search);
+            const accountParam = urlParams.get('account') || 'guest'; 
+            
+            loadAccountView(accountParam);
+        }
 
-      filtered.forEach((item, index) => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.onclick = () => openModal(index);
+        // Account-specific content
+        function loadAccountView(accountType) {
+            const accountData = {
+                user: {
+                    name: "Premium Member",
+                    message: "Your exclusive content is ready",
+                    images: [
+                             '../images/SakaHalfBody.jpeg',
+                             '../images/NetoHalfBody.jpeg',
+                              'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
+                            ]
 
-        const img = document.createElement('img');
-        img.src = item.images?.[0] || '';
-        card.appendChild(img);
+                },
+                guest: {
+                    name: "Standard Member",
+                    message: "Upgrade for premium content"
+                }
+            };
 
-        const name = document.createElement('h3');
-        name.textContent = item.name;
-        card.appendChild(name);
+            const account = accountData[accountType] || accountData.guest;
+            
+            // Update account info
+            document.getElementById('account-name').textContent = `Welcome ${account.name}`;
+            document.getElementById('account-type').textContent = account.message;
+            
+            // Update images
+            const container = document.getElementById('account-image-container');
+            container.innerHTML = '';
+            
+            account.images.forEach(imageUrl => {
+                const segment = document.createElement('div');
+                segment.className = 'image-segment';
+                segment.style.backgroundImage = `url(${imageUrl})`;
+                container.appendChild(segment);
+            });
+        }
 
-        const price = document.createElement('div');
-        price.className = 'price';
-        price.textContent = `$${item.price}`;
-        card.appendChild(price);
-
-        const stock = document.createElement('div');
-        stock.className = 'stock';
-        stock.textContent = item.stock > 0 ? `${item.stock} in stock` : 'Out of stock';
-        card.appendChild(stock);
-
-        grid.appendChild(card);
-      });
-    }
-
-    function openModal(index) {
-      currentItem = { ...items[index], index };
-      const modal = document.getElementById('productModal');
-      modal.style.display = 'flex';
-
-      document.getElementById('mainImage').src = currentItem.images[0];
-      document.getElementById('modalName').textContent = currentItem.name;
-      document.getElementById('modalDescription').textContent = currentItem.description;
-      document.getElementById('modalPrice').textContent = `$${currentItem.price}`;
-      document.getElementById('modalStock').textContent = currentItem.stock > 0
-        ? `${currentItem.stock} in stock` : 'Out of stock';
-      document.getElementById('modalQuantity').value = 1;
-
-      const thumbnails = document.getElementById('thumbnails');
-      thumbnails.innerHTML = '';
-      currentItem.images.forEach((imgSrc, i) => {
-        const thumb = document.createElement('img');
-        thumb.src = imgSrc;
-        if (i === 0) thumb.classList.add('selected');
-        thumb.onclick = () => {
-          document.querySelectorAll('#thumbnails img').forEach(img => img.classList.remove('selected'));
-          thumb.classList.add('selected');
-          document.getElementById('mainImage').src = imgSrc;
-        };
-        thumbnails.appendChild(thumb);
-      });
-    }
-
-    function closeModal() {
-      document.getElementById('productModal').style.display = 'none';
-    }
-
-    function addToCart() {
-      const quantity = parseInt(document.getElementById('modalQuantity').value);
-      if (!quantity || quantity <= 0) return alert('Enter a valid quantity');
-
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const existing = cart.find(c => c.name === currentItem.name);
-
-      if (existing) {
-        existing.quantity += quantity;
-      } else {
-        cart.push({
-          name: currentItem.name,
-          price: currentItem.price,
-          image: currentItem.images[0],
-          quantity
-        });
-      }
-
-      localStorage.setItem('cart', JSON.stringify(cart));
-      alert('Added to cart!');
-      closeModal();
-    }
-
-    searchBar.addEventListener('input', e => {
-      displayProducts(e.target.value);
-    });
-
-    displayProducts();
-  </script>
-
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', detectAccount);
+    </script> -->
 </body>
 </html>
+
+        <!-- video thumbnail -->
+        <!-- <a href="https://youtu.be/YsWzugAnsBw" target="_blank" rel="noopener noreferrer" class="video-thumbnail">
+            <picture class="custom-picture">
+              <!-- Mobile (Dark/Light) 
+              <source 
+                media="(max-width: 767px) and (prefers-color-scheme: dark)" 
+                srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=335&h=188&dpr=2"
+              >
+              <source 
+                media="(max-width: 767px) and (prefers-color-scheme: light)" 
+                srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=335&h=188&dpr=2"
+              >
+          
+              <!-- Tablet (Dark/Light) 
+              <source 
+                media="(min-width: 768px) and (max-width: 1023px) and (prefers-color-scheme: dark)" 
+                srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=334&h=334&dpr=2"
+              >
+              <source 
+                media="(min-width: 768px) and (max-width: 1023px) and (prefers-color-scheme: light)" 
+                srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=334&h=334&dpr=2"
+              >
+          
+              <!-- Desktop (Dark/Light) 
+              <source 
+                media="(min-width: 1024px) and (max-width: 1279px) and (prefers-color-scheme: dark)" 
+                srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=620&h=348&dpr=2"
+              >
+              <source 
+                media="(min-width: 1024px) and (max-width: 1279px) and (prefers-color-scheme: light)" 
+                srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=620&h=348&dpr=2"
+              >
+          
+              <!-- Large Desktop (Dark/Light) 
+              <source 
+                media="(min-width: 1280px) and (prefers-color-scheme: dark)" 
+                srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=840&h=472&dpr=2"
+              >
+              <source 
+                media="(min-width: 1280px) and (prefers-color-scheme: light)" 
+                srcset="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw&w=840&h=472&dpr=2"
+              >
+          
+              <!-- Fallback Image
+              <img
+                alt="YouTube Video Thumbnail"
+                decoding="sync"
+                loading="eager"
+                src="https://i.ytimg.com/vi/YsWzugAnsBw/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDWajdvUPvJaR_T83fI0IRa-uP3gw"
+                width="335"
+                height="188"
+                class="custom-image teaser__img--video"
+                importance="high"
+              >
+            </picture>
+            <div class="play-button"></div>
+          </a> -->
+<!-- Upload Media Section -->
+<section class="upload-section">
+  <h2>Share Your Media</h2>
+  <p>Upload images or videos to share with the community</p>
+<a href="/HTML/upload-media.html" class="btn-upload">Upload Media</a>
+
+</section>
+
+    </main>
+
+    <script>
+        // // Sample account detection (replace with your actual auth logic)
+        // function detectAccount() {
+        //     // In a real app, you would check Firebase auth or cookies
+        //     const urlParams = new URLSearchParams(window.location.search);
+        //     const accountParam = urlParams.get('account') || 'guest'; 
+            
+        //     loadAccountView(accountParam);
+        // }
+
+    //     // Account-specific content
+    //     function loadAccountView(accountType) {
+    //         const accountData = {
+    //             user: {
+    //                 name: "Premium Member",
+    //                 message: "Your exclusive content is ready",
+    //                 images: [
+    //                     src='../images/SakaHalfBody.jpeg',
+    //                     src='../images/NetoHalfBody.jpeg',
+    //                     'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
+    //                 ]
+    //             },
+    //             guest: {
+    //                 name: "Standard Member",
+    //                 message: "Upgrade for premium content"
+    //             }
+    //         };
+
+    //         const account = accountData[accountType] || accountData.guest;
+            
+    //         // Update account info
+    //         document.getElementById('account-name').textContent = `Welcome ${account.name}`;
+    //         document.getElementById('account-type').textContent = account.message;
+            
+    //         // Update images
+    //         const container = document.getElementById('account-image-container');
+    //         container.innerHTML = '';
+            
+    //         account.images.forEach(imageUrl => {
+    //             const segment = document.createElement('div');
+    //             segment.className = 'image-segment';
+    //             segment.style.backgroundImage = `url(${imageUrl})`;
+    //             container.appendChild(segment);
+    //         });
+    //     }
+
+    //     // Initialize when page loads
+    //     window.addEventListener('DOMContentLoaded', detectAccount);
+ </script>
+</body>
+</html>
+
+
+
+                <!-- <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="image-segment" style="background-image: url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div> -->  
