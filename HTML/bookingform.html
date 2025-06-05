@@ -35,13 +35,25 @@
 
 <!-- Match Selection -->
 <form class="signup-form" id="signupForm">
-    <input type="text" id="name" placeholder="Name" readonly required>
-    <input type="email" id="email" placeholder="Email" readonly required>
-    <input type="Team_home" id="Team_home" placeholder="Team Home" readonly required>
-    <input type="Team_away" id="Team_away" placeholder="Team Away" readonly required>
-    <input type="number" id="quantity" placeholder="Qty" required>
-    <input type="Date" id="Date" placeholder="Match Date" readonly required>
-    <div id="error-message" class="error-message" style="color: red; display: none;"></div>
+  <label for="name">Name</label>
+  <input type="text" id="name" name="name" readonly required>
+
+  <label for="email">Email</label>
+  <input type="email" id="email" name="email" readonly required>
+
+  <label for="Team_home">Team Home</label>
+  <input type="text" id="Team_home" name="Team_home" readonly required>
+
+  <label for="Team_away">Team Away</label>
+  <input type="text" id="Team_away" name="Team_away" readonly required>
+
+  <label for="quantity">Quantity</label>
+  <input type="number" id="quantity" name="quantity" placeholder="Enter number of tickets" required>
+
+  <label for="Date">Match Date</label>
+  <input type="date" id="Date" name="Date" readonly required>
+
+  <div id="error-message" class="error-message" style="color: red; display: none;"></div>
 </form>
 
 
