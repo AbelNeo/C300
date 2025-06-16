@@ -42,13 +42,13 @@
   <input type="email" id="email" name="email" readonly required>
 
   <label for="Team_home">Team Home</label>
-  <input type="text" id="Team_home" name="Team_home" readonly required>
+  <input type="text" id="Team_home" name="Team_home" value="Arsenal" readonly required>
 
   <label for="Team_away">Team Away</label>
   <input type="text" id="Team_away" name="Team_away" readonly required>
 
   <label for="quantity">Quantity</label>
-  <input type="number" id="quantity" name="quantity" placeholder="Enter number of tickets" required>
+  <input type="number" id="quantity" name="quantity" placeholder="Enter number of tickets" required min="1" max="10000">
 
   <label for="Date">Match Date</label>
   <input type="date" id="Date" name="Date" readonly required>

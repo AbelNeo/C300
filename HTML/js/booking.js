@@ -83,12 +83,16 @@ document.addEventListener('DOMContentLoaded', function () {
   } else {
     alert(`No matches on ${selectedDate}`);
   }
-}
+},
 
-  calendar.render();
+  calendar.render());
 });
 
-
+// Ticket quantity during booking
+if (quantity > 10000) {
+  showError("Ticket quantity exceeds maximum allowed.");
+  return;
+}
 
 // Load matches
 async function loadMatches() {
