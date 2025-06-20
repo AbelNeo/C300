@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Footmaster Pro</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="components\navbar-component.js" ></script>
+  <script type="module" src="js/booking.js" ></script>
+</head>
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+  }
+}
+</script>
+<script type="module" src="js\firebase.js"></script>
+<script type="module" src="js\players.js"></script>
+<script type="module" src="js\main.js"></script>
+<script type="module" src="components\navbar-component.js" ></script>
+
+<header>
+  <navbar-component></navbar-component>
+</header>
+
+<main class="container">
+  <h1>Matches on <span id="matchDate"></span></h1>
+  <div id="matchesList"></div>
+</main>
+
+<script type="module">
+  import { db } from './js/firebase.js';
+  import { collection, getDocs } from "firebase/firestore";
+
+  const params = new URLSearchParams(window.location.search);
+  const selectedDate = params.get('date');
+  document.getElementById('matchDate').textContent = selectedDate;
+
+  const matchListDiv = document.getElementById('matchesList');
+
+  const snapshot = await getDocs(collection(db, 'matches'));
+  snapshot.forEach(doc => {
+    const match = doc.data();
+    const matchDate = match.match_date.toDate().toISOString().split('T')[0];
+    if (matchDate === selectedDate) {
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <h3>${match.team_home} vs ${match.team_away}</h3>
+        <p>Time: ${new Date(match.match_date.toDate()).toLocaleTimeString()}</p>
+        <a href="bookingform.html?match_id=${doc.id}" class="btn">Book tickets</a>
+      `;
+      matchListDiv.appendChild(div);
+    }
+  });
+</script>
+
+
