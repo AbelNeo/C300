@@ -1200,3 +1200,32 @@ background-color: #600000;
 .card-button:hover {
   background-color: #a00000;
 }
+
+
+/*section for match cards display */
+.match-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.match-card h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #ef0107; /* Arsenal red */
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+
+

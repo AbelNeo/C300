@@ -13,7 +13,7 @@ const firebaseConfig = {
   appId: "1:388394869174:web:ec8f93ab8fb685e9846117"
 };
 
-//const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 // Export your custom functions
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const snapshot = await getDocs(collection(db,'matches'));
       const eventsOnDate = snapshot.docs.filter(doc => {
         const match = doc.data();
-        const matchDate = match.matchDate.toDate().toISOString().split('T')[0];
+        const matchDate = match.match_date.toDate().toISOString().split('T')[0];
         return matchDate === selectedDate;
       });
   
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const match = matchDoc.data();
       const option = document.createElement('option');
       option.value = matchDoc.id;
-      option.textContent = `${match.teamHome} vs ${match.teamAway} - ${new Date(match.matchDate).toLocaleDateString()}`;
+      option.textContent = `${match.teamHome} vs ${match.teamAway} - ${new Date(match.match_date).toLocaleDateString()}`;
       matchSelect.appendChild(option);
     });
   }

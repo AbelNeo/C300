@@ -32,8 +32,8 @@
 </main>
 
 <script type="module">
-  import { db } from './js/firebase.js';
-  import { collection, getDocs } from "firebase/firestore";
+  import { db, initializeApp } from './js/firebase.js';
+  import { collection, getDocs, getFirestore } from "firebase/firestore";
 
   const params = new URLSearchParams(window.location.search);
   const selectedDate = params.get('date');
@@ -50,11 +50,19 @@
       div.innerHTML = `
         <h3>${match.team_home} vs ${match.team_away}</h3>
         <p>Time: ${new Date(match.match_date.toDate()).toLocaleTimeString()}</p>
+        <p>Venue: ${match.venue || 'Emirates Stadium'}</p>
         <a href="bookingform.html?match_id=${doc.id}" class="btn">Book tickets</a>
       `;
       matchListDiv.appendChild(div);
     }
   });
+  if (!matchesFound) {
+    matchListDiv.innerHTML = "<p>No matches found for this date</p>";
+  }
+} catch (error) {
+  console.error("Error loading matches:", error);
+  matchListDiv.innerHTML = "<p>Error loading matches. Please try again.</p>;
+}
 </script>
 
 
