@@ -35,12 +35,20 @@
   import { db, initializeApp } from './js/firebase.js';
   import { collection, getDocs, getFirestore } from "firebase/firestore";
 
+async function loadMatches() {
   const params = new URLSearchParams(window.location.search);
   const selectedDate = params.get('date');
-  document.getElementById('matchDate').textContent = selectedDate;
-
   const matchListDiv = document.getElementById('matchesList');
 
+  if (!selectedDate) {
+    matchListDiv.innerHTML = '<p>No date specified</p>';
+    return;
+  }
+  
+  document.getElementById('matchDate').textContent = selectedDate;
+  matchListDiv.innerHTML = '<p>Loading matches...</p>';
+
+try {
   const snapshot = await getDocs(collection(db, 'matches'));
   snapshot.forEach(doc => {
     const match = doc.data();
@@ -57,12 +65,16 @@
     }
   });
   if (!matchesFound) {
-    matchListDiv.innerHTML = "<p>No matches found for this date</p>";
+    matchListDiv.innerHTML = '<p>No matches found for this date</p>';
   }
-} catch (error) {
+  } catch (error) {
   console.error("Error loading matches:", error);
-  matchListDiv.innerHTML = "<p>Error loading matches. Please try again.</p>;
+  const matchListDiv = document.getElementById('matchesList');
+  matchListDiv.innerHTML = '<p>Error loading matches. Please try again.</p>';
+  }
 }
+
+  loadMatches();
 </script>
 
 
