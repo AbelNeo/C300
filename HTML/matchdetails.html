@@ -35,7 +35,56 @@
   import { db, initializeApp } from './js/firebase.js';
   import { collection, getDocs, getFirestore } from "firebase/firestore";
 
-async function loadMatches() {
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const selectedDate = params.get('date');
+  const matchListDiv = document.getElementById('matchesList');
+  const matchDateEl = document.getElementById('matchDate');
+
+  if (!selectedDate) {
+    matchDateEl.textContent = '(No date specified)'
+    matchListDiv.innerHTML = '<p>No date specified</p>';
+    return;
+  }
+
+  document.getElementById('matchDate').textContent = selectedDate;
+  matchDateEl.textContent = new Date(selectedDate).toDateString();
+  matchListDiv.innerHTML = '<p>Loading matches...</p>';
+
+try {
+  const snapshot = await getDocs(collection(db, 'matches'));
+  let matchesFound = false;
+  matchListDiv.innerHTML = '';
+
+  snapshot.forEach(doc => {
+    const match = doc.data();
+    const matchDate = match.match_date.toDate().toISOString().split('T')[0];
+
+    if (matchDate === selectedDate) {
+      matchesFound = true;
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <h3>${match.team_home} vs ${match.team_away}</h3>
+        <p>Time: ${new Date(match.match_date.toDate()).toLocaleTimeString()}</p>
+        <p>Venue: ${match.venue || 'Emirates Stadium'}</p>
+        <a href="bookingform.html?match_id=${doc.id}" class="btn">Book tickets</a>
+      `;
+      matchListDiv.appendChild(div);
+    }
+  });
+  if (!matchesFound) {
+    matchListDiv.innerHTML = '<p>No matches found for this date</p>';
+  }
+  } catch (error) {
+  console.error("Error loading matches:", error);
+  const matchListDiv = document.getElementById('matchesList');
+  matchListDiv.innerHTML = '<p>Error loading matches. Please try again.</p>';
+  }
+});
+</script>
+
+<!--
+document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   const selectedDate = params.get('date');
   const matchListDiv = document.getElementById('matchesList');
@@ -44,7 +93,7 @@ async function loadMatches() {
     matchListDiv.innerHTML = '<p>No date specified</p>';
     return;
   }
-  
+
   document.getElementById('matchDate').textContent = selectedDate;
   matchListDiv.innerHTML = '<p>Loading matches...</p>';
 
@@ -72,9 +121,6 @@ try {
   const matchListDiv = document.getElementById('matchesList');
   matchListDiv.innerHTML = '<p>Error loading matches. Please try again.</p>';
   }
-}
-
-  loadMatches();
-</script>
-
+});
+-->
 
