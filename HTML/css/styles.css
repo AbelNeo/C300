@@ -1229,3 +1229,95 @@ background-color: #600000;
 
 
 
+/* Player Cards */
+.player-result-card, .favorite-player-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.player-result-card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
+
+/* Search Components */
+.player-search {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+#playerSearch {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+#searchBtn {
+  padding: 10px 16px;
+  background: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#searchBtn:hover {
+  background: #3367d6;
+}
+
+/* Favorite Buttons */
+.favorite-btn {
+  background: #fbbc05;
+  color: #202124;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.remove-favorite-btn {
+  background: #ea4335;
+  color: white;
+}
+
+/* Status Messages */
+.search-results .loading,
+.search-results .empty,
+.search-results .error {
+  padding: 12px;
+  text-align: center;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+
+.loading { background: #fff8e1; color: #ff9800; }
+.empty { background: #e8f5e9; color: #388e3c; }
+.error { background: #ffebee; color: #d32f2f; }
+
+/* Layout Containers */
+.search-results,
+.favorites-list {
+  display: grid;
+  gap: 12px;
+}
+
+/* Responsive Grid */
+@media (min-width: 600px) {
+  .search-results,
+  .favorites-list {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+.favorite-btn:active, .remove-favorite-btn:active {
+  transform: scale(0.95);
+}
