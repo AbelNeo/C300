@@ -5,6 +5,113 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Footmaster Pro - My Followings</title>
   <link rel="stylesheet" href="css/styles.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+      }
+    }
+  </script>
+  <!-- Only import your JS modules -->
+  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/followings.js"></script>
+    <script type="module" src="js/main.js"></script>
+  <script type="module" src="components/navbar-component.js"></script>
+</head>
+<body>
+  <header>
+    <navbar-component></navbar-component>
+  </header>
+
+  <article class="players-section">
+    <p class="section-title">MY FAVORITE PLAYERS <span id="favoriteCount" class="player-count">(0)</span></p>
+    <div class="divider"></div>
+    
+    <!-- Favorites List -->
+    <div id="favoritePlayers" class="favorites-list"></div>
+    
+    <!-- Search Section -->
+    <div class="player-search">
+      <input type="text" id="playerSearch" placeholder="Search players...">
+      <button id="searchBtn">Search</button>
+    </div>
+    <div id="searchResults" class="search-results"></div>
+  </article>
+  
+
+
+  <div class="players-grid" id="playersContainer">
+    <!-- Player cards will be inserted here by JavaScript -->
+  </div>
+
+  <script type="module">
+    import { db } from './js/firebase.js';
+    import { collection, query, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    async function loadPlayers() {
+      const container = document.getElementById('playersContainer');
+      container.innerHTML = '<div class="loading">Loading players...</div>';
+      
+      try {
+        const playersRef = collection(db, 'Players');
+        const q = query(playersRef, limit(7)); // Limit to 7 players
+        
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+          container.innerHTML = '<div class="empty">No players found</div>';
+          return;
+        }
+        
+        container.innerHTML = '';
+        querySnapshot.forEach(doc => {
+          const player = doc.data();
+          const card = createPlayerCard(player);
+          container.appendChild(card);
+        });
+        
+      } catch (error) {
+        console.error("Error loading players:", error);
+        container.innerHTML = `<div class="error">Error loading players: ${error.message}</div>`;
+      }
+    }
+
+    function createPlayerCard(player) {
+      const card = document.createElement('div');
+      card.className = 'player-card';
+      
+      // Use placeholder image if no photo available
+      const photoUrl = player.photoURL || 'https://via.placeholder.com/150x180?text=No+Photo';
+      
+      card.innerHTML = `
+        <img src="${photoUrl}" alt="${player.name}" class="player-portrait">
+        <div class="player-info">
+          <div class="player-name">${player.name}</div>
+          <div class="player-position">${player.position || 'Position not specified'}</div>
+        </div>
+      `;
+      
+      return card;
+    }
+
+    // Load players when page loads
+    window.addEventListener('DOMContentLoaded', loadPlayers);
+  </script>
+  
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Footmaster Pro - My Followings</title>
+  <link rel="stylesheet" href="css/styles.css">
     
   <script type="importmap">
     {
@@ -43,10 +150,10 @@
     <p class="section-title">MY FAVORITE PLAYERS <span id="favoriteCount" class="player-count">(0)</span></p>
     <div class="divider"></div>
     
-    <!-- Favorite Players List -->
+    <!-- Favorite Players List
     <div id="favoritePlayers" class="favorites-list"></div>
 
-    <!-- Player Search -->
+    <!-- Player Search
     <div class="player-search">
       <input type="text" id="playerSearch" placeholder="Search players...">
       <button id="searchBtn">Search</button>
@@ -127,4 +234,4 @@
     window.addEventListener('DOMContentLoaded', loadFavorites);
   </script>
 </body>
-</html>
+</html> -->
