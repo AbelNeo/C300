@@ -30,6 +30,7 @@ const seatSelect = document.getElementById('seatSelect');
 const bookButton = document.getElementById('bookButton');
 const messageArea = document.getElementById('messageArea');
 
+
 //calendar code
 document.addEventListener('DOMContentLoaded', function () {
   const db = firebase.firestore();

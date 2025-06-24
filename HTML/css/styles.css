@@ -1227,6 +1227,102 @@ background-color: #600000;
   margin-top: 10px;
 }
 
+/*section for stadium seating plan*/
+
+.stadium-map {
+  margin-top: 60px;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 40px;
+}
+    
+.stadium-map h3 {
+  color: #800000;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+    
+#stadiumSeating {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+    
+.seat-categories {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+    
+.seat-category {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+    
+.color-swatch {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+    
+#matchesList {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 20px;
+}
+    
+#matchesList > div {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+    
+#matchesList h3 {
+  color: #800000;
+  margin-bottom: 12px;
+}
+    
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #800000;
+  color: white;
+  text-decoration: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  margin-top: 16px;
+}
+
+.btn:hover {
+  background-color: #a00000;
+}
+    
+h1 {
+  color: #800000;
+  margin-bottom: 24px;
+}
+    
+@media (max-width: 768px) {
+  .stadium-map {
+    margin-top: 40px;
+    padding: 16px;
+}
+      
+.seat-categories {
+  gap: 16px;
+  }
+}
 
 
 /* Player Cards */

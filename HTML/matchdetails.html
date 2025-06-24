@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="css/styles.css">
   <script type="module" src="components\navbar-component.js" ></script>
   <script type="module" src="js/booking.js" ></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <script type="importmap">
 {
@@ -29,7 +32,6 @@
 <main class="container">
   <h1>Matches on <span id="matchDate"></span></h1>
   <div id="matchesList"></div>
-</main>
 
 <script type="module">
   import { db, initializeApp } from './js/firebase.js';
@@ -83,7 +85,251 @@ try {
 });
 </script>
 
+
+<body>
+  <div style="margin-top: 200px;"></div>
+  <h3>Seating Plan of Emirates stadium</h3>
+  
+  <img src="https://timaps.s3-eu-west-1.amazonaws.com/emirates2.png" 
+      alt="Emirates Stadium Seating"  
+      loading="lazy" 
+      width="600" 
+      height="600" 
+      decoding="async" 
+      id="stadiumSeating">
+  <p class="stadium caption" style="margin-bottom: 30px;"></p>
+  <!-- add code for a dropdown list of the section that user want to sit at-->
+  <label for="seat-section">Select Seat Section:</label>
+  <select id="seat-section" class="js-example-basic-single" name="seat-section" style="width: 100%;">
+  <optgroup label="🟦 Lower Tier - East">
+    <option value="block-13">Block 13 - Long Side - Lower Tier - East 🟦</option>
+    <option value="block-14">Block 14 - Long Side - Lower Tier - East 🟦</option>
+    <option value="block-19">Block 19 - Long Side - Lower Tier - East 🟦</option>
+  </optgroup>
+
+  <optgroup label="🟦 Lower Tier - West">
+    <option value="block-3">Block 3 - Long Side - Lower Tier - West 🟦</option>
+    <option value="block-4">Block 4 - Long Side - Lower Tier - West 🟦</option>
+    <option value="block-29">Block 29 - Long Side - Lower Tier - West 🟦</option>
+    <option value="block-30">Block 30 - Long Side - Lower Tier - West 🟦</option>
+  </optgroup>
+
+  <optgroup label="🔵 Upper Tier - East">
+    <option value="block-107">Block 107 - Long Side - Upper Tier - East 🔵</option>
+    <option value="block-108">Block 108 - Long Side - Upper Tier - East 🔵</option>
+    <option value="block-109">Block 109 - Long Side - Upper Tier - East 🔵</option>
+    <option value="block-110">Block 110 - Long Side - Upper Tier - East 🔵</option>
+    <option value="block-115">Block 115 - Long Side - Upper Tier - East 🔵</option>
+    <option value="block-116">Block 116 - Long Side - Upper Tier - East 🔵</option>
+    <option value="block-117">Block 117 - Long Side - Upper Tier - East 🔵</option>
+    <option value="block-118">Block 118 - Long Side - Upper Tier - East 🔵</option>
+  </optgroup>
+
+  <optgroup label="🔵 Upper Tier - West">
+    <option value="block-93">Block 93 - Long Side - Upper Tier - West 🔵</option>
+    <option value="block-94">Block 94 - Long Side - Upper Tier - West 🔵</option>
+    <option value="block-95">Block 95 - Long Side - Upper Tier - West 🔵</option>
+    <option value="block-96">Block 96 - Long Side - Upper Tier - West 🔵</option>
+    <option value="block-129">Block 129 - Long Side - Upper Tier - West 🔵</option>
+    <option value="block-130">Block 130 - Long Side - Upper Tier - West 🔵</option>
+    <option value="block-131">Block 131 - Long Side - Upper Tier - West 🔵</option>
+    <option value="block-132">Block 132 - Long Side - Upper Tier - West 🔵</option>
+  </optgroup>
+
+  <optgroup label="🟩 Lower Tier - East">
+    <option value="block-15">Block 15 - Long Side Between Penalty Boxes - Lower Tier - East 🟩</option>
+    <option value="block-16">Block 16 - Long Side Between Penalty Boxes - Lower Tier - East 🟩</option>
+    <option value="block-17">Block 17 - Long Side Between Penalty Boxes - Lower Tier - East 🟩</option>
+    <option value="block-18">Block 18 - Long Side Between Penalty Boxes - Lower Tier - East 🟩</option>
+  </optgroup>
+
+  <optgroup label="🟩 Lower Tier - West">
+    <option value="block-1">Block 1 - Long Side Between Penalty Boxes - Lower Tier - West 🟩</option>
+    <option value="block-2">Block 2 - Long Side Between Penalty Boxes - Lower Tier - West 🟩</option>
+    <option value="block-31">Block 31 - Long Side Between Penalty Boxes - Lower Tier - West 🟩</option>
+    <option value="block-32">Block 32 - Long Side Between Penalty Boxes - Lower Tier - West 🟩</option>
+  </optgroup>
+
+  <optgroup label="🟢 Upper Tier - East">
+    <option value="block-111">Block 111 - Long Side Between Penalty Boxes - Upper Tier - East 🟢</option>
+    <option value="block-112">Block 112 - Long Side Between Penalty Boxes - Upper Tier - East 🟢</option>
+    <option value="block-113">Block 113 - Long Side Between Penalty Boxes - Upper Tier - East 🟢</option>
+    <option value="block-114">Block 114 - Long Side Between Penalty Boxes - Upper Tier - East 🟢</option>
+  </optgroup>
+
+  <optgroup label="🟢 Upper Tier - West">
+    <option value="block-91">Block 91 - Long Side Between Penalty Boxes - Upper Tier - West 🟢</option>
+    <option value="block-92">Block 92 - Long Side Between Penalty Boxes - Upper Tier - West 🟢</option>
+    <option value="block-133">Block 133 - Long Side Between Penalty Boxes - Upper Tier - West 🟢</option>
+    <option value="block-134">Block 134 - Long Side Between Penalty Boxes - Upper Tier - West 🟢</option>
+  </optgroup>
+
+  <optgroup label="🟧 Lower Tier - North">
+    <option value="block-5">Block 5 - Short Side - Lower Tier - North 🟧</option>
+    <option value="block-6">Block 6 - Short Side - Lower Tier - North 🟧</option>
+    <option value="block-7">Block 7 - Short Side - Lower Tier - North 🟧</option>
+    <option value="block-8">Block 8 - Short Side - Lower Tier - North 🟧</option>
+    <option value="block-9">Block 9 - Short Side - Lower Tier - North 🟧</option>
+    <option value="block-10">Block 10 - Short Side - Lower Tier - North 🟧</option>
+    <option value="block-11">Block 11 - Short Side - Lower Tier - North 🟧</option>
+    <option value="block-12">Block 12 - Short Side - Lower Tier - North 🟧</option>
+  </optgroup>
+
+  <optgroup label="🟧 Lower Tier - South">
+    <option value="block-24">Block 24 - Short Side - Lower Tier - South 🟧</option>
+    <option value="block-25">Block 25 - Short Side - Lower Tier - South 🟧</option>
+    <option value="block-26">Block 26 - Short Side - Lower Tier - South 🟧</option>
+    <option value="block-27">Block 27 - Short Side - Lower Tier - South 🟧</option>
+    <option value="block-28">Block 28 - Short Side - Lower Tier - South 🟧</option>
+  </optgroup>
+
+  <optgroup label="🟠 Upper Tier - North">
+    <option value="block-97">Block 97 - Short Side - Upper Tier - North 🟠</option>
+    <option value="block-98">Block 98 - Short Side - Upper Tier - North 🟠</option>
+    <option value="block-99">Block 99 - Short Side - Upper Tier - North 🟠</option>
+    <option value="block-100">Block 100 - Short Side - Upper Tier - North 🟠</option>
+    <option value="block-101">Block 101 - Short Side - Upper Tier - North 🟠</option>
+    <option value="block-102">Block 102 - Short Side - Upper Tier - North 🟠</option>
+    <option value="block-103">Block 103 - Short Side - Upper Tier - North 🟠</option>
+    <option value="block-104">Block 104 - Short Side - Upper Tier - North 🟠</option>
+    <option value="block-105">Block 105 - Short Side - Upper Tier - North 🟠</option>
+    <option value="block-106">Block 106 - Short Side - Upper Tier - North 🟠</option>
+  </optgroup>
+
+  <optgroup label="🟠 Upper Tier - South">
+    <option value="block-120">Block 119 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-121">Block 120 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-118">Block 121 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-119">Block 122 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-120">Block 123 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-121">Block 124 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-118">Block 125 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-119">Block 126 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-120">Block 127 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-121">Block 128 - Short Side - Upper Tier - South 🟠</option>
+  </optgroup>
+
+  <optgroup label="🟪 Away Section - SouthEast">
+    <option value="block-20">Block 20 - Away Team - Away Section - SouthEast 🟪</option>
+    <option value="block-21">Block 21 - Away Team - Away Section - SouthEast 🟪</option>
+    <option value="block-22">Block 22 - Away Team - Away Section - SouthEast 🟪</option>
+    <option value="block-23">Block 23 - Away Team - Away Section - SouthEast 🟪</option>
+  </optgroup>
+
+  <optgroup label="🟥 Club Level - Central">
+    <option value="block-B41">Block B41 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B42">Block B42 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B43">Block B43 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B44">Block B44 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B45">Block B45 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B46">Block B46 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B47">Block B47 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B48">Block B48 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B49">Block B49 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B50">Block B50 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B51">Block B51 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B52">Block B52 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B53">Block B53 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B54">Block B54 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B55">Block B55 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B56">Block B56 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B57">Block B57 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B58">Block B58 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B59">Block B59 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B60">Block B60 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B61">Block B61 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B62">Block B62 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B63">Block B63 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B64">Block B64 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B65">Block B65 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B66">Block B66 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B67">Block B67 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B68">Block B68 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B69">Block B69 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B70">Block B70 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B71">Block B71 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B72">Block B72 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B73">Block B73 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B74">Block B74 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B75">Block B75 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B76">Block B76 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B77">Block B77 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B78">Block B78 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B79">Block B79 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B80">Block B80 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B81">Block B81 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B82">Block B82 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B83">Block B83 - Club Level - Club Level - Central 🟥</option>
+    <option value="block-B84">Block B84 - Club Level - Club Level - Central 🟥</option>
+  </optgroup>
+
+  <script>
+    $(document).ready(function() {
+      $('.js-example-basic-single').select2({  
+        placeholder: "Select a block",
+        allowClear: true
+      });
+    });
+  </script>
+
+  </select><br><br>
+  <a href="bookingform.html?match_id=${doc.id}" class="btn">Book tickets</a>
+</body>
+</main>
+
+
+<!-- seat
+  $(document).ready(function() {
+      $('#seat-section').select2({  
+        placeholder: "Select a block",
+        allowClear: true
+      });
+    }); 
+-->
+
 <!--
+<div class="stadium-map">
+
+
+-->
+
+
+<!--on the booking form page there should be a field that display which section and specific seats user booked-->
+
+  <div class="transport">
+  <h3>Getting to Emirates Stadium</h3>
+  <div id="transportInfo"></div>
+  <button id="mapToggle">Show Stadium Map</button>
+  <div id="stadiumMap" style="display:none;">
+    <iframe
+      title="Map showing location of Emirates Stadium" 
+      width="100%" 
+      height="100" 
+      frameborder="0"
+      style="border:0"
+      scrolling="no" 
+      marginheight="0" 
+      marginwidth="0"
+      src="https://www.google.com/maps/embed/v1/place?key=AIzaSyCW4j-ojb2kFx2O5h0vHV2SryN7fsG1lt4&q=Emirates+Stadium,London"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
+</body>
+
+
+
+
+
+
+
+
+
+
+
+
+<!----
+
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   const selectedDate = params.get('date');
@@ -122,5 +368,6 @@ try {
   matchListDiv.innerHTML = '<p>Error loading matches. Please try again.</p>';
   }
 });
--->
+
+----->
 
