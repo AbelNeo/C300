@@ -1,87 +1,238 @@
-import { db } from './firebase.js';
-import { collection, query, where, getDocs, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { db, auth } from './firebase.js';
+import { 
+  collection, query, where, getDocs, orderBy, limit, 
+  doc, setDoc, getDoc, onSnapshot, deleteDoc 
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 // DOM elements
-const searchInput = document.getElementById('playerSearchInput');
-const searchButton = document.getElementById('searchButton');
+const searchInput = document.getElementById('playerSearch');
+const searchButton = document.getElementById('searchBtn');
 const searchResults = document.getElementById('searchResults');
+const favoritePlayers = document.getElementById('favoritePlayers');
+const favoriteCount = document.getElementById('favoriteCount');
 
-// Search players function
-async function searchPlayers(searchTerm) {
+// State management
+let currentUser = null;
+let unsubscribeFavorites = null;
+
+// Initialize auth state listener
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  
+  // Clean up previous listener if exists
+  if (unsubscribeFavorites) {
+    unsubscribeFavorites();
+  }
+  
+  if (user) {
+    loadFavorites();
+  } else {
+    favoritePlayers.innerHTML = '<div class="empty">Please sign in to view favorites</div>';
+    favoriteCount.textContent = '(0)';
+  }
+});
+
+// ======================
+// FAVORITES MANAGEMENT
+// ======================
+export function loadFavorites() {
+  if (!currentUser) return;
+
+  const favoritesRef = collection(db, `Users/${currentUser.uid}/Favorites`);
+  
+  unsubscribeFavorites = onSnapshot(favoritesRef, 
+    async (snapshot) => {
+      favoriteCount.textContent = `(${snapshot.size})`;
+      
+      if (snapshot.empty) {
+        favoritePlayers.innerHTML = '<div class="empty">No favorite players yet</div>';
+        return;
+      }
+      
+      favoritePlayers.innerHTML = '';
+      const promises = [];
+      
+      snapshot.forEach((doc) => {
+        promises.push
+          getPlayerData(doc.id).then(playerData => {
+            if (playerData) {
+              const card = createFavoriteCard(doc.id, playerData);
+              favoritePlayers.appendChild(card);
+            }
+          })
+      });
+      
+      await Promise.all(promises);
+    },
+    (error) => {
+      console.error("Favorites error:", error);
+      favoritePlayers.innerHTML = `<div class="error">Error loading favorites: ${error.message}</div>`;
+    }
+  );
+}
+
+async function getPlayerData(playerId) {
   try {
-    // Clear previous results
+    const docRef = doc(db, 'Players', playerId);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() : null;
+  } catch (error) {
+    console.error("Error getting player:", error);
+    return null;
+  }
+}
+
+async function toggleFavorite(playerId, playerData) {
+  if (!currentUser) {
+    alert('Please sign in to manage favorites');
+    return false;
+  }
+
+  const favRef = doc(db, `Users/${currentUser.uid}/Favorites`, playerId);
+  
+  try {
+    const docSnap = await getDoc(favRef);
+    if (docSnap.exists()) {
+      await deleteDoc(favRef);
+      return false;
+    } else {
+      await setDoc(favRef, {
+        ...playerData,
+        addedAt: new Date().toISOString()
+      });
+      return true;
+    }
+  } catch (error) {
+    console.error("Favorite toggle failed:", error);
+    throw error;
+  }
+}
+
+// ======================
+// PLAYER SEARCH
+// ======================
+export async function searchPlayers(searchTerm) {
+  try {
     searchResults.innerHTML = '<div class="loading">Searching players...</div>';
     
-    // Basic validation
-    if (!searchTerm || searchTerm.trim() === '') {
+    if (!searchTerm.trim()) {
       searchResults.innerHTML = '<div class="empty">Please enter a search term</div>';
       return;
     }
     
-    // Create Firestore query
     const playersRef = collection(db, 'Players');
     const q = query(
       playersRef,
-      orderBy('name'), // Ensure you have this field indexed in Firestore
+      orderBy('name'),
       where('name', '>=', searchTerm),
       where('name', '<=', searchTerm + '\uf8ff'),
       limit(20)
     );
     
-    // Execute query
     const querySnapshot = await getDocs(q);
     
-    // Process results
     if (querySnapshot.empty) {
       searchResults.innerHTML = '<div class="empty">No players found</div>';
       return;
     }
     
-    // Display results
     searchResults.innerHTML = '';
-    querySnapshot.forEach((doc) => {
+    const promises = querySnapshot.docs.map(async (doc) => {
       const player = doc.data();
-      const playerCard = createPlayerCard(doc.id, player);
-      searchResults.appendChild(playerCard);
+      const isFavorite = currentUser ? await checkIfFavorite(doc.id) : false;
+      const card = createPlayerCard(doc.id, player, isFavorite);
+      searchResults.appendChild(card);
     });
     
+    await Promise.all(promises);
   } catch (error) {
-    console.error('Error searching players:', error);
-    searchResults.innerHTML = `<div class="error">Search failed: ${error.message}</div>`;
+    console.error('Search error:', error);
+    let errorMsg = 'Search failed';
+    if (error.code === 'permission-denied') {
+      errorMsg = 'Authentication required';
+    }
+    searchResults.innerHTML = `<div class="error">${errorMsg}: ${error.message}</div>`;
   }
 }
 
-// Create player card element
-function createPlayerCard(playerId, playerData) {
+async function checkIfFavorite(playerId) {
+  if (!currentUser) return false;
+  
+  try {
+    const docRef = doc(db, `Users/${currentUser.uid}/Favorites`, playerId);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists();
+  } catch (error) {
+    console.error("Favorite check failed:", error);
+    return false;
+  }
+}
+
+// ======================
+// UI COMPONENTS
+// ======================
+function createPlayerCard(playerId, playerData, isFavorite = false) {
   const card = document.createElement('div');
   card.className = 'player-result-card';
   
   card.innerHTML = `
     <h3>${playerData.name}</h3>
-    <p>${playerData.position || 'Position not specified'}</p>
-    <p>${playerData.team || 'Team not specified'}</p>
-    <button class="add-favorite-btn" data-player-id="${playerId}">
-      Add to Favorites
+    <p>Position: ${playerData.position || 'N/A'}</p>
+    <p>Team: ${playerData.team || 'N/A'}</p>
+    <button class="favorite-btn ${isFavorite ? 'active' : ''}" 
+            data-player-id="${playerId}">
+      ${isFavorite ? '★ Remove Favorite' : '☆ Add Favorite'}
     </button>
   `;
   
-  // Add event listener to the button
-  const favoriteBtn = card.querySelector('.add-favorite-btn');
-  favoriteBtn.addEventListener('click', () => {
-    addPlayerToFavorites(playerId);
+  const btn = card.querySelector('.favorite-btn');
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    try {
+      const newState = await toggleFavorite(playerId, playerData);
+      btn.classList.toggle('active', newState);
+      btn.innerHTML = newState ? '★ Remove Favorite' : '☆ Add Favorite';
+    } catch (error) {
+      console.error("Favorite action failed:", error);
+    } finally {
+      btn.disabled = false;
+    }
   });
   
   return card;
 }
 
-// Add player to favorites (connect this to your existing function)
-async function addPlayerToFavorites(playerId) {
-  // Use your existing addFavoritePlayer function here
-  console.log('Adding player to favorites:', playerId);
-  // await addFavoritePlayer(playerId);
+function createFavoriteCard(playerId, playerData) {
+  const card = document.createElement('div');
+  card.className = 'favorite-player-card';
+  
+  card.innerHTML = `
+    <h3>${playerData.name}</h3>
+    <p>Position: ${playerData.position || 'N/A'}</p>
+    <p>Team: ${playerData.team || 'N/A'}</p>
+    <button class="remove-favorite-btn" data-player-id="${playerId}">
+      Remove Favorite
+    </button>
+  `;
+  
+  const btn = card.querySelector('.remove-favorite-btn');
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    try {
+      await toggleFavorite(playerId, playerData);
+    } catch (error) {
+      console.error("Remove favorite failed:", error);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  
+  return card;
 }
 
-// Event listeners
+// ======================
+// EVENT HANDLERS
+// ======================
 searchButton.addEventListener('click', () => {
   searchPlayers(searchInput.value.trim());
 });
@@ -91,23 +242,221 @@ searchInput.addEventListener('keypress', (e) => {
     searchPlayers(searchInput.value.trim());
   }
 });
-// Requires Algolia or similar service integration
-import { searchPlayersInAlgolia } from './searchService.js';
 
-async function advancedSearch(term) {
-  const results = await searchPlayersInAlgolia(term);
-  // Process and display results
-}
-const q = query(
-  playersRef,
-  where('searchKeywords', 'array-contains', searchTerm.toLowerCase())
-);
-const firstPage = query(playersRef, orderBy('name'), limit(10));
-const nextPage = query(playersRef, orderBy('name'), startAfter(lastDoc), limit(10));
+// Debounced search
 let searchTimer;
 searchInput.addEventListener('input', () => {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => {
-    searchPlayers(searchInput.value.trim());
-  }, 300);
+  const term = searchInput.value.trim();
+  if (term.length >= 2) {
+    searchTimer = setTimeout(() => searchPlayers(term), 300);
+  }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { db, auth } from './firebase.js';
+// import { 
+//   collection, query, where, getDocs, orderBy, limit, 
+//   doc, setDoc, getDoc, onSnapshot, deleteDoc 
+// } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+// // DOM elements
+// const searchInput = document.getElementById('playerSearch');
+// const searchButton = document.getElementById('searchBtn');
+// const searchResults = document.getElementById('searchResults');
+// const favoritePlayers = document.getElementById('favoritePlayers');
+// const favoriteCount = document.getElementById('favoriteCount');
+
+// // State
+// let currentUser = null;
+// auth.onAuthStateChanged(user => {
+//   currentUser = user;
+//   if (user) loadFavorites();
+// });
+
+// // ======================
+// // SEARCH FUNCTIONALITY
+// // ======================
+// async function searchPlayers(searchTerm) {
+//   try {
+//     searchResults.innerHTML = '<div class="loading">Searching players...</div>';
+    
+//     if (!searchTerm.trim()) {
+//       searchResults.innerHTML = '<div class="empty">Please enter a search term</div>';
+//       return;
+//     }
+    
+//     const playersRef = collection(db, 'Players');
+//     const q = query(
+//       playersRef,
+//       orderBy('name'),
+//       where('name', '>=', searchTerm),
+//       where('name', '<=', searchTerm + '\uf8ff'),
+//       limit(20)
+//     );
+    
+//     const querySnapshot = await getDocs(q);
+    
+//     if (querySnapshot.empty) {
+//       searchResults.innerHTML = '<div class="empty">No players found</div>';
+//       return;
+//     }
+    
+//     searchResults.innerHTML = '';
+//     querySnapshot.forEach(async (doc) => {
+//       const player = doc.data();
+//       const isFavorite = await checkIfFavorite(doc.id);
+//       const playerCard = createPlayerCard(doc.id, player, isFavorite);
+//       searchResults.appendChild(playerCard);
+//     });
+    
+//   } catch (error) {
+//     console.error('Search error:', error);
+//     searchResults.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+//   }
+// }
+
+// // ======================
+// // FAVORITES FUNCTIONALITY
+// // ======================
+
+
+// async function loadFavorites() {
+//   if (!currentUser) return;
+  
+//   const favoritesRef = collection(db, `Users/${currentUser.uid}/Favorites`);
+//   onSnapshot(favoritesRef, (snapshot) => {
+//     favoritePlayers.innerHTML = '';
+//     favoriteCount.textContent = `(${snapshot.size})`;
+    
+//     if (snapshot.empty) {
+//       favoritePlayers.innerHTML = '<div class="empty">No favorite players yet</div>';
+//       return;
+//     }
+    
+//     snapshot.forEach(async (doc) => {
+//       const playerId = doc.id;
+//       const playerData = await getPlayerData(playerId);
+//       if (playerData) {
+//         const favoriteCard = createFavoriteCard(playerId, playerData);
+//         favoritePlayers.appendChild(favoriteCard);
+//       }
+//     });
+//   });
+// }
+
+// async function getPlayerData(playerId) {
+//   const docRef = doc(db, 'Players', playerId);
+//   const docSnap = await getDoc(docRef);
+//   return docSnap.exists() ? docSnap.data() : null;
+// }
+
+// async function checkIfFavorite(playerId) {
+//   if (!currentUser) return false;
+//   const docRef = doc(db, `Users/${currentUser.uid}/Favorites`, playerId);
+//   const docSnap = await getDoc(docRef);
+//   return docSnap.exists();
+// }
+
+// async function toggleFavorite(playerId, playerData) {
+//   if (!currentUser) {
+//     alert('Please sign in to save favorites');
+//     return;
+//   }
+  
+//   const favRef = doc(db, `Users/${currentUser.uid}/Favorites`, playerId);
+//   const isFavorite = await checkIfFavorite(playerId);
+  
+//   try {
+//     if (isFavorite) {
+//       await deleteDoc(favRef);
+//     } else {
+//       await setDoc(favRef, playerData);
+//     }
+//     return !isFavorite;
+//   } catch (error) {
+//     console.error('Favorite toggle failed:', error);
+//     return isFavorite;
+//   }
+// }
+
+// // ======================
+// // UI COMPONENTS
+// // ======================
+// function createPlayerCard(playerId, playerData, isFavorite = false) {
+//   const card = document.createElement('div');
+//   card.className = 'player-result-card';
+  
+//   card.innerHTML = `
+//     <h3>${playerData.name}</h3>
+//     <p>Position: ${playerData.position || 'N/A'}</p>
+//     <p>Team: ${playerData.team || 'N/A'}</p>
+//     <button class="favorite-btn" data-player-id="${playerId}">
+//       ${isFavorite ? '★ Remove Favorite' : '☆ Add Favorite'}
+//     </button>
+//   `;
+  
+//   card.querySelector('.favorite-btn').addEventListener('click', async () => {
+//     const newState = await toggleFavorite(playerId, playerData);
+//     card.querySelector('.favorite-btn').textContent = 
+//       newState ? '★ Remove Favorite' : '☆ Add Favorite';
+//   });
+  
+//   return card;
+// }
+
+// function createFavoriteCard(playerId, playerData) {
+//   const card = document.createElement('div');
+//   card.className = 'favorite-player-card';
+  
+//   card.innerHTML = `
+//     <h3>${playerData.name}</h3>
+//     <p>Position: ${playerData.position || 'N/A'}</p>
+//     <p>Team: ${playerData.team || 'N/A'}</p>
+//     <button class="remove-favorite-btn" data-player-id="${playerId}">
+//       Remove Favorite
+//     </button>
+//   `;
+  
+//   card.querySelector('.remove-favorite-btn').addEventListener('click', async () => {
+//     await toggleFavorite(playerId, playerData);
+//   });
+  
+//   return card;
+// }
+
+// // ======================
+// // EVENT LISTENERS
+// // ======================
+// searchButton.addEventListener('click', () => searchPlayers(searchInput.value.trim()));
+// searchInput.addEventListener('keypress', (e) => {
+//   if (e.key === 'Enter') searchPlayers(searchInput.value.trim());
+// });
+
+// // Optional: Debounced search
+// let searchTimer;
+// searchInput.addEventListener('input', () => {
+//   clearTimeout(searchTimer);
+//   searchTimer = setTimeout(() => {
+//     if (searchInput.value.trim().length >= 2) {
+//       searchPlayers(searchInput.value.trim());
+//     }
+//   }, 300);
+// });
