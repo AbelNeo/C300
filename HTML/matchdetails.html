@@ -69,7 +69,7 @@ try {
         <h3>${match.team_home} vs ${match.team_away}</h3>
         <p>Time: ${new Date(match.match_date.toDate()).toLocaleTimeString()}</p>
         <p>Venue: ${match.venue || 'Emirates Stadium'}</p>
-        <a href="bookingform.html?match_id=${doc.id}" class="btn">Book tickets</a>
+        <a href="bookingform.html?match_id=${doc.id}" class="btn">Book seats</a>
       `;
       matchListDiv.appendChild(div);
     }
@@ -100,7 +100,7 @@ try {
   <p class="stadium caption" style="margin-bottom: 30px;"></p>
   <!-- add code for a dropdown list of the section that user want to sit at-->
   <label for="seat-section">Select Block Section:</label>
-  <select id="seat-section" class="js-example-basic-single" name="seat-section" style="width: 100%;">
+  <select id="seat-section" class="js-example-basic-single" name="seatSection" style="width: 100%;">
   <optgroup label="🟦 Lower Tier - East">
     <option value="block-13">Block 13 - Long Side - Lower Tier - East 🟦</option>
     <option value="block-14">Block 14 - Long Side - Lower Tier - East 🟦</option>
@@ -263,22 +263,64 @@ try {
     <option value="block-B84">Block B84 - Club Level - Club Level - Central 🟥</option>
   </optgroup>
 
+  </select><br><br>
   <script>
-    $(document).ready(function() {
-      $('.js-example-basic-single').select2({  
-        placeholder: "Select a block",
-        allowClear: true
-      });
+  $(document).ready(function() {
+    $('.js-example-basic-single').select2({  
+      placeholder: "Select a block",
+      allowClear: true
     });
+  });
   </script>
 
-  </select><br><br>
-  <a href="bookingform.html?match_id=${doc.id}" class="btn">Book tickets</a>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const matchListDiv = document.getElementById('matchesList');
+    if (!matchListDiv) return;
+
+    matchListDiv.querySelectorAll('.book-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const seatBlock = document.getElementById('seat-section').value;
+        const matchId = button.getAttribute('data-id');
+
+        if (!seatBlock) {
+          alert("Please select a block before booking.");
+          return;
+        }
+
+        window.location.href = `bookingform.html?match_id=${matchId}&seat_block=${encodeURIComponent(seatBlock)}`;
+        });
+      });
+    });
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const seatBlock = params.get('seat_block');
+        if (seatBlock) {
+        document.getElementById('seat-section').value = seatBlock;
+      }
+    });
+    </script>
+
+
+<a href="bookingform.html?match_id=${doc.id}" class="btn">Book tickets</a>
+
+
+  
 </body>
 </main>
 
 
-<!-- seat
+
+
+
+<!-- 
+<button class="btn book-btn" data-id="${doc.id}">Book seats</button>
+<a href="bookingform.html?match_id=${doc.id}" class="btn">Book tickets</a>
+
+    seat
   $(document).ready(function() {
       $('#seat-section').select2({  
         placeholder: "Select a block",

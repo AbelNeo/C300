@@ -24,12 +24,20 @@ getDocs, doc, getDoc, collection, query, where, runTransaction, setDoc, updateDo
 onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification
 };
 
-
 const matchSelect = document.getElementById('matchSelect');
 const seatSelect = document.getElementById('seatSelect');
 const bookButton = document.getElementById('bookButton');
 const messageArea = document.getElementById('messageArea');
 
+//script for seat block selection in match details.html
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const seatBlock = params.get('seat_block');
+
+  if (seatBlock) {
+    document.getElementById('seat_block').value = seatBlock;
+  }
+});
 
 //calendar code
 document.addEventListener('DOMContentLoaded', function () {
