@@ -75,7 +75,7 @@ function recommendAnotherSeat(match_id) {
 }
 
 async function updateFavorites(userId, newFavorites) {
-  await updateDoc(doc(db, "users", userId), {
+  await updateDoc(doc(db, "Accounts", userId), {
     favoritePlayers: newFavorites.slice(0, 3) // Store max 3
   });
 }

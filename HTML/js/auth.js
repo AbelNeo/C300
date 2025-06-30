@@ -1,4 +1,8 @@
 import { 
+  db, 
+  setDoc, 
+  doc, 
+  serverTimestamp,
   auth, 
   createUserWithEmailAndPassword,
   GoogleAuthProvider, 
@@ -111,6 +115,16 @@ function showSuccess(message) {
   errorElement.style.color = '#00C851';
   errorElement.style.backgroundColor = '#e8f5e9';
 }
+
+
+await setDoc(doc(db, "Accounts", userCredential.user.uid), {
+    email: userCredential.user.email,
+    createdAt: serverTimestamp(),
+    favoritePlayers: [],
+    membershipType: "bronze",
+    lastLogin: serverTimestamp(),
+    emailVerified: false // or true, as you need
+});
 
 // // auth.js
 // import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";

@@ -285,19 +285,6 @@ a {
   margin-top: 20px;
 }
 
-.player-card {
-  background: white;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 15px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.player-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
 .player-card h3 {
   color: #800000;
   margin-bottom: 8px;
@@ -1409,25 +1396,20 @@ h1 {
       margin: 0 auto;
     }
     
-    .player-card {
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
-      text-align: center;
-    }
-    
-    .player-card:hover {
-      transform: translateY(-5px);
-    }
-    
-    .player-portrait {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      border-bottom: 1px solid #eee;
-    }
+.player-portrait {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+  display: block;           /* Removes inline gap */
+  transition: transform 0.3s ease;
+  cursor: pointer;          /* Shows clickability */
+}
+
+.player-portrait:hover {
+  transform: scale(1.03);   /* Slight zoom effect on hover */
+}
+
     
     .player-info {
       padding: 10px;
@@ -1446,39 +1428,9 @@ h1 {
       font-size: 0.9em;
     }
     /* Player Card Styles */
-.player-card {
-    width: 180px;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    margin: 10px;
-    position: relative;
-}
 
-.player-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(128, 0, 0, 0); /* Maroon overlay - invisible by default */
-    transition: background 0.3s;
-}
 
-.player-card:hover::after {
-    background: rgba(128, 0, 0, 0.05); /* Slight maroon tint on hover */
-}
 
-.player-portrait {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-bottom: 1px solid #eee;
-    display: block; /* Remove inline gap */
-}
 
 .player-info {
     padding: 12px;
@@ -1504,4 +1456,36 @@ h1 {
 .player-portrait.loading {
     background: #f5f5f5;
     opacity: 0.8;
+}
+
+.player-card {
+  width: 180px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin: 10px;
+  position: relative;
+  cursor: pointer; /* 👈 Makes it clear it's clickable */
+  text-decoration: none; /* Remove underline if it's a link */
+  color: inherit; /* Keep text color consistent */
+}
+
+.player-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.player-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(128, 0, 0, 0); /* Maroon overlay - transparent by default */
+  transition: background 0.3s;
+  pointer-events: none; /* Allows clicks to go through */
+}
+
+.player-card:hover::after {
+  background: rgba(128, 0, 0, 0.05); /* Subtle maroon tint */
 }
