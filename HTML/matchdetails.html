@@ -85,6 +85,22 @@ try {
 });
 </script>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const selectedDate = params.get('date');
+    const matchDateEl = document.getElementById('matchDate');
+
+    console.log("Selected date from URL:", selectedDate);
+
+    if (!selectedDate) {
+      matchDateEl.textContent = "(No date specified)";
+      return;
+    }
+
+    matchDateEl.textContent = new Date(selectedDate).toDateString();
+  });
+</script>
 
 <body>
   <div style="margin-top: 200px;"></div>

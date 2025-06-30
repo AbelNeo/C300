@@ -82,12 +82,12 @@ document.addEventListener('DOMContentLoaded', function () {
       const selectedDate = info.dateStr;
 
     // Fetch events again from Firestore for this specific date
-      const snapshot = await getDocs(collection(db,'matches'));
-      const eventsOnDate = snapshot.docs.filter(doc => {
-        const match = doc.data();
-        const matchDate = match.match_date.toDate().toISOString().split('T')[0];
-        return matchDate === selectedDate;
-      });
+    //  const snapshot = await getDocs(collection(db,'matches'));
+    //  const eventsOnDate = snapshot.docs.filter(doc => {
+    //    const match = doc.data();
+    //    const matchDate = match.match_date.toDate().toISOString().split('T')[0];
+    //    return matchDate === selectedDate;
+    //  });
   
       if (eventsOnDate.length > 0) {
         let popupContent = '';
