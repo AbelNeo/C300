@@ -43,11 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const matchListDiv = document.getElementById('matchesList');
   const matchDateEl = document.getElementById('matchDate');
 
-  if (!selectedDate) {
-    matchDateEl.textContent = '(No date specified)'
-    matchListDiv.innerHTML = '<p>No date specified</p>';
-    return;
-  }
+  console.log("Selected date from URL:", selectedDate);
 
   document.getElementById('matchDate').textContent = selectedDate;
   matchDateEl.textContent = new Date(selectedDate).toDateString();
@@ -92,12 +88,6 @@ try {
     const matchDateEl = document.getElementById('matchDate');
 
     console.log("Selected date from URL:", selectedDate);
-
-    if (!selectedDate) {
-      matchDateEl.textContent = "(No date specified)";
-      return;
-    }
-
     matchDateEl.textContent = new Date(selectedDate).toDateString();
   });
 </script>
