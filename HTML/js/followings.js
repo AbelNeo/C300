@@ -38,7 +38,7 @@ auth.onAuthStateChanged(user => {
 export function loadFavorites() {
   if (!currentUser) return;
 
-  const favoritesRef = collection(db, `Users/${currentUser.uid}/Favorites`);
+  const favoritesRef = collection(db, `Accounts/${currentUser.uid}/Favorites`);
   
   unsubscribeFavorites = onSnapshot(favoritesRef, 
     async (snapshot) => {
@@ -88,7 +88,7 @@ async function toggleFavorite(playerId, playerData) {
     return false;
   }
 
-  const favRef = doc(db, `Users/${currentUser.uid}/Favorites`, playerId);
+  const favRef = doc(db, `Accounts/${currentUser.uid}/Favorites`, playerId);
   
   try {
     const docSnap = await getDoc(favRef);
@@ -159,7 +159,7 @@ async function checkIfFavorite(playerId) {
   if (!currentUser) return false;
   
   try {
-    const docRef = doc(db, `Users/${currentUser.uid}/Favorites`, playerId);
+    const docRef = doc(db, `Accounts/${currentUser.uid}/Favorites`, playerId);
     const docSnap = await getDoc(docRef);
     return docSnap.exists();
   } catch (error) {

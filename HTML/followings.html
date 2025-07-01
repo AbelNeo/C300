@@ -29,8 +29,8 @@
     <p class="section-title">MY FAVORITE PLAYERS <span id="favoriteCount" class="player-count">(0)</span></p>
     <div class="divider"></div>
     
-    <!-- Favorites List -->
-    <div id="favoritePlayers" class="favorites-list"></div>
+    <!-- Favorites List
+    <div id="favoritePlayers" class="favorites-list"></div> -->
     
     <!-- Search Section -->
     <div class="player-search">
@@ -78,24 +78,77 @@
       }
     }
 
-    function createPlayerCard(player) {
-      const card = document.createElement('div');
-      card.className = 'player-card';
+    // function createPlayerCard(player) {
+    //   const card = document.createElement('div');
+    //   card.className = 'player-card';
       
-      // Use placeholder image if no photo available
-      const photoUrl = player.photoURL || 'https://via.placeholder.com/150x180?text=No+Photo';
+    //   // Use placeholder image if no photo available
+    //   const photoUrl = player.photoURL || 'https://via.placeholder.com/150x180?text=No+Photo';
       
-      card.innerHTML = `
-        <img src="${photoUrl}" alt="${player.name}" class="player-portrait">
-        <div class="player-info">
-          <div class="player-name">${player.name}</div>
-          <div class="player-position">${player.position || 'Position not specified'}</div>
-        </div>
-      `;
+    //   card.innerHTML = `
+    //     <img src="${photoUrl}" alt="${player.name}" class="player-portrait">
+    //     <div class="player-info">
+    //       <div class="player-name">${player.name}</div>
+    //       <div class="player-position">${player.position || 'Position not specified'}</div>
+    //     </div>
+    //   `;
       
-      return card;
-    }
+    //   return card;
+    // }
 
+    function createPlayerCard(player, { onClick, showFavorite = false, isFavorite = false, onFavoriteToggle } = {}) {
+  const card = document.createElement('div');
+  card.className = 'player-card';
+  card.style.cursor = onClick ? 'pointer' : 'default';
+
+  // Hover effect
+  card.addEventListener('mouseenter', () => {
+    card.style.transform = 'translateY(-5px)';
+    card.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+    card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+  });
+
+  if (onClick) card.addEventListener('click', () => onClick(player));
+
+  const photoUrl = player.photoURL || player.photoPath || 'https://via.placeholder.com/150x180?text=No+Photo';
+
+  card.innerHTML = `
+    <img src="${photoUrl}" alt="${player.name || 'Player'}" class="player-portrait"
+         onerror="this.onerror=null;this.src='https://via.placeholder.com/150x180?text=No+Photo'">
+    <div class="player-info">
+      <h3 class="player-name">${player.name || 'Unknown Player'}</h3>
+      <p class="player-position">${player.position || 'Position not specified'}</p>
+      <p class="player-team">${player.team || ''}</p>
+    </div>
+    ${showFavorite ? `
+      <button class="favorite-btn ${isFavorite ? 'active' : ''}">
+        ${isFavorite ? '★ Remove Favorite' : '☆ Add Favorite'}
+      </button>
+    ` : ''}
+  `;
+
+  if (showFavorite && onFavoriteToggle) {
+    const btn = card.querySelector('.favorite-btn');
+    btn.addEventListener('click', async e => {
+      e.stopPropagation(); // Prevent triggering card click
+      btn.disabled = true;
+      try {
+        const newState = await onFavoriteToggle(player);
+        btn.classList.toggle('active', newState);
+        btn.innerHTML = newState ? '★ Remove Favorite' : '☆ Add Favorite';
+      } catch (err) {
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  }
+
+  return card;
+}
     // Load players when page loads
     window.addEventListener('DOMContentLoaded', loadPlayers);
   </script>

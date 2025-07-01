@@ -140,8 +140,8 @@ async function loadAccountView() {
   const imageContainer = document.getElementById('account-image-container');
 
   if (account.type === 'authenticated') {
-    // Fetch user document from Firestore
-    const userDoc = await getDoc(doc(db, "users", account.uid));
+    // Fetch user document from Firestore in "Accounts"
+    const userDoc = await getDoc(doc(db, "Accounts", account.uid));
     const userData = userDoc.data();
     
     accountNameElement.textContent = `Welcome, ${account.displayName}`;
@@ -178,6 +178,7 @@ async function loadAccountView() {
     `;
   }
 }
+
 
 
 
