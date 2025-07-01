@@ -16,7 +16,7 @@ class NavbarComponent extends HTMLElement {
     }
 
     async loadNavbar() {
-        const response = await fetch('components/navbar.html');
+        const response = await fetch('/HTML/components/navbar.html');
         if (!response.ok) throw new Error('Failed to load navbar');
         this.innerHTML = await response.text();
     }
@@ -34,7 +34,7 @@ class NavbarComponent extends HTMLElement {
         e.preventDefault();
         localStorage.removeItem('currentUser');
         this.updateAuthUI();
-        window.location.href = 'index.html';
+        window.location.href = '/HTML/index.html';
     }
 
     connectedCallback() {
