@@ -1,16 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Footmaster Pro - Upload media</title>
-  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/main.min.css' rel='stylesheet' />
-  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
-  <link rel="stylesheet" href="css/styles.css">
-  <script type="module" src="js/booking.js"></script>
-  <script src="/js/firebase.js"></script>
-  <script type="module" src="components\navbar-component.js" ></script>
- 
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Footmaster Pro - Upload media</title>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="module" src="js/upload.js"></script>
+    <script src="/js/firebase.js"></script>
+    <script type="module" src="components\navbar-component.js" ></script>
+    <script type="module" src="js\firebase.js"></script>
+    <script type="module" src="js\players.js"></script>
+    <script type="module" src="js\main.js">
+
+    </script>
+    
+
 
 <script type="importmap">
 {
@@ -21,10 +27,6 @@
   }
 }
 </script>
-<script type="module" src="js\firebase.js"></script>
-<script type="module" src="js\players.js"></script>
-<script type="module" src="js\main.js"></script>
-<script type="module" src="components\navbar-component.js" ></script>
 
 
     <style>
@@ -151,44 +153,99 @@
         </section>
     </main>
 
-<!-- In your existing upload-media.html, modify the script section: -->
-<script>
-  // Get the selected date from URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  const selectedDate = urlParams.get('date');
-  
-  // Display the selected date if it exists
-  if (selectedDate) {
-    const titleElement = document.querySelector('.upload-section h1');
-    titleElement.textContent += ` for ${selectedDate}`;
-    
-    // You can also add the date to your form data when uploading
-    document.getElementById('uploadForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const fileInput = document.getElementById('media');
-      const file = fileInput.files[0];
-      
-      if (!file) {
-        document.getElementById('statusMessage').innerHTML = '<div class="error-message">Please select a file to upload</div>';
-        return;
-      }
-      
-      // Validate file size (50MB max)
-      if (file.size > 50 * 1024 * 1024) {
-        document.getElementById('statusMessage').innerHTML = '<div class="error-message">File size exceeds 50MB limit</div>';
-        return;
-      }
-      
-      const formData = new FormData();
-      formData.append('media', file);
-      formData.append('date', selectedDate); // Add the date to the form data
-      
-      // Rest of your upload code...
-      // When redirecting to success page, include the date:
-      window.location.href = `upload-success.html?date=${encodeURIComponent(selectedDate)}`;
-    });
+<script type="module">
+import { initializeApp } from "firebase/app";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+
+// 🔧 Replace with your own Firebase config from Project Settings
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+// Handle selected date in title
+const urlParams = new URLSearchParams(window.location.search);
+const selectedDate = urlParams.get("date");
+if (selectedDate) {
+  const titleElement = document.querySelector(".upload-section h1");
+  titleElement.textContent += ` for ${selectedDate}`;
+}
+
+// Upload form logic
+const form = document.getElementById("uploadForm");
+const fileInput = document.getElementById("media");
+const progressBar = document.getElementById("uploadProgress");
+const progressText = document.getElementById("progressText");
+const progressContainer = document.getElementById("progressContainer");
+const statusMessage = document.getElementById("statusMessage");
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    statusMessage.innerHTML = '<div class="error-message">Please sign in to upload.</div>';
+    return;
   }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const file = fileInput.files[0];
+    if (!file) {
+      statusMessage.innerHTML = '<div class="error-message">Please select a file to upload.</div>';
+      return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      statusMessage.innerHTML = '<div class="error-message">File exceeds 50MB limit.</div>';
+      return;
+    }
+
+    const filePath = `users/${user.uid}/uploads/${Date.now()}_${file.name}`;
+    const storageRef = ref(storage, filePath);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    progressContainer.style.display = "block";
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        progressBar.value = percent;
+        progressText.textContent = `${Math.round(percent)}%`;
+      },
+      (error) => {
+        statusMessage.innerHTML = `<div class="error-message">Upload failed: ${error.message}</div>`;
+      },
+      async () => {
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        try {
+          await setDoc(doc(db, "users", user.uid, "media", `${Date.now()}`), {
+            url: downloadURL,
+            fileName: file.name,
+            fileType: file.type,
+            selectedDate: selectedDate || null,
+            uploadedAt: serverTimestamp()
+          });
+
+          statusMessage.innerHTML = `<div class="success-message">Upload successful!</div>`;
+          window.location.href = `upload-success.html?date=${encodeURIComponent(selectedDate || "")}`;
+        } catch (error) {
+          statusMessage.innerHTML = `<div class="error-message">Error saving to Firestore: ${error.message}</div>`;
+        }
+      }
+    );
+  });
+});
 </script>
+
 </body>
 </html>
