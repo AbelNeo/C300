@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #f5f5f5;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ee4d2d;
+      margin-bottom: 30px;
+    }
+
+    .checkout-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.05);
+    }
+
+    .item-row {
+      display: flex;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+      position: relative;
+    }
+
+    .item-row img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-right: 20px;
+    }
+
+    .item-details {
+      flex: 1;
+    }
+
+    .item-details h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .item-details .price {
+      color: #ee4d2d;
+      margin-top: 5px;
+    }
+
+    .item-quantity,
+    .item-subtotal {
+      text-align: right;
+      width: 100px;
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 16px;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 0;
+    }
+
+    .remove-btn:hover {
+      color: red;
+    }
+
+    .summary {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .place-order {
+      background-color: #ee4d2d;
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      font-size: 16px;
+      border-radius: 5px;
+      float: right;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    .confirmation {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 18px;
+      color: #27ae60;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Checkout</h1>
+
+  <div class="checkout-container" id="checkoutContainer"></div>
+
+  <div class="confirmation" id="confirmation">🎉 Purchase successful! Thank you for shopping with us.</div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const storeItems = JSON.parse(localStorage.getItem('storeItems') || '[]');
+    const checkoutContainer = document.getElementById('checkoutContainer');
+    const confirmation = document.getElementById('confirmation');
+
+    function renderCheckout() {
+      checkoutContainer.innerHTML = '';
+      let total = 0;
+
+      if (cart.length === 0) {
+        checkoutContainer.innerHTML = "<p>Your cart is empty.</p>";
+        return;
+      }
+
+      cart.forEach((item, index) => {
+        const storeItem = storeItems.find(p => p.name === item.name);
+        const price = storeItem ? parseFloat(storeItem.price) : 0;
+        const subtotal = price * item.quantity;
+        total += subtotal;
+
+        const row = document.createElement('div');
+        row.className = 'item-row';
+
+        const img = document.createElement('img');
+        img.src = storeItem?.images[0] || '';
+
+        const details = document.createElement('div');
+        details.className = 'item-details';
+        details.innerHTML = `
+          <h3>${item.name}</h3>
+          <div class="price">$${price.toFixed(2)}</div>
+        `;
+
+        const qty = document.createElement('div');
+        qty.className = 'item-quantity';
+        qty.textContent = `x${item.quantity}`;
+
+        const subtotalDiv = document.createElement('div');
+        subtotalDiv.className = 'item-subtotal';
+        subtotalDiv.textContent = `$${subtotal.toFixed(2)}`;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.innerHTML = '🗑️';
+        removeBtn.onclick = () => removeItem(index);
+
+        row.appendChild(img);
+        row.appendChild(details);
+        row.appendChild(qty);
+        row.appendChild(subtotalDiv);
+        row.appendChild(removeBtn);
+
+        checkoutContainer.appendChild(row);
+      });
+
+      const summary = document.createElement('div');
+      summary.className = 'summary';
+      summary.innerHTML = `Total: $${total.toFixed(2)}`;
+      checkoutContainer.appendChild(summary);
+
+      const button = document.createElement('button');
+      button.className = 'place-order';
+      button.textContent = 'Place Order';
+      button.onclick = placeOrder;
+      checkoutContainer.appendChild(button);
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCheckout();
+    }
+
+    function placeOrder() {
+      localStorage.removeItem('cart');
+      checkoutContainer.innerHTML = '';
+      confirmation.style.display = 'block';
+    }
+
+    renderCheckout();
+  </script>
+
+</body>
+</html>
