@@ -19,7 +19,43 @@
 </head>
 <body>
     <header>
-        <navbar-component></navbar-component>
+        <nav class="navbar" aria-label="Main navigation">
+    <div class="container">
+        <div class="logo">
+            <a href="/HTML/index.html" aria-label="FootMaster Pro Home">
+                <img 
+                    src="https://pngdownload.io/wp-content/uploads/2024/02/Euro-2024-ball-football-ballon-transparent-PNG-image-jpg.webp" 
+                    alt="FootMaster Pro Logo"
+                    width="40" 
+                    height="40"
+                    loading="lazy"
+                >
+                <span>FootMaster Pro</span>
+            </a>
+        </div>
+        
+        <ul class="nav-links" id="nav-links">
+
+            <li class="header_navIconDivider"></li>
+            
+            <!-- Main Navigation Links -->
+            <li><a href="/HTML/bookingcalendar.html" class="nav-link">Schedule</a></li>
+            <li><a href="/HTML/shopmenucustomer.html" class="nav-link">Store</a></li>
+            <li><a href="/HTML/checkout.html" class="nav-link">Checkout</a></li>
+            <li><a href="/HTML/calender-test.html" class="nav-link">Add new</a></li>
+            <li><a href="/HTML/itemcreator.html" class="nav-link">Item creator</a></li>
+            <li><a href="/HTML/flight-booking.html" class="nav-link">Book Flights</a></li>
+            <li><a href="/HTML/accomodation.html" class="nav-button">Find Accomodation</a></li>
+            <li><a href="/HTML/matchdetails.html" class="nav-button">Match info</a></li>
+
+            <!-- Auth Buttons - Corrected Structure -->
+            <li class="auth-buttons">
+                <a href="sign-in.html" class="btn-login">Login</a>
+                <a href="sign-up.html" class="btn-login">Join</a>
+            </li>
+        </ul>
+    </div>
+</nav><navbar-component></navbar-component>
     </header>
     <main class="container">
       <section class="players-section" style="margin-bottom: 1.5em; display: flex; align-items: flex-start;">
@@ -70,7 +106,7 @@
                     </div>
                 </div>
                 <div class="player-card" style="width:160px;">
-                    <img src="../images/arsenal-logo.png" alt="Arsenal" class="player-portrait" style="height: 80px;">
+                    <img src="../images/arsenal-logo.jpeg" alt="Arsenal" class="player-portrait" style="height: 80px;">
                     <div class="player-info">
                         <p class="player-team">Arsenal</p>
                     </div>
