@@ -16,7 +16,7 @@ class NavbarComponent extends HTMLElement {
     }
 
     async loadNavbar() {
-        const response = await fetch('components/navbar.html');
+        const response = await fetch('/HTML/components/navbar.html');
         if (!response.ok) throw new Error('Failed to load navbar');
         this.innerHTML = await response.text();
     }
