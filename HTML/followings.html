@@ -125,7 +125,7 @@ async function loadPlayers() {
       const card = createPlayerCard(player, {
         onClick: player =>
           player.playerPage
-            ? window.location.href = `player/${player.playerPage}.html`
+            ? window.location.href = `${player.playerPage}.html`
             : alert('Player page not set for this player!')
       });
       container.appendChild(card);
