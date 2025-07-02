@@ -16,7 +16,7 @@ class NavbarComponent extends HTMLElement {
     }
 
     async loadNavbar() {
-        const response = await fetch('/HTML/components/navbar.html');
+        const response = await fetch('components/navbar.html');
         if (!response.ok) throw new Error('Failed to load navbar');
         this.innerHTML = await response.text();
     }
@@ -34,7 +34,7 @@ class NavbarComponent extends HTMLElement {
         e.preventDefault();
         localStorage.removeItem('currentUser');
         this.updateAuthUI();
-        window.location.href = '/HTML/index.html';
+        window.location.href = 'index.html';
     }
 
     connectedCallback() {
@@ -61,47 +61,3 @@ class NavbarComponent extends HTMLElement {
 }
 
 customElements.define('navbar-component', NavbarComponent);
-
-
-
-// class NavbarComponent extends HTMLElement {
-//     connectedCallback() {
-//         this.loadNavbar();
-//     }
-
-//     async loadNavbar() {
-//         const response = await fetch('components/navbar.html');
-//         const html = await response.text();
-//         this.innerHTML = html;
-//         this.updateAuthUI();
-//     }
-
-//     updateAuthUI() {
-//     const user = localStorage.getItem('currentUser');
-//     const loginBtn = document.getElementById('loginBtn');
-//     const signupBtn = document.getElementById('signupBtn');
-//     const logoutBtn = document.getElementById('logoutBtn');
-
-//     if (user) {
-//         if (loginBtn) loginBtn.style.display = 'none';
-//         if (signupBtn) signupBtn.style.display = 'none';
-//         if (logoutBtn) logoutBtn.style.display = 'block';
-//     } else {
-//         if (loginBtn) loginBtn.style.display = 'block';
-//         if (signupBtn) signupBtn.style.display = 'block';
-//         if (logoutBtn) logoutBtn.style.display = 'none';
-//     }
-//     }
-//     //logout functionality
-// document.addEventListener('click', (e) => {
-//     if (e.target.closest('#logoutBtn')) {
-//         e.preventDefault();
-//         localStorage.removeItem('currentUser');
-//         updateAuthUI();
-//         window.location.href = 'index.html';
-//     }
-// })
-
-// }
-
-// customElements.define('navbar-component', NavbarComponent);
