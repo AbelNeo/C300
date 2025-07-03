@@ -5,7 +5,9 @@
     "@fullcalendar/list": "^6.1.17",
     "@fullcalendar/timegrid": "^6.1.17",
     "firebase": "^11.8.0",
-    "fullcalendar": "^6.1.17",
+    "fullcalendar": "^6.1.17"
+  },
+  "scripts": {
     "build": "echo Building project..."
   }
 }
