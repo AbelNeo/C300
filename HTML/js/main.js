@@ -12,8 +12,8 @@ import {
   signOut
 } from './firebase.js';
 
-// Other imports
 import { getFavoritePlayer } from "./players.js";
+import { renderPlayersGrid } from "./playerCard.js";
 
 // Navbar Auth Manager - Enhanced version
 const NavbarAuth = {
@@ -28,10 +28,10 @@ const NavbarAuth = {
   updateNavbar: function(user) {
     const navLinks = document.getElementById('nav-links');
     if (!navLinks) return;
-    
+
     const authButtons = navLinks.querySelector('.auth-buttons');
     const profileLink = navLinks.querySelector('a[href="profile.html"]');
-    
+
     if (user) {
       // User is logged in
       if (authButtons) {
@@ -41,7 +41,6 @@ const NavbarAuth = {
           </a>
           <a href="index.html" id="logout-btn" class="btn-login">Logout</a>
         `;
-        
         document.getElementById('logout-btn')?.addEventListener('click', (e) => {
           e.preventDefault();
           signOut(auth).then(() => {
@@ -54,7 +53,6 @@ const NavbarAuth = {
       if (authButtons) {
         authButtons.innerHTML = `
           <a href="sign-in.html" class="btn-login">Login</a>
-          
           <a href="sign-up.html" class="btn-login">Join</a>
         `;
       }
@@ -64,14 +62,14 @@ const NavbarAuth = {
   updateAccountView: function(user) {
     const accountNameElement = document.getElementById('account-name');
     const accountTypeElement = document.getElementById('account-type');
-    
+
     if (!accountNameElement || !accountTypeElement) return;
-    
+
     if (user) {
       accountNameElement.textContent = `Welcome, ${user.displayName || 'User'}`;
       accountTypeElement.textContent = 'Premium Member';
       accountTypeElement.style.color = '#800000';
-      
+
       // Show premium features
       document.querySelectorAll('.premium-feature').forEach(el => {
         el.style.display = 'block';
@@ -80,7 +78,7 @@ const NavbarAuth = {
       accountNameElement.textContent = 'Welcome, Guest';
       accountTypeElement.textContent = 'Sign in for premium features';
       accountTypeElement.style.color = '#666';
-      
+
       // Hide premium features
       document.querySelectorAll('.premium-feature').forEach(el => {
         el.style.display = 'none';
@@ -129,27 +127,28 @@ function showError(message) {
 document.addEventListener('DOMContentLoaded', () => {
   NavbarAuth.init();
   setupAuthHandlers();
-  });
+});
 
-
-
+// Account view loader
 async function loadAccountView() {
   const account = await detectAccount();
   const accountNameElement = document.getElementById('account-name');
   const accountTypeElement = document.getElementById('account-type');
   const imageContainer = document.getElementById('account-image-container');
 
+  if (!accountNameElement || !accountTypeElement || !imageContainer) return;
+
   if (account.type === 'authenticated') {
     // Fetch user document from Firestore in "Accounts"
     const userDoc = await getDoc(doc(db, "Accounts", account.uid));
     const userData = userDoc.data();
-    
+
     accountNameElement.textContent = `Welcome, ${account.displayName}`;
     accountTypeElement.textContent = 'Your premium content';
-    
+
     // Clear existing images
     imageContainer.innerHTML = '';
-    
+
     // Add favorite player images (1-3 based on what exists)
     if (userData.favoritePlayers?.length) {
       userData.favoritePlayers.slice(0, 3).forEach(imgUrl => {
@@ -167,7 +166,6 @@ async function loadAccountView() {
       segment.innerHTML = `<p class="no-favorites">Select your favorite players in Profile</p>`;
       imageContainer.appendChild(segment);
     }
-    
   } else {
     accountNameElement.textContent = 'Welcome, Guest';
     accountTypeElement.textContent = 'Sign in for personalized content';
@@ -179,77 +177,45 @@ async function loadAccountView() {
   }
 }
 
-
-
-
-
-
-
-
+// Player display loader using playerCard.js
 async function loadAndDisplayPlayers() {
-  console.log("Button clicked - function started"); // Debug log
-  
   try {
-    const debugOutput = document.getElementById('debug-output');
-    debugOutput.innerHTML = "Loading players...";
-    
-    console.log("Fetching players..."); // Debug log
-    const players = await getFavoritePlayer();
-    console.log("Players fetched:", players); // Debug log
-    
-    const container = document.getElementById('players-container');
-    if (!container) {
-      throw new Error("Players container not found in DOM");
-    }
+    // Use the new playersContainer id (all player cards are handled by playerCard.js)
+    const container = document.getElementById('playersContainer');
+    if (!container) throw new Error("Players container not found in DOM");
 
+    container.innerHTML = '<div class="loading">Loading players...</div>';
+
+    const players = await getFavoritePlayer();
     if (!players || players.length === 0) {
       container.innerHTML = '<p class="no-players">No players found in database</p>';
-      debugOutput.innerHTML = 'No players found in database';
       return;
     }
 
-    container.innerHTML = players.map(player => `
-      <div class="player-card">
-        <h3>${player.Name || 'Unnamed Player'}</h3>
-        <p>Position: ${player.Role || 'No position specified'}</p>
-        ${player.JerseyNumber ? `<p>Jersey: ${player.JerseyNumber}</p>` : ''}
-      </div>
-    `).join('');
-
-    debugOutput.innerHTML = `Successfully loaded ${players.length} player(s)`;
-    console.table(players); // View detailed data in console
-
+    renderPlayersGrid(players, 'playersContainer');
   } catch (error) {
-    console.error("Full error details:", error); // Detailed error
-    const debugOutput = document.getElementById('debug-output');
-    debugOutput.innerHTML = `
-      <p style="color: red">Error loading players</p>
-      <p>${error.message}</p>
-    `;
+    console.error("Full error details:", error);
+    const container = document.getElementById('playersContainer');
+    if (container) {
+      container.innerHTML = `
+        <p style="color: red">Error loading players</p>
+        <p>${error.message}</p>
+      `;
+    }
   }
 }
 
-// Initialize
+// Initialize player card loading and refresh button
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("DOM fully loaded"); // Debug log
-  
+  // Refresh button
   const refreshBtn = document.getElementById('refresh-players');
   if (refreshBtn) {
     refreshBtn.addEventListener('click', loadAndDisplayPlayers);
-    console.log("Event listener attached to button"); // Debug log
-  } else {
-    console.error("Refresh button not found in DOM!");
   }
 
-  // Load immediately on page load
+  // Load player cards on page load
   loadAndDisplayPlayers();
 });
-
-
-
-
-
-
 
 // Real account detection
 function detectAccount() {
@@ -274,5 +240,5 @@ function detectAccount() {
   });
 }
 
-// Initialize when page loads
+// Also load account view on page load
 document.addEventListener('DOMContentLoaded', loadAccountView);

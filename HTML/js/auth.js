@@ -121,7 +121,7 @@ await setDoc(doc(db, "Accounts", userCredential.user.uid), {
     email: userCredential.user.email,
     createdAt: serverTimestamp(),
     favoritePlayers: [],
-    membershipType: "bronze",
+    tier: "Bronze", // or "Silver", "Gold", etc. as needed
     lastLogin: serverTimestamp(),
     emailVerified: false // or true, as you need
 });

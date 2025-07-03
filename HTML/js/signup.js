@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     email: user.email,
                     createdAt: serverTimestamp(),
                     favoritePlayers: [],
-                    membershipType: "bronze",
+                    tier: "Bronze", // Default tier
                     lastLogin: serverTimestamp(),
                     emailVerified: true // mark as verified for demo
                 });
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 email: user.email,
                 createdAt: serverTimestamp(),
                 favoritePlayers: [],
-                membershipType: "bronze",
+                tier: "Bronze",
                 lastLogin: serverTimestamp(),
                 emailVerified: true
             }, { merge: true });
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 email: user.email,
                 createdAt: serverTimestamp(),
                 favoritePlayers: [],
-                membershipType: "bronze",
+                tier: "Bronze",
                 lastLogin: serverTimestamp(),
                 emailVerified: true
             }, { merge: true });
