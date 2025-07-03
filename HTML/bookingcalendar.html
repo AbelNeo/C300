@@ -53,6 +53,7 @@
     <div id="dateForm" style="display: none;">
   <h3>Selected Date: <span id="selectedDate"></span></h3>
   <a id="uploadLink" href="#" class="btn-login" style="text-decoration: none; margin-top: 15px; display: inline-block;">View match details</a>
+  <a id="uploadLink2" href="#" class="btn-login" style="text-decoration: none; margin-top: 15px; display: inline-block;">Upload Media for this Date</a>
 </div>
   </main>
 
@@ -82,7 +83,12 @@
           // Set the upload link with the date parameter
           document.getElementById('uploadLink').href = 
             `matchdetails.html?date=${encodeURIComponent(info.dateStr)}`;
+
+          // Set the upload media link
+          document.getElementById('uploadLink2').href =
+            `upload-media.html?date=${encodeURIComponent(info.dateStr)}`;
         },
+
         eventClick: function(info) {
           // Optional: handle if you click on an event instead of a date
           info.jsEvent.preventDefault();

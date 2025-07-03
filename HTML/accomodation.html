@@ -22,13 +22,22 @@
 <script type="module" src="js\main.js"></script>
 <script type="module" src="components\navbar-component.js" ></script>
 
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const venue = urlParams.get('venue') || "All Stadiums";
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('venueName').textContent = venue;
+  });
+</script>
+
+
 <header>
   <navbar-component></navbar-component>
 </header>
 
 <body>
     <main class="container" style="margin-top: 60px; margin-bottom: 150px; max-width: 1200px; padding: 20px;">
-    <h1>Find Accomodation</h1>
+    <h1>Find Accomodation near <span id="venueName"></span></h1>
 
 <p>Choose from the top hotel booking platforms:</p>
 <div class="card-list">
