@@ -1504,3 +1504,12 @@ h1 {
 .star-favorite.active {
   filter: drop-shadow(0 0 4px gold);
 }
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  color: #800000;
+  font-size: 1.2rem;
+  font-weight: 600;
+}

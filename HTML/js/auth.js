@@ -142,7 +142,12 @@ function showSuccess(message) {
   errorElement.style.backgroundColor = '#e8f5e9';
 }
 
-
+// // In sign-in form submit handler, after successful login:
+// if (!user.emailVerified) {
+//   showError('Please verify your email before logging in.');
+//   await signOut(auth);
+//   return;
+// }
 
 
 

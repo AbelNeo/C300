@@ -149,23 +149,47 @@ async function loadAccountView() {
     // Clear existing images
     imageContainer.innerHTML = '';
 
+
+
+    
     // Add favorite player images (1-3 based on what exists)
-    if (userData.favoritePlayers?.length) {
-      userData.favoritePlayers.slice(0, 3).forEach(imgUrl => {
-        const segment = document.createElement('div');
-        segment.className = 'image-segment';
-        segment.style.backgroundImage = `url(${imgUrl})`;
-        segment.style.backgroundSize = 'cover';
-        segment.style.backgroundPosition = 'center';
-        imageContainer.appendChild(segment);
-      });
-    } else {
-      // Default image if no favorites
+// Inside loadAccountView (replace the favoritePlayers display logic)
+if (userData.favoritePlayers?.length) {
+  imageContainer.innerHTML = '';
+  const playerIds = userData.favoritePlayers.slice(0, 3);
+
+  for (const playerId of playerIds) {
+    try {
+      const playerDoc = await getDoc(doc(db, "Players", playerId));
+      let photoUrl = 'https://via.placeholder.com/150x180?text=No+Photo';
+      if (playerDoc.exists()) {
+        const playerData = playerDoc.data();
+        if (playerData.photoPath) {
+          photoUrl = playerData.photoPath;
+        }
+      }
       const segment = document.createElement('div');
       segment.className = 'image-segment';
-      segment.innerHTML = `<p class="no-favorites">Select your favorite players in Profile</p>`;
+      segment.style.backgroundImage = `url(${photoUrl})`;
+      segment.style.backgroundSize = 'cover';
+      segment.style.backgroundPosition = 'center';
+      imageContainer.appendChild(segment);
+    } catch (err) {
+      // fallback
+      const segment = document.createElement('div');
+      segment.className = 'image-segment';
+      segment.style.backgroundImage = `url('https://via.placeholder.com/150x180?text=No+Photo')`;
+      segment.style.backgroundSize = 'cover';
+      segment.style.backgroundPosition = 'center';
       imageContainer.appendChild(segment);
     }
+  }
+} else {
+  const segment = document.createElement('div');
+  segment.className = 'image-segment';
+  segment.innerHTML = `<p class="no-favorites"><a href="profile.html" style="color: #800000; text-decoration: underline;">Select your favorite players in Profile</a></p>`;
+  imageContainer.appendChild(segment);
+}
   } else {
     accountNameElement.textContent = 'Welcome, Guest';
     accountTypeElement.textContent = 'Sign in for personalized content';
@@ -176,6 +200,14 @@ async function loadAccountView() {
     `;
   }
 }
+
+
+
+
+
+
+
+
 
 // Player display loader using playerCard.js
 async function loadAndDisplayPlayers() {
