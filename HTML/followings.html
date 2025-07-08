@@ -124,9 +124,7 @@ async function loadPlayers() {
       const player = doc.data();
       const card = createPlayerCard(player, {
         onClick: player =>
-          player.playerPage
-            ? window.location.href = `${player.playerPage}.html`
-            : alert('Player page not set for this player!')
+          window.location.href = `player.html?id=${doc.id}`
       });
       container.appendChild(card);
     });
