@@ -170,6 +170,7 @@ if (userData.favoritePlayers?.length) {
       }
       const segment = document.createElement('div');
       segment.className = 'image-segment';
+      segment.dataset.playerId = playerId;
       segment.style.backgroundImage = `url(${photoUrl})`;
       segment.style.backgroundSize = 'cover';
       segment.style.backgroundPosition = 'center';
@@ -306,9 +307,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerData = playerDoc.exists() ? playerDoc.data() : null;
 
     if (playerData && playerData.playerPage) {
-      window.location.href = `${playerData.playerPage}.html`;
+          window.location.href = `player.html?id=${doc.id}`
     } else {
       alert('Player page not found.');
     }
   });
 });
+
