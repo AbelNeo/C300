@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Profile</title>
+      <link rel="stylesheet" href="css/styles.css">
+
+      <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script type="module" src="js/firebase.js"></script>
+    <script type="module" src="js/players.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="components/navbar-component.js"></script>
+    <script type="module" src="js/upload.js"></script>
+</head>
+<body>
+  <div class="player-profile" id="profile">
+    <p>Loading player...</p>
+
+    <!-- In your main page (e.g., index.html or players.html) -->
+<a href="player.html?id=player1" class="player-card">
+  <img src="images/player1.jpg" class="player-portrait" alt="Player 1">
+  <h3>Player 1</h3>
+</a>
+
+  </div>
+
+  <script>
+    // Dummy player data — replace with Firebase fetch later
+    const playerData = {
+      player1: {
+        name: "Lionel Messi",
+        position: "Forward",
+        image: "images/player1.jpg",
+        bio: "One of the greatest footballers of all time."
+      },
+      player2: {
+        name: "Cristiano Ronaldo",
+        position: "Forward",
+        image: "images/player2.jpg",
+        bio: "Known for his strength, speed, and goal-scoring ability."
+      }
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const playerId = urlParams.get('id');
+    const profileDiv = document.getElementById('profile');
+
+    if (playerId && playerData[playerId]) {
+      const player = playerData[playerId];
+      profileDiv.innerHTML = `
+        <img src="${player.image}" alt="${player.name}" />
+        <h2>${player.name}</h2>
+        <p><strong>Position:</strong> ${player.position}</p>
+        <p>${player.bio}</p>
+        <button onclick="followPlayer('${playerId}')">Follow</button>
+      `;
+    } else {
+      profileDiv.innerHTML = `<p>Player not found.</p>`;
+    }
+
+    // Placeholder function for following
+    function followPlayer(playerId) {
+      alert(`You followed ${playerId}!`);
+      // TODO: Add Firebase logic to store this follow
+    }
+  </script>
+</body>
+</html>

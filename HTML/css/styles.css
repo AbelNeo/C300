@@ -1405,6 +1405,21 @@ h1 {
   transition: transform 0.3s ease;
   cursor: pointer;          /* Shows clickability */
 }
+    .player-profile {
+      max-width: 500px;
+      margin: auto;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      padding: 20px;
+      text-align: center;
+    }
+    .player-profile img {
+      width: 100%;
+      max-height: 250px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
 
 .player-portrait:hover {
   transform: scale(1.03);   /* Slight zoom effect on hover */
