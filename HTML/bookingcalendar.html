@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     initialView: 'dayGridMonth',
     events: async function(fetchInfo, successCallback, failureCallback) {
       try {
-        const matchesSnapshot = await getDocs(collection(db, 'matches'));
+        const matchesSnapshot = await getDocs(collection(db, 'Matches'));
         const events = matchesSnapshot.docs.map(doc => {
           const match = doc.data();
           return {
@@ -93,6 +93,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
           };
         });
+        console.log("Loaded events for calendar:", events); 
         successCallback(events);
       } catch (error) {
         failureCallback(error);
