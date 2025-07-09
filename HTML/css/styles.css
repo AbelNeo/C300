@@ -5,6 +5,11 @@
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+:root {
+  --primary-color: #800000;
+  --secondary-color: #ffcc00;
+  --dark-primary: #600000;
+}
 
 body {
     background-color: #f5f5f5;
@@ -475,15 +480,6 @@ background-color: #600000;
 .signup-form input.error {
     border-color: #ff4444;
 }
-.signup-container {
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 30px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
 .signup-header {
     text-align: center;
     margin-bottom: 30px;
@@ -651,14 +647,6 @@ background-color: #600000;
         margin: 20px;
         padding: 20px;
     }
-}/* Sign Up Page Styles */
-.signup-container {
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 30px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .signup-header {
@@ -875,7 +863,7 @@ background-color: #600000;
   border-left: 4px solid #800000 !important;
 }
 
-/* Footer Legend */
+/* Calendar Footer Legend */
 .calendar-footer {
   margin-top: 30px;
   text-align: center;
@@ -915,6 +903,134 @@ background-color: #600000;
 .legend-color.cup {
   background-color: #ffcc00;
   border-left: 2px solid #800000;
+}
+
+/* ===== FOOTER STYLES ===== */
+footer {
+    background-color: #2b2b2b; /* Slightly lighter than #111 for better contrast */
+    color: white;
+    padding: 2.5rem 0;
+    position: relative;
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.footer-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.footer-section {
+    margin-bottom: 1.5rem;
+}
+
+.footer-section h3 {
+    color: #ffcc00; /* Gold accent - matches your .btn-login */
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.footer-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: #800000; /* Maroon accent */
+}
+
+.footer-section p,
+.footer-section a {
+    color: #e5e7eb;
+    line-height: 1.6;
+    transition: all 0.3s ease; /* Matches your hover transition timing */
+}
+
+.footer-section a:hover {
+    color: #ffcc00; /* Gold hover effect - matches nav links */
+    text-decoration: underline;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+    display: inline-block;
+    padding: 2px 0; /* Similar to your nav link padding */
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.social-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    background-color: #800000; /* Maroon */
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Matches your card hover effect */
+}
+
+.social-links img {
+    width: 18px;
+    height: 18px;
+    filter: brightness(0) invert(1);
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: #aaa;
+    font-size: 0.8rem;
+}
+
+/* Responsive adjustments - matches your breakpoints */
+@media (min-width: 640px) {
+    .footer-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    
+    .footer-section {
+        margin-bottom: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    footer {
+        padding: 3rem 0;
+    }
+    
+    .footer-container {
+        gap: 3rem;
+    }
 }
 
 /* Buttons */

@@ -18,6 +18,7 @@
   <script type="module" src="js/firebase.js"></script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="components/navbar-component.js"></script>
+  <script type="module" src="components/footer-component.js"></script>
 </head>
 <body>
   <header>
@@ -48,12 +49,12 @@
               alt="Favorite Player"
               width="32"
               height="32"
-              src="${isFavorite ? 'https://images.onefootball.com/cw/icons/star-yellow-dark.svg' : 'https://images.onefootball.com/cw/icons/star-outline-dark.svg'}"
+              src="${isFavorite ? 'https://images.onefootball.com/cw/icons/star-yellow-dark.svg' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Yellow_bordered_white_star.svg/512px-Yellow_bordered_white_star.svg.png?20221001001156'}"
               class="star-favorite${isFavorite ? ' active' : ''}"
               style="color: transparent;${loggedIn ? '' : 'display:none;'}"
               title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}"
-            >
-          </div>
+              >
+            </div>
           <div class="player-card" style="max-width: 350px; margin: 0 auto;">
               <img src="${player.photoPath || player.photoURL ||  'https://via.placeholder.com/150x180?text=No+Photo'}" alt="${player.name}" class="player-portrait" style="height: 240px;">
               <div class="player-info">
@@ -174,4 +175,5 @@
     loadPlayer();
   </script>
 </body>
+<footer-component></footer-component>
 </html>
