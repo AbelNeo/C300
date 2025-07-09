@@ -17,14 +17,15 @@ const firebaseConfig = {
   appId: "1:388394869174:web:ec8f93ab8fb685e9846117"
 };
 
+const app = initializeApp(firebaseConfig);
+
+
 //DOM elements, excludes calendar elements
 const matchSelect = document.getElementById('matchSelect');
 const seatSelect = document.getElementById('seatSelect');
 const bookButton = document.getElementById('bookButton');
 const messageArea = document.getElementById('messageArea');
 const seatBlock = document.getElementById('seat_block');
-
-
 
 
 //script for seat block selection in match details.html (*dont remove*)
@@ -44,11 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  // Ticket quantity during booking
-  if (quantity > 50) {
-    showError("Ticket quantity exceeds maximum allowed.");
-    return;
-  }
+  
 
 
 async function getMatchData(match_id) {
