@@ -83,6 +83,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         const matchesSnapshot = await getDocs(collection(db, 'Matches'));
         const events = matchesSnapshot.docs.map(doc => {
           const match = doc.data();
+          let startDate = null;
+          if (match.match_date && typeof match.match_date.toDate === 'function') {
+            startDate = match.match_date.toDate();
+          } else if (match.match_date) {
+            startDate = new Date(match.match_date);
+          } else {
+            // Optionally skip this event if no date
+            return null;
+    }
           return {
             id: doc.id,
             title: `${match.team_home} vs ${match.team_away}`,
@@ -92,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async function() {
               team_away: match.team_away
             }
           };
-        });
+        }).filter(Boolean);
         console.log("Loaded events for calendar:", events); 
         successCallback(events);
       } catch (error) {
