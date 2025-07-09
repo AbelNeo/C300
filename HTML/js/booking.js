@@ -37,70 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-//calendar code (*dont remove*)
-document.addEventListener('DOMContentLoaded', function () {
-  const db = firebase.firestore();
-  const calendarEl = document.getElementById('calendar');
-
-  const calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
-    events: async function(fetchInfo, successCallback, failureCallback) {
-      try {
-        const matchesSnapshot = await db.collection('matches').get();
-        const events = matchesSnapshot.docs.map(doc => {
-          const match = doc.data();
-          return {
-            id: doc.id,
-            title: `${match.team_home} vs ${match.team_away}`,
-            start: match.match_date.toDate(),
-            extendedProps: {
-              team_home: match.team_home,
-              team_away: match.team_away
-            }
-        };
-      });
-      successCallback(events);
-    } catch (error) {
-      console.error('Error loading matches:', error);
-      failureCallback(error);
-    }
-  },
-  eventClick: function(info) {
-      const match = info.event.extendedProps;
-      const match_id = info.event.id;
-      const urlParams = new URLSearchParams({
-        match_id: match_id,
-        date: info.event.start.toISOString(),
-        team_home: match.team_home,
-        team_away: match.team_away
-      });
-      window.location.href = `bookingform.html?${urlParams.toString()}`;
-    },
-    dateClick: async function(info) {
-      const selectedDate = info.dateStr;
-
-    // Fetch events again from Firestore for this specific date
-    //  const snapshot = await getDocs(collection(db,'matches'));
-    //  const eventsOnDate = snapshot.docs.filter(doc => {
-    //    const match = doc.data();
-    //    const matchDate = match.match_date.toDate().toISOString().split('T')[0];
-    //    return matchDate === selectedDate;
-    //  });
-  
-      if (eventsOnDate.length > 0) {
-        let popupContent = '';
-        eventsOnDate.forEach(doc => {
-          const match = doc.data();
-          popupContent += `${match.team_home} vs ${match.team_away}\n`;
-        });
-        alert(`Matches on ${selectedDate}:\n${popupContent}`);
-      } else {
-        alert(`No matches on ${selectedDate}`);
-      }
-    }
-  });
-  calendar.render();
-});
+//calendar code was removed from here
 
 
 
@@ -242,3 +179,69 @@ async function getMatchData(match_id) {
       }
     }
   });
+
+
+/*calendar code (*dont remove*)
+document.addEventListener('DOMContentLoaded', function () {
+  const db = firebase.firestore();
+  const calendarEl = document.getElementById('calendar');
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    events: async function(fetchInfo, successCallback, failureCallback) {
+      try {
+        const matchesSnapshot = await db.collection('matches').get();
+        const events = matchesSnapshot.docs.map(doc => {
+          const match = doc.data();
+          return {
+            id: doc.id,
+            title: `${match.team_home} vs ${match.team_away}`,
+            start: match.match_date.toDate(),
+            extendedProps: {
+              team_home: match.team_home,
+              team_away: match.team_away
+            }
+        };
+      });
+      successCallback(events);
+    } catch (error) {
+      console.error('Error loading matches:', error);
+      failureCallback(error);
+    }
+  },
+  eventClick: function(info) {
+      const match = info.event.extendedProps;
+      const match_id = info.event.id;
+      const urlParams = new URLSearchParams({
+        match_id: match_id,
+        date: info.event.start.toISOString(),
+        team_home: match.team_home,
+        team_away: match.team_away
+      });
+      window.location.href = `bookingform.html?${urlParams.toString()}`;
+    },
+    dateClick: async function(info) {
+      const selectedDate = info.dateStr;
+
+    // Fetch events again from Firestore for this specific date
+    //  const snapshot = await getDocs(collection(db,'matches'));
+    //  const eventsOnDate = snapshot.docs.filter(doc => {
+    //    const match = doc.data();
+    //    const matchDate = match.match_date.toDate().toISOString().split('T')[0];
+    //    return matchDate === selectedDate;
+    //  });
+  
+      if (eventsOnDate.length > 0) {
+        let popupContent = '';
+        eventsOnDate.forEach(doc => {
+          const match = doc.data();
+          popupContent += `${match.team_home} vs ${match.team_away}\n`;
+        });
+        alert(`Matches on ${selectedDate}:\n${popupContent}`);
+      } else {
+        alert(`No matches on ${selectedDate}`);
+      }
+    }
+  });
+  calendar.render();
+}); */

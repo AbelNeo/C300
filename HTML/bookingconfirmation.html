@@ -38,6 +38,7 @@
     <p><strong>Match:</strong> <span id="match"></span></p>
     <p><strong>Date:</strong> <span id="date"></span></p>
     <p><strong>Tickets:</strong> <span id="quantity"></span></p>
+    <p><strong>Seat Block:</strong> <span id="seat_block"></span></p>
     </div>
   </div>
 
@@ -49,6 +50,7 @@
     document.getElementById('match').textContent = `${params.get('team_home')} vs ${params.get('team_away')}`;
     document.getElementById('date').textContent = params.get('date');
     document.getElementById('quantity').textContent = params.get('quantity');
+    document.getElementById('seat_block').textContent = params.get('seat_block');
 </script>
 
 </body>
