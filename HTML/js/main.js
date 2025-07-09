@@ -139,12 +139,19 @@ async function loadAccountView() {
   if (!accountNameElement || !accountTypeElement || !imageContainer) return;
 
   if (account.type === 'authenticated') {
-    // Fetch user document from Firestore in "Accounts"
     const userDoc = await getDoc(doc(db, "Accounts", account.uid));
     const userData = userDoc.data();
 
+    // Show admin or premium
+    if (userData && userData.isAdmin === true) {
+      accountTypeElement.textContent = 'Administrator';
+      accountTypeElement.style.color = '#800000';
+    } else {
+      accountTypeElement.textContent = 'Premium Member';
+      accountTypeElement.style.color = '#800000';
+    }
+
     accountNameElement.textContent = `Welcome, ${account.displayName}`;
-    accountTypeElement.textContent = 'Your premium content';
 
     // Clear existing images
     imageContainer.innerHTML = '';

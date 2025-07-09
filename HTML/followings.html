@@ -19,6 +19,7 @@
   <script type="module" src="js/followings.js"></script>
     <script type="module" src="js/main.js"></script>
   <script type="module" src="components/navbar-component.js"></script>
+      <script type="module" src="components/footer-component.js"></script>
 </head>
 <body>
   <header>
@@ -138,139 +139,6 @@ async function loadPlayers() {
   // Load players when page loads
   window.addEventListener('DOMContentLoaded', loadPlayers);
 </script>
-  
+<footer-component></footer-component>
 </body>
 </html>
-
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Footmaster Pro - My Followings</title>
-  <link rel="stylesheet" href="css/styles.css">
-    
-  <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
-      }
-    }
-  </script>
-  <script type="module" src="js/firebase.js"></script>
-  <script type="module" src="js/followings.js"></script>
-  <script type="module" src="components/navbar-component.js"></script>
-  <style>
-    /* Embedded CSS for critical UI (optional) */
-    .player-result-card {
-      border: 1px solid #ddd;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 8px;
-    }
-    .favorite-btn {
-      background: gold;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <navbar-component></navbar-component>
-  </header>
-
-  <article class="players-section">
-    <p class="section-title">MY FAVORITE PLAYERS <span id="favoriteCount" class="player-count">(0)</span></p>
-    <div class="divider"></div>
-    
-    <!-- Favorite Players List
-    <div id="favoritePlayers" class="favorites-list"></div>
-
-    <!-- Player Search
-    <div class="player-search">
-      <input type="text" id="playerSearch" placeholder="Search players...">
-      <button id="searchBtn">Search</button>
-    </div>
-    <div id="searchResults" class="search-results"></div>
-  </article>
-
-  <script type="module">
-    import { db, auth } from './js/firebase.js';
-    import { collection, query, where, orderBy, limit, getDocs, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    // DOM Elements
-    const searchInput = document.getElementById('playerSearch');
-    const searchBtn = document.getElementById('searchBtn');
-    const searchResults = document.getElementById('searchResults');
-    const favoritePlayers = document.getElementById('favoritePlayers');
-    const favoriteCount = document.getElementById('favoriteCount');
-
-    // Current User
-    let currentUser = null;
-    auth.onAuthStateChanged(user => currentUser = user);
-
-    // Search Players
-    async function searchPlayers(term) {
-    //   searchResults.innerHTML = '<div class="loading">Searching...</div>';
-      if (!term.trim()) {
-        searchResults.innerHTML = '<div>Please enter a search term</div>';
-        return;
-      }
-
-      const playersRef = collection(db, 'Players');
-      const q = query(
-        playersRef,
-        orderBy('name'),
-        where('name', '>=', term),
-        where('name', '<=', term + '\uf8ff'),
-        limit(20)
-      );
-
-      try {
-        const snapshot = await getDocs(q);
-        searchResults.innerHTML = snapshot.empty ? '<div>No players found.</div>' : '';
-        
-        snapshot.forEach(doc => {
-          const player = doc.data();
-          const isFavorite = false; // Check if already favorited (implement later)
-          
-          const card = document.createElement('div');
-          card.className = 'player-result-card';
-          card.innerHTML = `
-            <h3>${player.name}</h3>
-            <p>Position: ${player.position || "N/A"}</p>
-            <p>Team: ${player.team || "N/A"}</p>
-            <button class="favorite-btn" data-id="${doc.id}">
-              ${isFavorite ? '★ Remove Favorite' : '☆ Add Favorite'}
-            </button>
-          `;
-          searchResults.appendChild(card);
-        });
-      } catch (error) {
-        searchResults.innerHTML = `<div class="error">Error: ${error.message}</div>`;
-      }
-    }
-
-    // Event Listeners
-    searchBtn.addEventListener('click', () => searchPlayers(searchInput.value));
-    searchInput.addEventListener('keypress', e => {
-      if (e.key === 'Enter') searchPlayers(searchInput.value);
-    });
-
-    // Initialize favorites (implement in followings.js)
-    // function loadFavorites() {
-    //   favoritePlayers.innerHTML = '<div>Loading favorites...</div>';
-    //   // Logic to fetch favorites will go here
-    // }
-
-    // Load data on page load
-    window.addEventListener('DOMContentLoaded', loadFavorites);
-  </script>
-</body>
-</html> -->
