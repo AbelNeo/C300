@@ -159,14 +159,15 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
-// 🔧 Replace with your own Firebase config from Project Settings
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDZVSQAwB1YnKv6Pr_5kbsjvUz074mDsQ0",
+  authDomain: "football-club-management-3c136.firebaseapp.com",
+  databaseURL: "https://football-club-management-3c136-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "football-club-management-3c136",
+  storageBucket: "football-club-management-3c136.firebasestorage.app",
+  messagingSenderId: "388394869174",
+  appId: "1:388394869174:web:ec8f93ab8fb685e9846117",
+  measurementId: "G-Z9P2RHQQQQ"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -242,7 +243,42 @@ onAuthStateChanged(auth, (user) => {
           statusMessage.innerHTML = `<div class="error-message">Error saving to Firestore: ${error.message}</div>`;
         }
       }
+      
     );
+    
+  
+  // Display the selected date if it exists
+  if (selectedDate) {
+    const titleElement = document.querySelector('.upload-section h1');
+    titleElement.textContent += ` for ${selectedDate}`;
+    
+    // You can also add the date to your form data when uploading
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const fileInput = document.getElementById('media');
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        document.getElementById('statusMessage').innerHTML = '<div class="error-message">Please select a file to upload</div>';
+        return;
+      }
+      
+      // Validate file size (50MB max)
+      if (file.size > 50 * 1024 * 1024) {
+        document.getElementById('statusMessage').innerHTML = '<div class="error-message">File size exceeds 50MB limit</div>';
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append('media', file);
+      formData.append('date', selectedDate); // Add the date to the form data
+      
+      // Rest of your upload code...
+      // When redirecting to success page, include the date:
+      window.location.href = `upload-success.html?date=${encodeURIComponent(selectedDate)}`;
+    });
+  }
   });
 });
 </script>
