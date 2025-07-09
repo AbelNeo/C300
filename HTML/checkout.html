@@ -20,6 +20,7 @@
   <script type="module" src="js/followings.js"></script>
     <script type="module" src="js/main.js"></script>
   <script type="module" src="components/navbar-component.js"></script>
+  <script type="module" src="components/footer-component.js"></script>
 </head>
   <style>
     body {
@@ -227,21 +228,33 @@
     <p><strong>Match:</strong> <span id="match"></span></p>
     <p><strong>Date:</strong> <span id="date"></span></p>
     <p><strong>Tickets:</strong> <span id="quantity"></span></p>
+    <p><strong>Seat Block:</strong> <span id="seat_block"></span></p>
     </div>
   </div>
 
 
 <script>
+    const hasBooking = params.get('name') && params.get('team_home');
+    if (hasBooking) {
+      document.getElementById('purchases-container').style.display = 'block';
+      document.getElementById('checkoutContainer').style.display = 'none';
+    } else {
+      document.getElementById('purchases-container').style.display = 'none';
+      document.getElementById('checkoutContainer').style.display = 'block';
+    }
+
     const params = new URLSearchParams(window.location.search);
     document.getElementById('name').textContent = params.get('name');
     document.getElementById('email').textContent = params.get('email');
     document.getElementById('match').textContent = `${params.get('team_home')} vs ${params.get('team_away')}`;
     document.getElementById('date').textContent = params.get('date');
     document.getElementById('quantity').textContent = params.get('quantity');
+    document.getElementById('seat_block').textContent = params.get('seat_block');
 </script>
 
 
 
 
 </body>
+<footer-component></footer-component>
 </html>

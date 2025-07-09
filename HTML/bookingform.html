@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/styles.css">
   <script type="module" src="components\navbar-component.js" ></script>
   <script type="module" src="js/booking.js" ></script>
+  <script type="module" src="components/footer-component.js"></script>
 </head>
 <script type="importmap">
 {
@@ -33,38 +34,41 @@
       
         
 
-<!-- Match Selection -->
-<form class="signup-form" id="signupForm">
-  <label for="name">Name</label>
-  <input type="text" id="name" name="name" readonly required>
+      <!-- Match Selection -->
+      <form class="signup-form" id="signupForm">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" readonly required>
 
-  <label for="email">Email</label>
-  <input type="email" id="email" name="email" readonly required>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" readonly required>
 
-  <label for="Team_home">Team Home</label>
-  <input type="text" id="Team_home" name="Team_home" value="Arsenal" readonly required>
+        <label for="Team_home">Team Home</label>
+        <input type="text" id="Team_home" name="Team_home" readonly required>
 
-  <label for="Team_away">Team Away</label>
-  <input type="text" id="Team_away" name="Team_away" readonly required>
+        <label for="Team_away">Team Away</label>
+        <input type="text" id="Team_away" name="Team_away" readonly required>
 
-  <label for="quantity">Quantity</label>
-  <input type="number" id="quantity" name="quantity" placeholder="Enter number of tickets" required min="1" max="10000">
-  <div id="quantity-warning" style="color: red; display: none;"></div>
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" name="quantity" placeholder="Enter number of tickets" required min="1" max="10000">
+        <div id="quantity-warning" style="color: red; display: none;"></div>
 
-  <label for="Date">Match Date</label>
-  <input type="date" id="Date" name="Date" readonly required>
+        <label for="Date">Match Date</label>
+        <input type="date" id="Date" name="Date" readonly required>
 
-  <label for="seat_block">Seat Block</label>
-  <input type="text" id="seat_block" name="seat_block" readonly required>
+        <label for="seat_block">Seat Block</label>
+        <input type="text" id="seat_block" name="seat_block" readonly required>
 
-  <div id="error-message" class="error-message" style="color: red; display: none;"></div>
-</form>
+        <div id="error-message" class="error-message" style="color: red; display: none;"></div>
+      </form>
 
-<li class="auth-buttons" style="list-style: none; margin-top: 20px">
-    <a href="checkout.html" class="btn-login" style="text-decoration: none;">Confirm Booking</a>
+  <li class="auth-buttons" style="list-style: none; margin-top: 20px">
+      <a href="checkout.html" class="btn-login" style="text-decoration: none;">Confirm Booking</a>
 
-</li>
+  </li>
 
+  </ul>
+    </main>
 
-
+<footer-component></footer-component>
+</body>
 <!--on the booking form page there should be a field that display which section and specific seats user booked-->

@@ -1,7 +1,11 @@
 import { FullCalendar } from 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'
 import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, getDocs, collection, query, where, runTransaction, setDoc, updateDoc, addDoc, serverTimestamp } from 'firebase/firestore';
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { db, auth } from './firebase.js';
+
+import { 
+  doc, getDocs, orderBy,limit, collection, query, where, runTransaction, setDoc, updateDoc, addDoc, serverTimestamp,
+  getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification, onSnapshot, deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
 const firebaseConfig = {
@@ -13,23 +17,17 @@ const firebaseConfig = {
   appId: "1:388394869174:web:ec8f93ab8fb685e9846117"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-// Export your custom functions
-export {   db, auth,
-// Firestore functions
-getDocs, doc, getDoc, collection, query, where, runTransaction, setDoc, updateDoc, addDoc, serverTimestamp,
-// Auth functions
-onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification
-};
-
+//DOM elements, excludes calendar elements
 const matchSelect = document.getElementById('matchSelect');
 const seatSelect = document.getElementById('seatSelect');
 const bookButton = document.getElementById('bookButton');
 const messageArea = document.getElementById('messageArea');
+const seatBlock = document.getElementById('seat_block');
 
-//script for seat block selection in match details.html
+
+
+
+//script for seat block selection in match details.html (*dont remove*)
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const seatBlock = params.get('seat_block');
@@ -39,76 +37,31 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-//calendar code
-document.addEventListener('DOMContentLoaded', function () {
-  const db = firebase.firestore();
-  const calendarEl = document.getElementById('calendar');
+//calendar code was removed from here
 
-  const calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
-    events: async function(fetchInfo, successCallback, failureCallback) {
-      try {
-        const matchesSnapshot = await db.collection('matches').get();
-        const events = matchesSnapshot.docs.map(doc => {
-          const match = doc.data();
-          return {
-            id: doc.id,
-            title: `${match.team_home} vs ${match.team_away}`,
-            start: match.match_date.toDate(),
-            extendedProps: {
-              team_home: match.team_home,
-              team_away: match.team_away
-            }
-        };
-      });
-      successCallback(events);
-    } catch (error) {
-      console.error('Error loading matches:', error);
-      failureCallback(error);
-    }
-  },
-  eventClick: function(info) {
-      const match = info.event.extendedProps;
-      const match_id = info.event.id;
-      const urlParams = new URLSearchParams({
-        match_id: match_id,
-        date: info.event.start.toISOString(),
-        team_home: match.team_home,
-        team_away: match.team_away
-      });
-      window.location.href = `bookingform.html?${urlParams.toString()}`;
-    },
-    dateClick: async function(info) {
-      const selectedDate = info.dateStr;
 
-    // Fetch events again from Firestore for this specific date
-    //  const snapshot = await getDocs(collection(db,'matches'));
-    //  const eventsOnDate = snapshot.docs.filter(doc => {
-    //    const match = doc.data();
-    //    const matchDate = match.match_date.toDate().toISOString().split('T')[0];
-    //    return matchDate === selectedDate;
-    //  });
-  
-      if (eventsOnDate.length > 0) {
-        let popupContent = '';
-        eventsOnDate.forEach(doc => {
-          const match = doc.data();
-          popupContent += `${match.team_home} vs ${match.team_away}\n`;
-        });
-        alert(`Matches on ${selectedDate}:\n${popupContent}`);
-      } else {
-        alert(`No matches on ${selectedDate}`);
-      }
-    }
-  });
-  calendar.render();
-});
+
+
+
 
   // Ticket quantity during booking
-  if (quantity > 10000) {
+  if (quantity > 50) {
     showError("Ticket quantity exceeds maximum allowed.");
     return;
   }
+
+
+async function getMatchData(match_id) {
+  try {
+    const docRef = doc(db, 'Matches', match_id);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() : null;
+  } catch (error) {
+    console.error("Error getting match information:", error);
+    return null;
+  }
+}
+
 
   // Load matches
   async function loadMatches() {
@@ -226,3 +179,69 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
   });
+
+
+/*calendar code (*dont remove*)
+document.addEventListener('DOMContentLoaded', function () {
+  const db = firebase.firestore();
+  const calendarEl = document.getElementById('calendar');
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    events: async function(fetchInfo, successCallback, failureCallback) {
+      try {
+        const matchesSnapshot = await db.collection('matches').get();
+        const events = matchesSnapshot.docs.map(doc => {
+          const match = doc.data();
+          return {
+            id: doc.id,
+            title: `${match.team_home} vs ${match.team_away}`,
+            start: match.match_date.toDate(),
+            extendedProps: {
+              team_home: match.team_home,
+              team_away: match.team_away
+            }
+        };
+      });
+      successCallback(events);
+    } catch (error) {
+      console.error('Error loading matches:', error);
+      failureCallback(error);
+    }
+  },
+  eventClick: function(info) {
+      const match = info.event.extendedProps;
+      const match_id = info.event.id;
+      const urlParams = new URLSearchParams({
+        match_id: match_id,
+        date: info.event.start.toISOString(),
+        team_home: match.team_home,
+        team_away: match.team_away
+      });
+      window.location.href = `bookingform.html?${urlParams.toString()}`;
+    },
+    dateClick: async function(info) {
+      const selectedDate = info.dateStr;
+
+    // Fetch events again from Firestore for this specific date
+    //  const snapshot = await getDocs(collection(db,'matches'));
+    //  const eventsOnDate = snapshot.docs.filter(doc => {
+    //    const match = doc.data();
+    //    const matchDate = match.match_date.toDate().toISOString().split('T')[0];
+    //    return matchDate === selectedDate;
+    //  });
+  
+      if (eventsOnDate.length > 0) {
+        let popupContent = '';
+        eventsOnDate.forEach(doc => {
+          const match = doc.data();
+          popupContent += `${match.team_home} vs ${match.team_away}\n`;
+        });
+        alert(`Matches on ${selectedDate}:\n${popupContent}`);
+      } else {
+        alert(`No matches on ${selectedDate}`);
+      }
+    }
+  });
+  calendar.render();
+}); */

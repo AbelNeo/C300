@@ -139,12 +139,19 @@ async function loadAccountView() {
   if (!accountNameElement || !accountTypeElement || !imageContainer) return;
 
   if (account.type === 'authenticated') {
-    // Fetch user document from Firestore in "Accounts"
     const userDoc = await getDoc(doc(db, "Accounts", account.uid));
     const userData = userDoc.data();
 
+    // Show admin or premium
+    if (userData && userData.isAdmin === true) {
+      accountTypeElement.textContent = 'Administrator';
+      accountTypeElement.style.color = '#800000';
+    } else {
+      accountTypeElement.textContent = 'Premium Member';
+      accountTypeElement.style.color = '#800000';
+    }
+
     accountNameElement.textContent = `Welcome, ${account.displayName}`;
-    accountTypeElement.textContent = 'Your premium content';
 
     // Clear existing images
     imageContainer.innerHTML = '';
@@ -170,6 +177,7 @@ if (userData.favoritePlayers?.length) {
       }
       const segment = document.createElement('div');
       segment.className = 'image-segment';
+      segment.dataset.playerId = playerId;
       segment.style.backgroundImage = `url(${photoUrl})`;
       segment.style.backgroundSize = 'cover';
       segment.style.backgroundPosition = 'center';
@@ -274,3 +282,42 @@ function detectAccount() {
 
 // Also load account view on page load
 document.addEventListener('DOMContentLoaded', loadAccountView);
+// Add this to the END of main.js
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('account-image-container');
+  if (!container) return;
+
+  container.addEventListener('click', async (e) => {
+    const segment = e.target.closest('.image-segment');
+    if (!segment) return;
+
+    // Use currentUser (safe since DOMContentLoaded and after Firebase init)
+    const user = auth.currentUser;
+    if (!user) {
+      window.location.href = 'sign-up.html';
+      return;
+    }
+
+    // Get user doc for favorites
+    const userDoc = await getDoc(doc(db, "Accounts", user.uid));
+    const userData = userDoc.exists() ? userDoc.data() : null;
+    const favorites = userData?.favoritePlayers || [];
+
+    if (!favorites.length) {
+      window.location.href = 'profile.html';
+      return;
+    }
+
+    // Get first favorite's playerPage
+    const playerId = favorites[0];
+    const playerDoc = await getDoc(doc(db, "Players", playerId));
+    const playerData = playerDoc.exists() ? playerDoc.data() : null;
+
+    if (playerData && playerData.playerPage) {
+          window.location.href = `player.html?id=${doc.id}`
+    } else {
+      alert('Player page not found.');
+    }
+  });
+});
+

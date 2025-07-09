@@ -10,6 +10,7 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script type="module" src="components/footer-component.js"></script>
 </head>
 <script type="importmap">
 {
@@ -31,8 +32,43 @@
 
 <div style="margin-top: 20px;"></div>
 <main class="container">
-  <h1>Matches on <span id="matchDate"></span></h1>
+  <h1>Match on <span id="matchDate"></span></h1>
   <div id="matchesList"></div>
+
+<!-- Teams Section -->
+        <section class="teams-grid" style="margin-bottom:1.5em;">
+            <h2 style="color:#800000; margin-bottom:16px;">Teams</h2>
+            <div style="display:flex; gap:32px; flex-wrap:wrap;">
+                <div class="player-card" style="width:160px;">
+                    <img src="images/arsenal-logo.jpeg" alt="Arsenal" class="player-portrait" style="height: 80px;">
+                    <div class="player-info">
+                        <p class="team_home">Team Home: Arsenal</p>
+                    </div>
+                </div>
+                <div class="player-card" style="width:160px;">
+                    <img src="images/ACMilan-logo.jpeg" alt="AC Milan" class="player-portrait" style="height: 80px;">
+                    <div class="player-info">
+                        <p class="team_away">Team Away: AC Milan</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Match details section -->
+        <section class="match-container" style="background:#fff; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:24px; max-width:650px; margin:0 left;">
+            <p class="title" style="color:#800000; font-weight: 600;">Match Date and Venue</p>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:18px; margin-top:18px;">
+                <div>
+                    <p style="font-size:1.4em; color:#800000; font-weight:600;">23 July 2025, 19:30:00 PM Singapore Time</p>
+                    <p>Match Date</p>
+                </div>
+                <div>
+                    <p style="font-size:1.2em; color:#800000;">National Stadium, Singapore</p>
+                    <p>Venue</p>
+                </div>
+            </div>
+        </section>
+    </main>
 
 <script type="module">
   import { db, initializeApp } from './js/firebase.js';
@@ -94,7 +130,7 @@ try {
 </script>
 
 <body>
-  <div style="margin-top: 200px;"></div>
+  <div style="margin-top: 0px;"></div>
   <h3>Seating Plan of Emirates home stadium</h3>
   
   <img src="https://timaps.s3-eu-west-1.amazonaws.com/emirates2.png" 
@@ -365,6 +401,7 @@ try {
   </div>
 </div>
 </body>
+<footer-component></footer-component>
 
 
 
