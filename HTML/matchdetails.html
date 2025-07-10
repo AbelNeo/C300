@@ -39,16 +39,16 @@
         <section class="teams-grid" style="margin-bottom:1.5em;">
             <h2 style="color:#800000; margin-bottom:16px;">Teams</h2>
             <div style="display:flex; gap:32px; flex-wrap:wrap;">
-                <div class="player-card" style="width:160px;">
-                    <img src="images/arsenal-logo.jpeg" alt="Arsenal" class="player-portrait" style="height: 80px;">
+                <div class="team-card" style="width:160px;">
+                    <img id="teamHomeCrest" src="images/arsenal-logo.jpeg" alt="Arsenal" class="player-portrait" style="height: 80px;">
                     <div class="player-info">
-                        <p class="team_home">Team Home: Arsenal</p>
+                        <p id="teamHomeName" class="team_home">Team Home: Arsenal</p>
                     </div>
                 </div>
-                <div class="player-card" style="width:160px;">
-                    <img src="images/ACMilan-logo.jpeg" alt="AC Milan" class="player-portrait" style="height: 80px;">
+                <div class="team-card" style="width:160px;">
+                    <img id="teamAwayCrest" src="images/ACMilan-logo.jpeg" alt="AC Milan" class="player-portrait" style="height: 80px;">
                     <div class="player-info">
-                        <p class="team_away">Team Away: AC Milan</p>
+                        <p id="teamAwayName" class="team_away">Team Away: AC Milan</p>
                     </div>
                 </div>
             </div>
@@ -59,11 +59,11 @@
             <p class="title" style="color:#800000; font-weight: 600;">Match Date and Venue</p>
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:18px; margin-top:18px;">
                 <div>
-                    <p style="font-size:1.4em; color:#800000; font-weight:600;">23 July 2025, 19:30:00 PM Singapore Time</p>
+                    <p id="matchDateTime" style="font-size:1.4em; color:#800000; font-weight:600;">23 July 2025, 19:30:00 PM Singapore Time</p>
                     <p>Match Date</p>
                 </div>
                 <div>
-                    <p style="font-size:1.2em; color:#800000;">National Stadium, Singapore</p>
+                    <p id="matchVenue" style="font-size:1.2em; color:#800000;">National Stadium, Singapore</p>
                     <p>Venue</p>
                 </div>
             </div>
@@ -71,7 +71,7 @@
     </main>
 
 <script type="module">
-  import { db, initializeApp } from './js/firebase.js';
+  import { db, initializeApp } from 'firebase/app';
   import { collection, getDocs, getFirestore } from "firebase/firestore";
 
 document.addEventListener('DOMContentLoaded', async () => {
