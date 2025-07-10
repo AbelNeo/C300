@@ -91,11 +91,11 @@ document.addEventListener('DOMContentLoaded', async function() {
           } else {
             // Optionally skip this event if no date
             return null;
-    }
+          }
           return {
             id: doc.id,
             title: `${match.team_home} vs ${match.team_away}`,
-            start: match.match_date.toDate ? match.match_date.toDate() : new Date(match.match_date),
+            start: startDate,
             extendedProps: {
               team_home: match.team_home,
               team_away: match.team_away
@@ -108,6 +108,22 @@ document.addEventListener('DOMContentLoaded', async function() {
         failureCallback(error);
       }
     },
+    eventContent: function(arg) {
+      let crestUrl = '';
+      const crestMap = {
+        'AC Milan': 'images/ACMilan-logo.jpeg',
+        'Manchester City': 'images/ManchesterCity-logo.jpeg',
+        'Newcastle United': 'images/NewcastleUnited-logo.jpeg',
+        'Nottingham Forest': 'images/nottinghamforest-logo.jpeg',
+    };
+    if (crestMap[arg.event.extendedProps.team_away]) {
+      crestUrl = crestMap[arg.event.extendedProps.team_away];
+    }
+    if (crestUrl) {
+      return { html: `<img src='${crestUrl}' alt='' style='height:50px;width:50px;display:block;margin:auto;'>` };
+      }
+      return { html: `<span>${arg.event.extendedProps.team_home} vs ${arg.event.extendedProps.team_away}</span>` };
+  },
     dateClick: function(info) {
       document.querySelectorAll('.selected-date').forEach(el => {
         el.classList.remove('selected-date');
