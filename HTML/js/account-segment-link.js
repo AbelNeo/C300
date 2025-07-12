@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        window.location.href = 'sign-up.html';
+        window.location.href = 'register.html';
         return;
       }
       // Always navigate to the clicked player's page

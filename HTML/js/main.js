@@ -52,8 +52,8 @@ const NavbarAuth = {
       // User is logged out
       if (authButtons) {
         authButtons.innerHTML = `
-          <a href="sign-in.html" class="btn-login">Login</a>
-          <a href="sign-up.html" class="btn-login">Join</a>
+          <a href="login.html" class="btn-login">Login</a>
+          <a href="register.html" class="btn-login">Register</a>
         `;
       }
     }
@@ -89,7 +89,7 @@ const NavbarAuth = {
 
 // Authentication Handlers
 function setupAuthHandlers() {
-  // Google Sign-In
+  // Google login
   document.querySelector('.google-btn')?.addEventListener('click', async () => {
     const provider = new GoogleAuthProvider();
     try {
@@ -100,7 +100,7 @@ function setupAuthHandlers() {
     }
   });
 
-  // Apple Sign-In
+  // Apple login
   document.querySelector('.apple-btn')?.addEventListener('click', async () => {
     const provider = new OAuthProvider('apple.com');
     try {
@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Use currentUser (safe since DOMContentLoaded and after Firebase init)
     const user = auth.currentUser;
     if (!user) {
-      window.location.href = 'sign-up.html';
+      window.location.href = 'register.html';
       return;
     }
 

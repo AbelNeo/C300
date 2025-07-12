@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FootMaster Pro - Sign Up</title>
+    <title>FootMaster Pro - Login</title>
     <link rel="stylesheet" href="css/styles.css">
     
     <script type="importmap">
@@ -21,21 +21,21 @@
         <navbar-component></navbar-component>
     </header>
 
-
     <div class="signup-container">
         <div class="signup-header">
-            <img srcset="https://pngdownload.io/wp-content/uploads/2024/02/Euro-2024-ball-football-ballon-transparent-PNG-image-jpg.webp" alt="Logo" class="signup-logo">
-            <h1>Welcome Back</h1>
-            <p>Use one of the following applications to sign into your FootMaster Pro</p>
+            <img srcset="https://pngdownload.io/wp-content/uploads/2024/02/Euro-2024-ball-football-ballon-transparent-PNG-image-jpg.webp" 
+                 alt="Logo" class="signup-logo">
+            <h1>I'm new here</h1>
+            <p>Use one of the following applications to sign up on FootMaster Pro</p>
         </div>
 
         <div class="social-signup">
-            <button class="social-btn google-btn" id="googleSignup">
+            <button class="social-btn google-btn" id="googleLogin">
                 <img src="https://image-service.onefootball.com/transform?w=64&dpr=2&image=https://images.onefootball.com/cw/icons/google-v3-dark.svg" 
                      alt="Google">
                 Continue with Google
             </button>
-            <button class="social-btn apple-btn" id="appleSignup">
+            <button class="social-btn apple-btn" id="appleLogin">
                 <img src="https://image-service.onefootball.com/transform?w=64&dpr=2&image=https://images.onefootball.com/cw/icons/apple-v2-dark.svg" 
                      alt="Apple">
                 Continue with Apple
@@ -46,15 +46,23 @@
             <span>or</span>
         </div>
 
-        <form id="loginForm" class="auth-form">
-            <input type="email" id="email" name="email" placeholder="Email" required>
-            <input type="password" id="password" name="password" placeholder="Password" required>
-            <button type="submit" id="togglePassword" class="auth-button">Sign In</button>
+        <!-- <form id="loginForm">
+  <input type="email" id="loginEmail" name="email" placeholder="Email" required>
+  <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+  <button type="submit" id="loginButton">Sign In</button>
+  <div id="login-error-message" style="display: none;"></div>
+</form> -->
+
+
+        <form class="signup-form" id="loginForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <div id="error-message" class="error-message"></div>
+            <button type="submit" class="signup-btn" id="loginButton">Log In</button>
         </form>
 
-
         <div class="login-redirect">
-            <p>Are you new here? <a href="/HTML/sign-up.html">Create an account</a></p>
+            <p>Already have an account? <a href="/HTML/login.html">Sign in</a></p>
         </div>
 
         <div class="signup-benefits">
@@ -82,11 +90,10 @@
             </div>
         </div>
     </div>
-        <script type="module" src="js/auth.js"></script>
 
     <!-- Firebase and Auth Scripts -->
     <script type="module" src="js/firebase.js"></script>
-    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/login.js"></script>
     <script type="module" src="components/navbar-component.js"></script>
     <script type="module" src="components/footer-component.js"></script>
 </body>
