@@ -39,21 +39,23 @@ const NavbarAuth = {
           <a href="profile.html" class="btn-login">
             ${user.displayName || 'Profile'}
           </a>
-          <a href="index.html" id="logout-btn" class="btn-login">Logout</a>
+          <a href="index.html" id="logout-btn" class="btn-logout">Logout</a>
         `;
         document.getElementById('logout-btn')?.addEventListener('click', (e) => {
           e.preventDefault();
           signOut(auth).then(() => {
-            window.location.reload(); // Ensures clean state
-          });
-        });
+                  setTimeout(() => {
+                    window.location.href = 'index.html';
+                  }, 3000);
+            });
+         });
       }
     } else {
       // User is logged out
       if (authButtons) {
         authButtons.innerHTML = `
           <a href="login.html" class="btn-login">Login</a>
-          <a href="register.html" class="btn-login">Register</a>
+          <a href="register.html" class="btn-register">Register</a>
         `;
       }
     }

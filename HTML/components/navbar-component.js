@@ -16,11 +16,25 @@ class NavbarComponent extends HTMLElement {
         }
     }
 
-    async loadNavbar() {
-        const response = await fetch('components/navbar.html');
-        if (!response.ok) throw new Error('Failed to load navbar');
-        this.innerHTML = await response.text();
+async loadNavbar() {
+    const response = await fetch('components/navbar.html');
+    if (!response.ok) throw new Error('Failed to load navbar');
+    this.innerHTML = await response.text();
+    this.adjustBodyPadding(); // Push content down after navbar is rendered
+}
+
+adjustBodyPadding() {
+    const navbar = this.querySelector('.navbar');
+    if (navbar) {
+        const updatePadding = () => {
+            document.body.style.paddingTop = navbar.offsetHeight + 'px';
+        };
+
+        updatePadding();
+        window.addEventListener('resize', updatePadding);
     }
+}
+
 
     setupEventListeners() {
         this.addEventListener('click', (e) => {

@@ -13,7 +13,7 @@
 
 body {
     background-color: #f5f5f5;
-    padding-top: 108px; /* Offset for fixed navbar */
+    padding-top: 110px; /* Offset for fixed navbar */
 }
 
 .container {
@@ -78,12 +78,35 @@ body {
     border-radius: 5px;
     font-weight: 600 !important;
 }
+.btn-register {
+    background-color: #ffcc00;
+    color: #800000 !important;
+    padding: 8px 20px !important;
+    border-radius: 5px;
+    font-weight: 600 !important;
+}
+.btn-logout {
+    background-color: #ffcc00;
+    color: #800000 !important;
+    padding: 8px 20px !important;
+    border-radius: 5px;
+    font-weight: 600 !important;
+}
 .header_navIconDivider{
     margin: 0 1rem;
 }
 
 .btn-login:hover {
     background-color: #e6b800;
+}
+ .auth-buttons {
+    justify-content: space-between;
+    gap: 10px;
+
+} 
+
+.auth-button:hover {
+    background-color: #600000;
 }
 
 /* ===== MAIN CONTENT ===== */
@@ -563,22 +586,7 @@ background-color: #600000;
     font-size: 16px;
 }
 
-.auth-button {
-    width: 100%;
-    padding: 12px;
-    background-color: #800000;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
 
-.auth-button:hover {
-    background-color: #600000;
-}
 
 
 .signup-btn {
@@ -1663,4 +1671,42 @@ h1 {
 .back-button:hover {
   color: #2980b9;
   text-decoration: underline;
+}
+
+
+/* Profile Segment Styles */
+.profileHeader {
+  max-width: calc(var(--root-max-width) + 0px);
+  margin-left: 20px;
+  margin-right: auto;
+  min-height: 6.875em;
+  padding: 2em 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  grid-template-areas:
+    "icon title"
+    "icon subtitle";
+  column-gap: .75em;
+  align-items: center;
+}
+
+.profileHeader_icon {
+  grid-area: icon;
+}
+
+.profileHeader_text {
+  display: flex;
+  flex-direction: column;
+}
+
+.profileHeader_title {
+  grid-area: title;
+  font-size: 1.5em;
+}
+
+.profileHeader_subtitle {
+  grid-area: subtitle;
+  font-weight: bold;
+  color: #000;
+  font-size: 2em;
 }
