@@ -57,6 +57,8 @@ body {
     display: flex;
     list-style: none;
     gap: 25px;
+    align-items: center;
+    /* margin-left: auto; Pushes nav-links to the right */
 }
 
 .nav-links a {
@@ -99,11 +101,12 @@ body {
 .btn-login:hover {
     background-color: #e6b800;
 }
- .auth-buttons {
-    justify-content: space-between;
+.auth-buttons {
+    display: flex;
+    align-items: center;
     gap: 10px;
-
-} 
+    margin-left: 20px; /* spacing from nav-links */
+}
 
 .auth-button:hover {
     background-color: #600000;
