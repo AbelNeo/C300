@@ -69,13 +69,23 @@ if (signupForm) {
   });
 }
 
-// Google login
+// Google Sign-In
 if (googleBtn) {
   googleBtn.addEventListener('click', async () => {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+
+      if (auth && user) {
+        // Email is already in use
+        showError('An account already exists with this email. Please log in instead next time.');
+      showSuccess('Welcome back to FootMaster Pro!');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1000);
+        return; // Proceed without creating a new account
+      }
 
       // Create Firestore user document if new user
       await setDoc(doc(db, "Accounts", user.uid), {
@@ -98,13 +108,23 @@ if (googleBtn) {
   });
 }
 
-// Apple login
+// Apple Sign-In
 if (appleBtn) {
   appleBtn.addEventListener('click', async () => {
     try {
       const provider = new OAuthProvider('apple.com');
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+
+      if (auth && user) {
+        // Email is already in use
+        showError('An account already exists with this email. Please log in instead next time.');
+      showSuccess('Welcome back to FootMaster Pro!');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1000);
+        return; // Proceed without creating a new account
+      }
 
       // Create Firestore user document if new user
       await setDoc(doc(db, "Accounts", user.uid), {

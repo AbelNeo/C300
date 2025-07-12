@@ -53,7 +53,7 @@ const NavbarAuth = {
       if (authButtons) {
         authButtons.innerHTML = `
           <a href="login.html" class="btn-login">Login</a>
-          <a href="register.html" class="btn-login">Join</a>
+          <a href="register.html" class="btn-login">Register</a>
         `;
       }
     }

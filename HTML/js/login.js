@@ -86,12 +86,8 @@ if (appleBtn) {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Create Firestore user document if new user
+      // Update last login timestamp in Firestore
       await setDoc(doc(db, "Accounts", user.uid), {
-        email: user.email,
-        createdAt: serverTimestamp(),
-        favoritePlayers: [],
-        tier: "Bronze",
         lastLogin: serverTimestamp(),
         emailVerified: user.emailVerified || false
       }, { merge: true });
