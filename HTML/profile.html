@@ -17,6 +17,7 @@
 </script>
 <script type="module" src="js\firebase.js"></script>
 <script type="module" src="js\players.js"></script>
+<script type="module" src="js\profile.js"></script>
 <script type="module" src="js\main.js"></script>
 <script type="module" src="components\navbar-component.js" ></script>
 <script type="module" src="components/footer-component.js"></script>
@@ -44,6 +45,48 @@
   </div>
 </header>
 
+
+
+<nav class="profileNavigation">
+  <ul class="pageTabs">
+    <li class="pageTabs_Item">
+      <button class="pageTabs_link dropdown-toggle-store">Store</button>
+    </li>
+
+    <li class="pageTabs_Item">
+      <button class="pageTabs_link dropdown-toggle-settings">Settings</button>
+    </li>
+  </ul>
+  <!-- Add more tabs here -->
+
+
+  <div class="dropdown-panel" id="storePanel"> 
+    <div class="panel-header">
+      <h4>Store Panel</h4>
+      <!-- <button class="close-panel store">&times;</button> -->
+    </div>
+    <div class="panel-content">
+      <a href="itemcreator.html" class="panel-item"><i class="icon-create"></i><span>Item Creator</span></a>
+      <a href="edit-item.html" class="panel-item"><i class="icon-edit"></i><span>Edit Item</span></a>
+      <a href="manage-items.html" class="panel-item"><i class="icon-manage"></i><span>Manage Items</span></a>
+    </div>
+  </div>
+
+
+  <div class="dropdown-panel" id="settingsPanel">
+    <div class="panel-header">
+      <h4>Settings Panel</h4>
+      <!-- <button class="close-panel settings">&times;</button> -->
+    </div>
+    <div class="panel-content">
+      <a href="#" class="panel-item"><i class="icon-password"></i><span>Change Password</span></a>
+      <a href="edit-item.html" class="panel-item"><i class="icon-edit"></i><span>Edit Item</span></a>
+      <a href="manage-items.html" class="panel-item"><i class="icon-manage"></i><span>Manage Items</span></a>
+    </div>
+  </div>
+
+  <!-- Add dropdown here -->
+</nav>
 
 <article class="players-section">
     <p class="section-title">
@@ -78,6 +121,3 @@
  </body>
 <footer-component></footer-component>
 </html>
-
-<!-- 
-        <header class="profileHeader"><img alt="" decoding="async" loading="lazy" width="48" height="48" data-nimg="1" class="ProfileHeader_iconContainer__1g9e7" style="color:transparent" srcset="https://image-service.onefootball.com/transform?w=48&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/profile-dark.svg 1x, https://image-service.onefootball.com/transform?w=96&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/profile-dark.svg 2x" src="https://image-service.onefootball.com/transform?w=96&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/profile-dark.svg"><p class="ProfileHeader_title__dfOjN ProfileHeaderAuthenticated_welcome__Hqda4">Welcome</p><p class="ProfileHeader_subtitle__xYeKU ProfileHeaderAuthenticated_yourProfile__Hby_x">Your Profile</p></header> -->
