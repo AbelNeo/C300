@@ -1097,13 +1097,12 @@ footer {
 /* Following Player Section */
 .players-section {
         display: flex;
-    /* flex-direction: column;
-    margin-top: 1.5em; */
+    flex-direction: column;
+    /* margin-top: 1.5em; */
 }
 
 /* Players list */
 .players-list {
-    /* Your existing .MyInterestEntitiesGallery_entitiesGalleryList__nbuCF styles */
     list-style: none;
     padding: 0;
     display: flex;
@@ -1112,29 +1111,24 @@ footer {
 
 
 .player-link {
-    /* Your existing .MyInterestEntityLink_myInterestEntityLink__4Uil7 styles */
     text-decoration: none;
     color: inherit;
 }
 
 /* Player content */
 .player-content {
-    /* Your existing .MyInterestEntity_myInterestEntity__19hAv styles */
     text-align: center;
 }
 
 .player-img {
-    /* Your existing .MyInterestEntity_myInterestEntityLogoImage__M4AXI styles */
     border-radius: 50%;
 }
 
 .player-name {
-    /* Your existing .MyInterestEntity_myInterestEntityTitle__g4PS4 styles */
     margin: 0.5rem 0 0;
 }
 
 .player-action {
-    /* Your existing .MyInterestEntity_myInterestEntitySubtitle__aRmzq styles */
     color: #666;
     font-size: 0.9rem;
     margin: 0.25rem 0 0;
@@ -1435,6 +1429,39 @@ h1 {
   transform: translateY(-2px);
   transition: all 0.2s ease;
 }
+
+/* Player upload Grid Container */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
+.grid-item {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.grid-item img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.grid-item h3 {
+  margin: 10px 0 5px;
+  font-size: 1.1rem;
+}
+
+.grid-item p {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+}
+
 
 /* Search Components */
 .player-search {

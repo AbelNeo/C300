@@ -41,7 +41,7 @@ import { initializeApp } from "firebase/app";
     const db = getDatabase(app);
     const itemsRef = ref(db, 'items');
 
-    const form = document.getElementById('itemForm');
+    const form = document.getElementById('postPlayerForm');
     const table = document.getElementById('itemsTable');
     const tbody = table.querySelector('tbody');
 
