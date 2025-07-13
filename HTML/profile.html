@@ -20,11 +20,30 @@
 <script type="module" src="js\main.js"></script>
 <script type="module" src="components\navbar-component.js" ></script>
 <script type="module" src="components/footer-component.js"></script>
+<navbar-component></navbar-component>
 </head>
 <body>
-    <header>
-        <navbar-component></navbar-component>
-    </header>
+
+<header class="profileHeader">
+  <img
+    alt=""
+    decoding="async"
+    loading="lazy"
+    width="60"
+    height="60"
+    class="profileHeader_icon"
+    style="color: transparent"
+    srcset="https://image-service.onefootball.com/transform?w=48&dpr=2&image=https://images.onefootball.com/cw/icons/profile-dark.svg 1x, 
+            https://image-service.onefootball.com/transform?w=96&dpr=2&image=https://images.onefootball.com/cw/icons/profile-dark.svg 2x"
+    src="https://image-service.onefootball.com/transform?w=96&dpr=2&image=https://images.onefootball.com/cw/icons/profile-dark.svg"
+  />
+
+  <div class="profileHeader_text">
+    <p class="profileHeader_title">Welcome</p>
+    <p class="profileHeader_subtitle">Your Profile</p>
+  </div>
+</header>
+
 
 <article class="players-section">
     <p class="section-title">
@@ -59,3 +78,6 @@
  </body>
 <footer-component></footer-component>
 </html>
+
+<!-- 
+        <header class="profileHeader"><img alt="" decoding="async" loading="lazy" width="48" height="48" data-nimg="1" class="ProfileHeader_iconContainer__1g9e7" style="color:transparent" srcset="https://image-service.onefootball.com/transform?w=48&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/profile-dark.svg 1x, https://image-service.onefootball.com/transform?w=96&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/profile-dark.svg 2x" src="https://image-service.onefootball.com/transform?w=96&amp;dpr=2&amp;image=https://images.onefootball.com/cw/icons/profile-dark.svg"><p class="ProfileHeader_title__dfOjN ProfileHeaderAuthenticated_welcome__Hqda4">Welcome</p><p class="ProfileHeader_subtitle__xYeKU ProfileHeaderAuthenticated_yourProfile__Hby_x">Your Profile</p></header> -->
