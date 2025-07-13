@@ -1,4 +1,4 @@
-import { FullCalendar } from 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'
+
 import { initializeApp } from 'firebase/app';
 import { db, auth } from './firebase.js';
 
