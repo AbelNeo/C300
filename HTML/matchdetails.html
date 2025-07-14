@@ -12,6 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <script type="module" src="components/footer-component.js"></script>
 </head>
+
 <script type="importmap">
 {
   "imports": {
@@ -55,12 +56,12 @@
         </section>
 
         <!-- Match details section -->
-        <section class="match-container" style="background:#fff; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:24px; max-width:650px; margin:0 left;">
+        <section class="match-container" style="background:#fff; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:24px; max-width:650px;">
             <p class="title" style="color:#800000; font-weight: 600;">Match Date and Venue</p>
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:18px; margin-top:18px;">
                 <div>
                     <p id="matchDateTime" style="font-size:1.4em; color:#800000; font-weight:600;"></p>
-                    <p>Match Date</p>
+                    <p>Match Date and Time</p>
                 </div>
                 <div>
                     <p id="matchVenue" style="font-size:1.2em; color:#800000;"></p>
@@ -68,7 +69,7 @@
                 </div>
             </div>
         </section>
-    </main>
+    
 
 <script type="module">
   import { initializeApp } from "firebase/app";
@@ -127,15 +128,15 @@ try {
       document.getElementById('matchVenue').textContent = match.venue || 'Emirates Stadium';
 
 
-      const div = document.createElement('div');
+      /*const div = document.createElement('div');
       div.innerHTML = `
         <h3>${match.team_home} vs ${match.team_away}</h3>
         <p>Time: ${new Date(match.match_date.toDate()).toLocaleTimeString()}</p>
         <p>Venue: ${match.venue || 'Emirates Stadium'}</p>
         <a href="bookingform.html?match_id=${doc.id}" class="btn">Book seats</a>
       `;
-      matchListDiv.appendChild(div);
-    }
+      matchListDiv.appendChild(div); */
+    } 
   });
   if (!matchesFound) {
     matchListDiv.innerHTML = '<p>No matches found for this date</p>';
@@ -160,9 +161,9 @@ try {
 </script>
 
 <body>
-  <div style="margin-top: 0px;"></div>
+  <section class="seating-plan-container" style="background:#fff; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:24px; max-width:650px; margin:0 left;">
   <h3>Seating Plan of Emirates home stadium</h3>
-  
+  <p class="stadium caption" style="margin-bottom: 30px;"></p>
   <img src="https://timaps.s3-eu-west-1.amazonaws.com/emirates2.png" 
       alt="Emirates Stadium Seating"  
       loading="lazy" 
@@ -170,8 +171,7 @@ try {
       height="600" 
       decoding="async" 
       id="stadiumSeating">
-  <p class="stadium caption" style="margin-bottom: 30px;"></p>
-  <!-- add code for a dropdown list of the section that user want to sit at-->
+      
   <label for="seat-section">Select Block Section:</label>
   <select id="seat-section" class="js-example-basic-single" name="seatSection" style="width: 100%;">
   <optgroup label="🟦 Lower Tier - East">
@@ -337,6 +337,10 @@ try {
   </optgroup>
 
   </select><br><br>
+  </section>
+  <a href="bookingform.html?match_id=${doc.id}" class="btn">Book tickets</a>
+</main>
+
   <script>
   $(document).ready(function() {
     $('.js-example-basic-single').select2({  
@@ -377,8 +381,6 @@ try {
     });
     </script>
 
-
-<a href="bookingform.html?match_id=${doc.id}" class="btn">Book tickets</a>
 
 
   
