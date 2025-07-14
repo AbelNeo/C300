@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   matchListDiv.innerHTML = '<p>Loading matches...</p>';
 
 try {
-  const snapshot = await getDocs(collection(db, 'matches'));
+  const snapshot = await getDocs(collection(db, 'Matches'));
   let matchesFound = false;
   matchListDiv.innerHTML = '';
 
@@ -109,6 +109,7 @@ try {
     if (matchDate === selectedDate) {
       matchesFound = true;
       const crestMap = {
+        'Arsenal': 'images/Arsenal-logo.jpeg',
         'AC Milan': 'images/ACMilan-logo.jpeg',
         'Manchester City': 'images/ManchesterCity-logo.jpeg',
         'Newcastle United': 'images/NewcastleUnited-logo.jpeg',

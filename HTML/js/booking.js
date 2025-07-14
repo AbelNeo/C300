@@ -1,12 +1,10 @@
 
 import { initializeApp } from 'firebase/app';
-import { db, auth } from './firebase.js';
-
 import { 
   doc, getDocs, orderBy,limit, collection, query, where, runTransaction, setDoc, updateDoc, addDoc, serverTimestamp,
-  getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification, onSnapshot, deleteDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+  
+} from "firebase/firestore";
+import { db} from './firebase.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDZVSQAwB1YnKv6Pr_5kbsjvUz074mDsQ0",
@@ -72,11 +70,11 @@ async function getMatchData(match_id) {
     });
   }
 
-  matchSelect.addEventListener('change', async () => {
+  /*matchSelect.addEventListener('change', async () => {
     const matchId = matchSelect.value;
     seatSelect.innerHTML = '<option value="">-- Choose a Seat --</option>';
-    seatSelect.disabled = true;
-    bookButton.disabled = true;
+    seatSelect.disabled = true; 
+    bookButton.disabled = true; */
 
     if (!matchId) return;
 
@@ -93,7 +91,7 @@ async function getMatchData(match_id) {
     });
 
     seatSelect.disabled = false;
-  });
+  //});
 
   seatSelect.addEventListener('change', () => {
     bookButton.disabled = !seatSelect.value;
