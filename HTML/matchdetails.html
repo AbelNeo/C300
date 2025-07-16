@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const matchListDiv = document.getElementById('matchesList');
   const matchDateEl = document.getElementById('matchDate');
 
+
   console.log("Selected date from URL:", selectedDate);
 
   document.getElementById('matchDate').textContent = selectedDate;
@@ -102,11 +103,9 @@ try {
   const snapshot = await getDocs(collection(db, 'Matches'));
   let matchesFound = false;
   matchListDiv.innerHTML = '';
-
   snapshot.forEach(doc => {
     const match = doc.data();
     const matchDate = match.match_date.toDate().toISOString().split('T')[0];
-
     if (matchDate === selectedDate) {
       matchesFound = true;
       const crestMap = {
@@ -365,7 +364,7 @@ try {
           return;
         }
 
-        window.location.href = `bookingform.html?match_id=${matchId}&seat_block=${encodeURIComponent(seatBlock)}`;
+        window.location.href = `bookingform.html?match_id=${matchId}&team_home=${encodeURIComponent(teamHome)}&team_away=${encodeURIComponent(teamAway)}&date=${encodeURIComponent(matchDate)}&seat_block=${encodeURIComponent(seatBlock)}`;
         });
       });
     });
@@ -413,7 +412,7 @@ try {
 
 <!--on the booking form page there should be a field that display which section and specific seats user booked-->
 
-  <div class="transport">
+<!--div class="transport">
   <h3>Getting to Emirates home stadium</h3>
   <div id="transportInfo"></div>
   <button id="mapToggle">Show Stadium Map</button>
@@ -433,7 +432,7 @@ try {
   </div>
 </div>
 </body>
-<footer-component></footer-component>
+<footer-component></footer-component> -->
 
 
 

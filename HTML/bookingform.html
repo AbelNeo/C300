@@ -33,18 +33,6 @@
       <h1>Booking page</h1>
       <!-- Match Selection -->
       <form class="signup-form" id="signupForm">
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" readonly required>
-
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" readonly required>
-
-        <label for="Team_home">Team Home</label>
-        <input type="text" id="Team_home" name="Team_home" readonly required>
-
-        <label for="Team_away">Team Away</label>
-        <input type="text" id="Team_away" name="Team_away" readonly required>
-
         <label for="quantity">Quantity</label>
         <input type="number" id="quantity" name="quantity" placeholder="Enter number of tickets" required min="1" max="10000">
         <div id="quantity-warning" style="color: red; display: none;"></div>
@@ -67,4 +55,53 @@
     </main>
 
 <footer-component></footer-component>
+
+<script type="module">
+
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDZVSQAwB1YnKv6Pr_5kbsjvUz074mDsQ0",
+  authDomain: "football-club-management-3c136.firebaseapp.com",
+  projectId: "football-club-management-3c136",
+  storageBucket: "football-club-management-3c136.appspot.com",
+  messagingSenderId: "388394869174",
+  appId: "1:388394869174:web:ec8f93ab8fb685e9846117"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const matchId = params.get('match_id');
+  const quantity = params.get('quantity');
+  const seatBlock = params.get('seat_block');
+
+ // Set quantity field if present
+  if (quantity && document.getElementById('quantity')) {
+    document.getElementById('quantity').value = quantity;
+  }
+
+  // Set seat_block field if present
+  if (seatBlock && document.getElementById('seat_block')) {
+    document.getElementById('seat_block').value = seatBlock;
+  }
+
+  // Fetch match data and populate fields
+  if (matchId) {
+    const matchRef = doc(db, 'Matches', matchId);
+    const matchSnap = await getDoc(matchRef);
+    if (matchSnap.exists()) {
+      const match = matchSnap.data();
+      if (document.getElementById('Date')) {
+        document.getElementById('Date').value = match.match_date && match.match_date.toDate
+          ? match.match_date.toDate().toISOString().split('T')[0]
+          : '';
+      }
+      // Add more fields here if needed
+    }
+  }
+});
+</script>
 </body>
