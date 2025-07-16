@@ -70,6 +70,14 @@ document.querySelector('.close-panel.settings')?.addEventListener('click', () =>
   document.getElementById('settingsPanel')?.classList.remove('active');
 });
 
+// Player panel toggle
+document.querySelector('.dropdown-toggle-player')?.addEventListener('click', () => {
+  document.getElementById('playerPanel')?.classList.toggle('active');
+});
+document.querySelector('.close-panel.player')?.addEventListener('click', () => {
+  document.getElementById('playerPanel')?.classList.remove('active');
+});
+
 
 
 
