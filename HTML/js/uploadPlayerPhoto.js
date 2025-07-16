@@ -224,3 +224,52 @@ import { initializeApp } from "firebase/app";
 
       table.style.display = Object.keys(items).length > 0 ? 'table' : 'none';
     });
+
+
+
+
+
+
+    // Sample data - you could fetch this from an API or database
+const videos = [
+    {
+        id: "Player%201",
+        title: "Saka opens the scoring vs Real Madrid",
+        description: "Champions League Semi-Final",
+        thumbnail: "https://via.placeholder.com/300x180?text=Saka+vs+Real+Madrid"
+    },
+    {
+        id: "Player%202",
+        title: "Saka scores in PSO semi",
+        description: "Penalty Shootout Winner",
+        thumbnail: "https://via.placeholder.com/300x180?text=Saka+PSO+Goal"
+    },
+    {
+        id: "Player%203",
+        title: "Saka scores on comeback against Fulham",
+        description: "Premier League Matchday 24",
+        thumbnail: "https://via.placeholder.com/300x180?text=Saka+vs+Fulham"
+    }
+];
+
+function renderVideos() {
+    const gallery = document.querySelector('.video-gallery');
+    gallery.innerHTML = '';
+    
+    videos.forEach(video => {
+        gallery.innerHTML += `
+            <div class="video-card" onclick="window.location.href='/HTML/playerVideo.html?id=${video.id}'">
+                <div class="video-thumbnail">
+                    <img src="${video.thumbnail}" alt="${video.title}">
+                    <div class="play-icon"></div>
+                </div>
+                <div class="video-info">
+                    <h3>${video.title}</h3>
+                    <p>${video.description}</p>
+                </div>
+            </div>
+        `;
+    });
+}
+
+document.addEventListener('DOMContentLoaded', renderVideos);

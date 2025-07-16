@@ -20,12 +20,118 @@
   <script type="module" src="components/navbar-component.js"></script>
   <script type="module" src="components/footer-component.js"></script>  
   <script type="module" src="uploadPlayerPhoto.js"></script>
+    <style>
+.instagram-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.instagram-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.instagram-card:hover {
+    transform: translateY(-5px);
+}
+
+.instagram-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.instagram-content {
+    padding: 15px;
+}
+
+.instagram-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.instagram-caption {
+    color: #555;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.instagram-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.instagram-price {
+    font-weight: bold;
+    color: #27ae60;
+}
+
+.instagram-stock {
+    color: #666;
+}
+
+.instagram-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.buy-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.buy-section input {
+    width: 60px;
+    padding: 5px;
+}
+
+.buy-button, .edit-btn, .delete-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.buy-button {
+    background-color: #27ae60;
+    color: white;
+}
+
+.edit-btn {
+    background-color: #2980b9;
+    color: white;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .instagram-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+  </style>
+
   <navbar-component></navbar-component>
 </head>
 <body>
-  <header>
-   
-  </header>
+
   <main class="container">
     <div class="player-profile" id="profile">
       <div class="loading">Loading player...</div>
@@ -118,7 +224,7 @@
     
 
     // 1. Load Firestore player data
-    async function loadPlayer() {
+ async function loadPlayer() {
       if (!playerId) {
         profileDiv.innerHTML = '<div class="error">No player specified.</div>';
         return;
@@ -131,6 +237,17 @@
         return;
       }
       const player = snap.data();
+
+      // Update the header with player's name
+      const header = document.querySelector('.header h1');
+      if (header) {
+        header.textContent = `${player.name.toUpperCase()}'S HIGHLIGHTS`;
+      }
+      
+      const subheader = document.querySelector('.header p');
+      if (subheader) {
+        subheader.textContent = `${player.name}'s best moments of ${new Date().getFullYear()-1}/${new Date().getFullYear()}`;
+      }
 
       // 2. Wait for auth state and render favorite button
       onAuthStateChanged(auth, async (user) => {
@@ -181,11 +298,66 @@
 
     
   </script>
-  <form id="postPlayerForm">
-    <label for="name">Item Name:</label>
+
+<div class="header">
+    <h1><!-- This will be populated by JavaScript --></h1>
+    <p><!-- This will be populated by JavaScript --></p>
+</div>
+    
+    <!-- <div class="player-highlight">
+        <div class="player-name">BUKAYO SAKA</div>
+        <div class="player-title">PLAYER OF THE SEASON</div>
+    </div> -->
+    
+    <div class="video-gallery">
+        <!-- Video 1 -->
+        <div class="video-card" onclick="window.location.href='/HTML/playerVideo.html?id=Player%201'">
+            <div class="video-thumbnail">
+                <img src="https://via.placeholder.com/300x180?text=Saka+vs+Real+Madrid" alt="Saka vs Real Madrid">
+                <div class="play-icon"></div>
+            </div>
+            <div class="video-info">
+                <h3>Saka opens the scoring vs Real Madrid</h3>
+                <p>Champions League Semi-Final</p>
+            </div>
+        </div>
+        
+        <!-- Video 2 -->
+        <div class="video-card" onclick="window.location.href='/HTML/playerVideo.html?id=Player%202'">
+            <div class="video-thumbnail">
+                <img src="https://via.placeholder.com/300x180?text=Saka+PSO+Goal" alt="Saka PSO Goal">
+                <div class="play-icon"></div>
+            </div>
+            <div class="video-info">
+                <h3>Saka scores in PSO semi</h3>
+                <p>Penalty Shootout Winner</p>
+            </div>
+        </div>
+        
+        <!-- Video 3 -->
+        <div class="video-card" onclick="window.location.href='/HTML/playerVideo.html?id=Player%203'">
+            <div class="video-thumbnail">
+                <img src="https://via.placeholder.com/300x180?text=Saka+vs+Fulham" alt="Saka vs Fulham">
+                <div class="play-icon"></div>
+            </div>
+            <div class="video-info">
+                <h3>Saka scores on comeback against Fulham</h3>
+                <p>Premier League Matchday 24</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="see-more">
+        <a href="#">SEE MORE</a>
+    </div>
+
+
+
+<form id="itemForm">
+    <label for="name">Title:</label>
     <input type="text" id="name" required />
 
-    <label for="description">Item Description:</label>
+    <label for="description">Caption:</label>
     <textarea id="description" required></textarea>
 
     <label for="price">Price ($):</label>
@@ -194,26 +366,130 @@
     <label for="stock">Stock Quantity:</label>
     <input type="number" id="stock" min="0" required />
 
-    <label for="image">Upload Images:</label>
+    <label for="image">Upload Image:</label>
     <input type="file" id="image" accept="image/*" multiple />
 
     <button type="submit">Add Item</button>
-  </form>
+</form>
 
-    <table id="itemsTable" style="display: none;">
-    <thead>
-      <tr>
-        <th>Images</th>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Price ($)</th>
-        <th>Stock</th>
-        <th>Buy</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<!-- Replace the table with this Instagram-style grid -->
+<div id="instagramGrid" class="instagram-grid"></div>
+
+
+
+
+<script>
+const form = document.getElementById('itemForm');
+const instagramGrid = document.getElementById('instagramGrid');
+let playerPost = JSON.parse(localStorage.getItem('playerPost') || '[]');
+
+function renderInstagramGrid() {
+    instagramGrid.innerHTML = '';
+    
+    playerPost.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'instagram-card';
+        
+        card.innerHTML = `
+            <div class="instagram-image-container">
+                ${item.images.length > 0 ? 
+                    `<img src="${item.images[0]}" alt="${item.name}" class="instagram-image">` : 
+                    '<div class="instagram-image no-image">No Image</div>'
+                }
+            </div>
+            <div class="instagram-content">
+                <h3 class="instagram-title">${item.name}</h3>
+                <p class="instagram-caption">${item.description}</p>
+                
+                <div class="instagram-details">
+                    <span class="instagram-price">$${item.price}</span>
+                    <span class="instagram-stock">${item.stock} in stock</span>
+                </div>
+                
+                <div class="instagram-actions">
+                    <div class="buy-section">
+                        <input type="number" min="1" max="${item.stock}" value="1" ${item.stock <= 0 ? 'disabled' : ''}>
+                        <button class="buy-button" ${item.stock <= 0 ? 'disabled' : ''}>Buy</button>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn">Delete</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add event listeners
+        const buyBtn = card.querySelector('.buy-button');
+        const qtyInput = card.querySelector('.buy-section input');
+        const editBtn = card.querySelector('.edit-btn');
+        const deleteBtn = card.querySelector('.delete-btn');
+        
+        if (item.stock > 0) {
+            buyBtn.addEventListener('click', () => {
+                const qty = parseInt(qtyInput.value);
+                if (isNaN(qty) || qty <= 0 || qty > item.stock) {
+                    alert(`Invalid quantity. Only ${item.stock} in stock.`);
+                    return;
+                }
+                item.stock -= qty;
+                localStorage.setItem('playerPost', JSON.stringify(playerPost));
+                renderInstagramGrid();
+            });
+        }
+        
+        editBtn.addEventListener('click', () => {
+            // Implement edit functionality
+            const newPrice = prompt('Enter new price:', item.price);
+            const newStock = prompt('Enter new stock quantity:', item.stock);
+            
+            if (newPrice !== null && newStock !== null) {
+                item.price = parseFloat(newPrice).toFixed(2);
+                item.stock = parseInt(newStock);
+                localStorage.setItem('playerPost', JSON.stringify(playerPost));
+                renderInstagramGrid();
+            }
+        });
+        
+        deleteBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to delete this item?')) {
+                playerPost.splice(index, 1);
+                localStorage.setItem('playerPost', JSON.stringify(playerPost));
+                renderInstagramGrid();
+            }
+        });
+        
+        instagramGrid.appendChild(card);
+    });
+}
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = form.name.value.trim();
+    const description = form.description.value.trim();
+    const price = parseFloat(form.price.value).toFixed(2);
+    const stock = parseInt(form.stock.value);
+    const files = form.image.files;
+
+    const imagePromises = Array.from(files).map(file => {
+        return new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = e => resolve(e.target.result);
+            reader.readAsDataURL(file);
+        });
+    });
+
+    Promise.all(imagePromises).then(images => {
+        playerPost.push({ name, description, price, stock, images });
+        localStorage.setItem('playerPost', JSON.stringify(playerPost));
+        renderInstagramGrid();
+        form.reset();
+    });
+});
+
+// Initialize the grid
+renderInstagramGrid();
+</script>
 
 </body>
 <footer-component></footer-component>
