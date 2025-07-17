@@ -341,8 +341,11 @@ a {
 
 
 /* booking system section */
-.btn-book {
+.book-btn-disabled {
 background-color: #600000;
+pointer-events: none;
+opacity: 0.5;
+cursor: not-allowed;
 }
 
 #bookingMessage {
