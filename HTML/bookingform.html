@@ -35,7 +35,12 @@
       <!-- Match Selection -->
       <form class="signup-form" id="signupForm">
         <label for="quantity">Quantity</label>
-        <input type="number" id="quantity" name="quantity" placeholder="Enter number of tickets" required min="1" max="10000">
+
+        <div class="quantity-selector" style="display: flex; align-items: center; gap: 10px;">
+          <button type="button" id="decrement-qty" class="qty-btn" style="font-size: 1.5em; width: 40px;">-</button>
+          <input type="number" id="quantity" name="quantity" value="0" min="0" max="50" style="width: 80px; text-align: center; font-size: 1.2em;" required>
+          <button type="button" id="increment-qty" class="qty-btn" style="font-size: 1.5em; width: 40px;">+</button>
+        </div>
         <div id="quantity-warning" style="color: red; display: none;"></div>
 
         <label for="Date">Match Date</label>
@@ -47,10 +52,9 @@
         <div id="error-message" class="error-message" style="color: red; display: none;"></div>
       </form>
 
-  <li class="auth-buttons" style="list-style: none; margin-top: 20px">
-      <a href="checkout.html" class="btn-login" style="text-decoration: none;">Confirm Booking</a>
-
-  </li>
+      <li class="auth-buttons" style="list-style: none; margin-top: 20px">
+        <button id="confirm-booking-btn" class="btn" type="button" disabled>Confirm Booking</a>
+      </li>
 
   </ul>
     </main>
@@ -111,6 +115,48 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Add more fields here if needed
     }
   }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const confirmBtn = document.getElementById('confirm-booking-btn');
+  const qtyInput = document.querySelector('.quantity-selector input[name="quantity"]');
+  function checkQty() {
+    let qty = parseInt(qtyInput.value, 10);
+    if (qty > 50) {
+      qtyInput.value = 50;
+      qty = 50;
+    }
+    confirmBtn.disabled = !(qty && qty > 0 && qty <= 50);
+  }
+  qtyInput.addEventListener('input', checkQty);
+  checkQty(); // Initial check
+
+  confirmBtn.addEventListener('click', function(event) {
+    event.preventDefault();
+    const quantity = qtyInput.value;
+    const date = document.getElementById('Date').value;
+    const seatBlock = document.getElementById('seat_block').value;
+    const url = `checkout.html?quantity=${encodeURIComponent(quantity)}&date=${encodeURIComponent(date)}&seat_block=${encodeURIComponent(seatBlock)}`;
+    window.location.href = url;
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const qtyInput = document.querySelector('.quantity-selector input[name="quantity"]');
+  document.getElementById('increment-qty').onclick = () => {
+    let val = parseInt(qtyInput.value) || 0;
+    if (val < 50) qtyInput.value = val + 1;
+    qtyInput.dispatchEvent(new Event('input'));
+  };
+  document.getElementById('decrement-qty').onclick = () => {
+    let val = parseInt(qtyInput.value) || 0;
+    if (val > 1) qtyInput.value = val - 1;
+    qtyInput.dispatchEvent(new Event('input'));
+  };
 });
 </script>
 </body>

@@ -222,7 +222,7 @@
   <div id="purchases-container">
     <div class="purchase-card">
     <h1>Booking Confirmation</h1>
-    <p><strong>Tickets:</strong> <span id="quantity"></span></p>
+    <p><strong>Ticket Qty:</strong> <span id="quantity"></span></p>
     <p><strong>Date:</strong> <span id="date"></span></p>
     <p><strong>Seat Block:</strong> <span id="seat_block"></span></p>
     </div>
@@ -230,7 +230,8 @@
 
 
 <script>
-    const hasBooking = params.get('name') && params.get('team_home');
+    const params = new URLSearchParams(window.location.search);
+    const hasBooking = params.get('quantity') && params.get('date') && params.get('seat_block');
     if (hasBooking) {
       document.getElementById('purchases-container').style.display = 'block';
       document.getElementById('checkoutContainer').style.display = 'none';
@@ -239,7 +240,6 @@
       document.getElementById('checkoutContainer').style.display = 'block';
     }
 
-    const params = new URLSearchParams(window.location.search);
     document.getElementById('quantity').textContent = params.get('quantity');
     document.getElementById('date').textContent = params.get('date');
     document.getElementById('seat_block').textContent = params.get('seat_block');
