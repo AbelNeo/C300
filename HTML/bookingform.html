@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const matchId = params.get('match_id');
   const quantity = params.get('quantity');
   const seatBlock = params.get('seat_block');
+  const seatBlockLabel = params.get('seat_block_label');
   const dateParam = params.get('match_date');
 
  // Set quantity field if present
@@ -89,9 +90,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('quantity').value = quantity;
   }
 
-  // Set seat_block field if present
-  if (seatBlock && document.getElementById('seat_block')) {
-    document.getElementById('seat_block').value = seatBlock;
+// Set seat_block field if present
+  if ((seatBlockLabel || seatBlock) && document.getElementById('seat_block')) {
+    document.getElementById('seat_block').value = seatBlockLabel || seatBlock;
   }
 
   /* Set Match Date field if present in URL
@@ -137,8 +138,15 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
     const quantity = qtyInput.value;
     const date = document.getElementById('Date').value;
-    const seatBlock = document.getElementById('seat_block').value;
-    const url = `checkout.html?quantity=${encodeURIComponent(quantity)}&date=${encodeURIComponent(date)}&seat_block=${encodeURIComponent(seatBlock)}`;
+    const seatBlockLabel = document.getElementById('seat_block').value;
+
+    /*const params = new URLSearchParams(window.location.search); */
+    // Extract block code (e.g., "13" from "Block 13 ..."), fallback to label if not found
+    const seatBlockMatch = seatBlockLabel.match(/Block\s*([A-Za-z0-9\-]+)/i);
+    const seatBlock = seatBlockMatch ? seatBlockMatch[1] : seatBlockLabel;
+    // Pass both seat_block and seat_block_label if available
+    let url = `checkout.html?quantity=${encodeURIComponent(quantity)}&date=${encodeURIComponent(date)}&seat_block=${encodeURIComponent(seatBlock)}&seat_block_label=${encodeURIComponent(seatBlockLabel)}`;
+    /*const url = `checkout.html?quantity=${encodeURIComponent(quantity)}&date=${encodeURIComponent(date)}&seat_block=${encodeURIComponent(seatBlock)}`; */
     window.location.href = url;
   });
 });

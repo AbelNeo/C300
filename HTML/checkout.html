@@ -242,7 +242,7 @@
 
     document.getElementById('quantity').textContent = params.get('quantity');
     document.getElementById('date').textContent = params.get('date');
-    document.getElementById('seat_block').textContent = params.get('seat_block');
+    document.getElementById('seat_block').textContent = params.get('seat_block_label') || params.get('seat_block');
 </script>
 
 

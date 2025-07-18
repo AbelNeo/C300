@@ -138,8 +138,9 @@ try {
       // Update the link when a seat is selected
         $('#seat-section').on('change', function() {
         const seatBlock = this.value;
+        const seatBlockLabel = this.options[this.selectedIndex].text; 
         if (seatBlock) {
-          bookBtn.href = `bookingform.html?match_id=${matchId}&match_date=${encodeURIComponent(matchDateStr)}&seat_block=${encodeURIComponent(seatBlock)}`;
+          bookBtn.href = `bookingform.html?match_id=${matchId}&match_date=${encodeURIComponent(matchDateStr)}&seat_block=${encodeURIComponent(seatBlock)}&seat_block_label=${encodeURIComponent(seatBlockLabel)}`;
           bookBtn.classList.remove('book-btn-disabled');
         } else {
           bookBtn.removeAttribute('href');
