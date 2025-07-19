@@ -49,6 +49,8 @@
         <label for="seat_block">Seat Block</label>
         <input type="text" id="seat_block" name="seat_block" readonly required>
 
+        <div id="price-info" style="margin-top: 16px; font-size: 1.2em; color: #800000;"></div>
+
         <div id="error-message" class="error-message" style="color: red; display: none;"></div>
       </form>
 
@@ -65,6 +67,7 @@
 
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyDZVSQAwB1YnKv6Pr_5kbsjvUz074mDsQ0",
@@ -166,5 +169,51 @@ document.addEventListener('DOMContentLoaded', () => {
     qtyInput.dispatchEvent(new Event('input'));
   };
 });
+</script>
+
+<script type="module">
+import { seatBlocks } from '../js/seatBlocks.js';
+
+function getBlockInfo(seatBlockLabel) {
+  for (const group of seatBlocks) {
+    for (const block of group.blocks) {
+      if (
+        block.label === seatBlockLabel || 
+        block.value === seatBlockLabel ||
+        seatBlockLabel.includes(block.value) ||
+        seatBlockLabel.includes(block.label)
+      ) {
+        return { price: group.price, section: group.section, color: group.color, label: block.label };
+      }
+    }
+  }
+  return null;
+}
+
+function updatePriceDisplay() {
+  const qty = parseInt(document.getElementById('quantity').value, 10) || 0;
+  const seatBlockLabel = document.getElementById('seat_block').value;
+  const priceInfo = getBlockInfo(seatBlockLabel);
+  const priceDiv = document.getElementById('price-info');
+  if (priceInfo && qty > 0) {
+    let total = 0;
+    for (let i = 0; i < qty; i++) {
+      total += priceInfo.price * Math.pow(1.05, i);
+    }
+    priceDiv.textContent = `Price per ticket: $${priceInfo.price.toFixed(2)} | Total: $${total.toFixed(2)}`;
+  } else {
+    priceDiv.textContent = '';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const qtyInput = document.getElementById('quantity');
+  const seatBlockInput = document.getElementById('seat_block');
+  qtyInput.addEventListener('input', updatePriceDisplay);
+  seatBlockInput.addEventListener('input', updatePriceDisplay);
+  document.getElementById('seat_block').addEventListener('input', updatePriceDisplay);
+  updatePriceDisplay();
+});
+
 </script>
 </body>

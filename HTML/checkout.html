@@ -245,7 +245,50 @@
     document.getElementById('seat_block').textContent = params.get('seat_block_label') || params.get('seat_block');
 </script>
 
+<script type="module">
+import { seatBlocks } from '../js/seatBlocks.js';
 
+function getBlockInfo(seatBlockLabel) {
+  for (const group of seatBlocks) {
+    for (const block of group.blocks) {
+      if (
+        block.label === seatBlockLabel ||
+        block.value === seatBlockLabel ||
+        seatBlockLabel.includes(block.value) ||
+        seatBlockLabel.includes(block.label)
+      ) {
+        return { price: group.price, section: group.section, color: group.color, label: block.label };
+      }
+    }
+  }
+  return null;
+}
+
+function updateConfirmationPrice() {
+  const params = new URLSearchParams(window.location.search);
+  const qty = parseInt(params.get('quantity'), 10) || 0;
+  const seatBlockLabel = params.get('seat_block_label') || params.get('seat_block');
+  const priceInfo = getBlockInfo(seatBlockLabel);
+  if (priceInfo && qty > 0) {
+    let total = 0;
+    for (let i = 0; i < qty; i++) {
+      total += priceInfo.price * Math.pow(1.05, i);
+    }
+    // Add price info to confirmation
+    const container = document.querySelector('.purchase-card');
+    if (container) {
+      const priceEl = document.createElement('p');
+      priceEl.innerHTML = `<strong>Price per ticket:</strong> $${priceInfo.price.toFixed(2)}`;
+      const totalEl = document.createElement('p');
+      totalEl.innerHTML = `<strong>Total:</strong> $${total.toFixed(2)}`;
+      container.appendChild(priceEl);
+      container.appendChild(totalEl);
+    }
+  }
+}
+
+updateConfirmationPrice();
+</script>
 
 
 </body>
