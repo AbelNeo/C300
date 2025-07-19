@@ -246,7 +246,7 @@
 </script>
 
 <script type="module">
-import { seatBlocks } from '../js/seatBlocks.js';
+import { seatBlocks } from './js/seatBlocks.js';
 
 function getBlockInfo(seatBlockLabel) {
   for (const group of seatBlocks) {
@@ -277,7 +277,10 @@ function updateConfirmationPrice() {
     // Add price info to confirmation
     const container = document.querySelector('.purchase-card');
     if (container) {
+      const oldPrices = container.querySelectorAll('.price-info');
+      oldPrices.forEach(el => el.remove());
       const priceEl = document.createElement('p');
+      priceEl.className = 'price-info';
       priceEl.innerHTML = `<strong>Price per ticket:</strong> $${priceInfo.price.toFixed(2)}`;
       const totalEl = document.createElement('p');
       totalEl.innerHTML = `<strong>Total:</strong> $${total.toFixed(2)}`;
@@ -287,10 +290,8 @@ function updateConfirmationPrice() {
   }
 }
 
-updateConfirmationPrice();
+document.addEventListener('DOMContentLoaded', updateConfirmationPrice);
 </script>
-
-
 </body>
 <footer-component></footer-component>
 </html>

@@ -89,7 +89,7 @@ export const seatBlocks = [
     color: "🟢",
     tier: "Upper",
     side: "East",
-    price: 280,
+    price: 95,
     blocks: [
       { value: "block-111", label: "Block 111 - Long Side Between Penalty Boxes - Upper Tier - East 🟢" },
       { value: "block-112", label: "Block 112 - Long Side Between Penalty Boxes - Upper Tier - East 🟢" },
@@ -102,7 +102,7 @@ export const seatBlocks = [
     color: "🟢",
     tier: "Upper",
     side: "West",
-    price: 280,
+    price: 95,
     blocks: [
       { value: "block-91", label: "Block 91 - Long Side Between Penalty Boxes - Upper Tier - West 🟢" },
       { value: "block-92", label: "Block 92 - Long Side Between Penalty Boxes - Upper Tier - West 🟢" },
@@ -184,7 +184,7 @@ export const seatBlocks = [
     color: "🟪",
     tier: "Away",
     side: "SouthEast",
-    price: 120,
+    price: 110,
     blocks: [
       { value: "block-20", label: "Block 20 - Away Team - Away Section - SouthEast 🟪" },
       { value: "block-21", label: "Block 21 - Away Team - Away Section - SouthEast 🟪" },
