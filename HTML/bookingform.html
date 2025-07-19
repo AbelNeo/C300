@@ -196,10 +196,7 @@ function updatePriceDisplay() {
   const priceInfo = getBlockInfo(seatBlockLabel);
   const priceDiv = document.getElementById('price-info');
   if (priceInfo && qty > 0) {
-    let total = 0;
-    for (let i = 0; i < qty; i++) {
-      total += priceInfo.price * Math.pow(1.05, i);
-    }
+    let total = priceInfo.price * qty;
     priceDiv.textContent = `Price per ticket: $${priceInfo.price.toFixed(2)} | Total: $${total.toFixed(2)}`;
   } else {
     priceDiv.textContent = '';

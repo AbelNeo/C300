@@ -78,7 +78,21 @@
     <tbody></tbody>
   </table>
 
-  <div class="no-purchases" id="noPurchasesMessage">No purchases yet.</div>
+  <table id="MatchPurchasesTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Seat Block</th>
+        <th>Quantity</th>
+        <th>Price per ticket</th>
+        <th>Total Price</th>
+        <th>Match Date ($)</th>
+        <th>Purchase Date</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="no-purchases" id="noPurchasesMessage">No tickets purchased yet.</div>
 
   <script type="module">
     import { initializeApp } from "firebase/app";
@@ -169,6 +183,55 @@
     });
   </script>
 
+<!-- Match ticket purchases -->
+<script type="module">
+import { db } from './js/firebase.js';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const purchasesTable = document.getElementById('purchasesTable');
+  const tbody = purchasesTable.querySelector('tbody');
+  const noPurchasesMsg = document.getElementById('noPurchasesMessage');
+
+  if (!user) {
+    noPurchasesMsg.textContent = "Please log in to view your purchases.";
+    noPurchasesMsg.style.display = 'block';
+    return;
+  }
+
+  const q = query(collection(db, "Purchases"), where("userId", "==", user.uid));
+  const querySnapshot = await getDocs(q);
+
+  tbody.innerHTML = '';
+  let found = false;
+
+  querySnapshot.forEach(doc => {
+    found = true;
+    const purchase = doc.data();
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${purchase.seatBlockLabel || purchase.seatBlock}</td>
+      <td>${purchase.quantity}</td>
+      <td>${purchase.pricePerTicket}</td>
+      <td>${purchase.totalPrice}</td>
+      <td>${purchase.matchDate}</td>
+      <td>${purchase.purchaseDate?.toDate ? purchase.purchaseDate.toDate().toLocaleString() : ''}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  if (found) {
+    purchasesTable.style.display = 'table';
+    noPurchasesMsg.style.display = 'none';
+  } else {
+    purchasesTable.style.display = 'none';
+    noPurchasesMsg.style.display = 'block';
+  }
+});
+</script>
 </body>
 
 </html>
