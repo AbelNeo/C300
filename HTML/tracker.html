@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  const q = query(collection(db, "Match Tickets Purchases"), where("userEmail", "==", user.email));
+  const q = query(collection(db, "Match Tickets purchases"), where("userEmail", "==", user.email));
   const querySnapshot = await getDocs(q);
 
   tbody.innerHTML = '';
