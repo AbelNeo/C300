@@ -252,6 +252,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 function getBlockInfo(seatBlockLabel) {
+  if (!seatBlockLabel) return null;
   for (const group of seatBlocks) {
     for (const block of group.blocks) {
       if (
@@ -297,8 +298,8 @@ async function saveMatchPurchase() {
   const qty = parseInt(params.get('quantity'), 10) || 0;
   const seatBlock = params.get('seat_block');
   const seatBlockLabel = params.get('seat_block_label') || seatBlock;
-  const matchDate = params.get('date');
-  const matchId = params.get('match_id') || ""; // If you pass match_id in URL
+  const matchDateStr = params.get('date');
+  const matchId = parseInt(params.get('match_id'),10) || null; // If you pass match_id in URL
   const priceInfo = getBlockInfo(seatBlockLabel);
 
   // Get user
@@ -308,11 +309,17 @@ async function saveMatchPurchase() {
 
   let total = priceInfo.price * qty;
 
+  let matchDate = null;
+  if (matchDateStr) {
+    matchDate = new Date(matchDateStr);
+  }
+
   // Save to Firestore
-  await addDoc(collection(db, "Purchases"), {
-    userEmail: userEmail,
-    matchId: match_id,
-    matchDate: match_date,
+  await addDoc(collection(db, "Match Tickets purchases"), {
+    userId: user.uid,
+    userEmail: user.email,
+    match_id: matchId,
+    match_date: matchDate ? matchDate : null,
     seatBlock: seatBlock,
     seatBlockLabel: seatBlockLabel,
     quantity: qty,
