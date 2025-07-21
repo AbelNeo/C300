@@ -1,34 +1,65 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Footmaster Pro - Upload media</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footmaster Pro - Upload Media</title>
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/main.min.css' rel='stylesheet' />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
-    <link rel="stylesheet" href="css/styles.css">
-    <script type="module" src="js/upload.js"></script>
-    <script src="/js/firebase.js"></script>
-    <script type="module" src="components\navbar-component.js" ></script>
-    <script type="module" src="js\firebase.js"></script>
-    <script type="module" src="js\players.js"></script>
-    <script type="module" src="js\main.js"></script>
-    <script type="module" src="components/footer-component.js"></script>
-
-
-
-<script type="importmap">
-{
-  "imports": {
-    "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-    "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
-    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
-  }
-}
-</script>
-
-
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 32px;
+            color: #27ae60;
+        }
+        
+        .logo h1 {
+            font-size: 28px;
+            color: #2c3e50;
+        }
+        
         /* Upload Media Specific Styles */
         .upload-section {
             max-width: 800px;
@@ -39,6 +70,15 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -47,13 +87,7 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
-        }
-        
-        .form-group input[type="file"] {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            color: #2c3e50;
         }
         
         #progressContainer {
@@ -71,6 +105,7 @@
             display: block;
             text-align: center;
             margin-top: 0.5rem;
+            font-size: 0.9rem;
         }
         
         .btn-primary {
@@ -82,10 +117,28 @@
             cursor: pointer;
             font-size: 1rem;
             transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .btn-primary:hover {
             background: #0069d9;
+        }
+        
+        .btn-secondary {
+            padding: 0.75rem 1.5rem;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
         }
         
         .error-message {
@@ -109,179 +162,433 @@
             padding: 1rem;
             background: #f8f9fa;
             border-radius: 4px;
+            font-size: 0.9rem;
         }
-
-        </style>
-        <script type="module" src="components/navbar-component.js"></script>
-    </head>
-    <body>
+        
+        .preview-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .preview-container img, 
+        .preview-container video {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            color: #6c757d;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-input-label:hover {
+            border-color: #007bff;
+            background: rgba(0, 123, 255, 0.05);
+        }
+        
+        .file-input-label i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #6c757d;
+        }
+        
+        .file-input-label span {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .file-input-container input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .countdown {
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .preview-placeholder {
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .preview-title {
+            width: 100%;
+            text-align: center;
+            font-weight: 600;
+            color: #495057;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .file-info {
+            width: 100%;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
         <header>
-    <navbar-component></navbar-component>
-    </header>
-
-
-
-    <main class="container">
-        <section class="upload-section">
-            <h1>Upload Media</h1>
-            
-            <form id="uploadForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="media">Select Image or Video:</label>
-                    <input type="file" id="media" name="media" accept="image/*,video/*" required>
+            <div class="logo">
+                <i class="fas fa-futbol"></i>
+                <a href="index.html" class="btn-upload"><h1>FootMaster Pro</h1></a>
+            </div>
+            <div class="user-info">
+                 <li class="auth-buttons">
+                <a href="sign-in.html" class="btn-login" aria-label="Login">Login</a>
+                <a href="sign-up.html" class="btn-login" aria-label="Register">Register</a>
+            </li>
+            </div>
+        </header>
+        
+        <main>
+            <section class="upload-section">
+                <div class="upload-header">
+                    <h1>Upload Media</h1>
+                    <button class="btn-secondary" id="backBtn">
+                        <a href="bookingcalendar.html" class="btn-secondary" id="backBtn">
+                          <i class="fas fa-arrow-left"></i> Back to Calendar
+                        </a>
+                    </button>
                 </div>
                 
-                <button type="submit" class="btn-primary">Upload</button>
-            </form>
-            
-            <div id="progressContainer">
-                <progress id="uploadProgress" value="0" max="100"></progress>
-                <span id="progressText">0%</span>
-            </div>
-            
-            <div id="statusMessage"></div>
-            
-            <div class="upload-instructions">
-                <h3>Supported Formats:</h3>
-                <ul>
-                    <li>Images: JPG, PNG, GIF, WEBP</li>
-                    <li>Videos: MP4, MOV, AVI, WEBM</li>
-                </ul>
-                <p>Max file size: 50MB</p>
-            </div>
-        </section>
-    </main>
+                <form id="uploadForm">
+                    <div class="form-group">
+                        <label for="media">Select Image or Video:</label>
+                        <div class="file-input-container">
+                            <div class="file-input-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Click to select or drag & drop files</span>
+                                <small>Max file size: 50MB</small>
+                            </div>
+                            <input type="file" id="media" name="media" accept="image/*,video/*" required>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-section">
+                        <h3>Preview:</h3>
+                        <div class="preview-container" id="previewContainer">
+                            <div class="preview-placeholder">
+                                <i class="fas fa-image" style="font-size: 48px; margin-bottom: 10px;"></i>
+                                <p>No file selected</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="progressContainer">
+                        <progress id="uploadProgress" value="0" max="100"></progress>
+                        <span id="progressText">0%</span>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" class="btn-primary" id="uploadBtn">
+                            <i class="fas fa-upload"></i> Upload
+                        </button>
+                        <button type="button" class="btn-secondary" id="resetBtn">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                    
+                    <div id="statusMessage"></div>
+                </form>
+                
+                <div class="upload-instructions">
+                    <h3>Supported Formats:</h3>
+                    <ul>
+                        <li>Images: JPG, PNG, GIF, WEBP</li>
+                        <li>Videos: MP4, MOV, AVI, WEBM</li>
+                    </ul>
+                    <p>Max file size: 50MB</p>
+                </div>
+            </section>
+        </main>
+    </div>
 
-<script type="module">
-import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZVSQAwB1YnKv6Pr_5kbsjvUz074mDsQ0",
+            authDomain: "football-club-management-3c136.firebaseapp.com",
+            databaseURL: "https://football-club-management-3c136-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "football-club-management-3c136",
+            storageBucket: "football-club-management-3c136.appspot.com",
+            messagingSenderId: "388394869174",
+            appId: "1:388394869174:web:ec8f93ab8fb685e9846117",
+            measurementId: "G-Z9P2RHQQQQ"
+        };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDZVSQAwB1YnKv6Pr_5kbsjvUz074mDsQ0",
-  authDomain: "football-club-management-3c136.firebaseapp.com",
-  databaseURL: "https://football-club-management-3c136-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "football-club-management-3c136",
-  storageBucket: "football-club-management-3c136.firebasestorage.app",
-  messagingSenderId: "388394869174",
-  appId: "1:388394869174:web:ec8f93ab8fb685e9846117",
-  measurementId: "G-Z9P2RHQQQQ"
-};
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+        // Get DOM elements
+        const form = document.getElementById("uploadForm");
+        const fileInput = document.getElementById("media");
+        const progressBar = document.getElementById("uploadProgress");
+        const progressText = document.getElementById("progressText");
+        const progressContainer = document.getElementById("progressContainer");
+        const statusMessage = document.getElementById("statusMessage");
+        const previewContainer = document.getElementById("previewContainer");
+        const uploadBtn = document.getElementById("uploadBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const backBtn = document.getElementById("backBtn");
 
-// Handle selected date in title
-const urlParams = new URLSearchParams(window.location.search);
-const selectedDate = urlParams.get("date");
-if (selectedDate) {
-  const titleElement = document.querySelector(".upload-section h1");
-  titleElement.textContent += ` for ${selectedDate}`;
-}
-
-// Upload form logic
-const form = document.getElementById("uploadForm");
-const fileInput = document.getElementById("media");
-const progressBar = document.getElementById("uploadProgress");
-const progressText = document.getElementById("progressText");
-const progressContainer = document.getElementById("progressContainer");
-const statusMessage = document.getElementById("statusMessage");
-
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    statusMessage.innerHTML = '<div class="error-message">Please sign in to upload.</div>';
-    return;
-  }
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const file = fileInput.files[0];
-    if (!file) {
-      statusMessage.innerHTML = '<div class="error-message">Please select a file to upload.</div>';
-      return;
-    }
-
-    if (file.size > 50 * 1024 * 1024) {
-      statusMessage.innerHTML = '<div class="error-message">File exceeds 50MB limit.</div>';
-      return;
-    }
-
-    const filePath = `users/${user.uid}/uploads/${Date.now()}_${file.name}`;
-    const storageRef = ref(storage, filePath);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    progressContainer.style.display = "block";
-
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        progressBar.value = percent;
-        progressText.textContent = `${Math.round(percent)}%`;
-      },
-      (error) => {
-        statusMessage.innerHTML = `<div class="error-message">Upload failed: ${error.message}</div>`;
-      },
-      async () => {
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        try {
-          await setDoc(doc(db, "users", user.uid, "media", `${Date.now()}`), {
-            url: downloadURL,
-            fileName: file.name,
-            fileType: file.type,
-            selectedDate: selectedDate || null,
-            uploadedAt: serverTimestamp()
-          });
-
-          statusMessage.innerHTML = `<div class="success-message">Upload successful!</div>`;
-          window.location.href = `upload-success.html?date=${encodeURIComponent(selectedDate || "")}`;
-        } catch (error) {
-          statusMessage.innerHTML = `<div class="error-message">Error saving to Firestore: ${error.message}</div>`;
+        // Get selected date from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedDate = urlParams.get("date");
+        
+        if (selectedDate) {
+            const titleElement = document.querySelector(".upload-section h1");
+            titleElement.textContent += ` for ${selectedDate}`;
         }
-      }
-      
-    );
-    
-  
-  // Display the selected date if it exists
-  if (selectedDate) {
-    const titleElement = document.querySelector('.upload-section h1');
-    titleElement.textContent += ` for ${selectedDate}`;
-    
-    // You can also add the date to your form data when uploading
-    document.getElementById('uploadForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const fileInput = document.getElementById('media');
-      const file = fileInput.files[0];
-      
-      if (!file) {
-        document.getElementById('statusMessage').innerHTML = '<div class="error-message">Please select a file to upload</div>';
-        return;
-      }
-      
-      // Validate file size (50MB max)
-      if (file.size > 50 * 1024 * 1024) {
-        document.getElementById('statusMessage').innerHTML = '<div class="error-message">File size exceeds 50MB limit</div>';
-        return;
-      }
-      
-      const formData = new FormData();
-      formData.append('media', file);
-      formData.append('date', selectedDate); // Add the date to the form data
-      
-      // Rest of your upload code...
-      // When redirecting to success page, include the date:
-      window.location.href = `upload-success.html?date=${encodeURIComponent(selectedDate)}`;
-    });
-  }
-  });
-});
-</script>
 
+        // Preview file before upload
+        fileInput.addEventListener("change", function() {
+            const file = fileInput.files[0];
+            if (!file) return;
+            
+            // Clear previous preview
+            previewContainer.innerHTML = '';
+            
+            // Create file info element
+            const fileInfo = document.createElement("div");
+            fileInfo.className = "file-info";
+            fileInfo.innerHTML = `
+                <p><strong>File Name:</strong> ${file.name}</p>
+                <p><strong>File Size:</strong> ${formatFileSize(file.size)}</p>
+                <p><strong>File Type:</strong> ${file.type || "Unknown"}</p>
+            `;
+            previewContainer.appendChild(fileInfo);
+            
+            // Validate file size
+            if (file.size > 50 * 1024 * 1024) {
+                statusMessage.innerHTML = '<div class="error-message">File exceeds 50MB limit.</div>';
+                uploadBtn.disabled = true;
+                return;
+            }
+            
+            // Create preview based on file type
+            if (file.type.startsWith("image/")) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgContainer = document.createElement("div");
+                    imgContainer.style.width = "100%";
+                    imgContainer.style.display = "flex";
+                    imgContainer.style.flexDirection = "column";
+                    imgContainer.style.alignItems = "center";
+                    
+                    const previewTitle = document.createElement("div");
+                    previewTitle.className = "preview-title";
+                    previewTitle.textContent = "Image Preview";
+                    imgContainer.appendChild(previewTitle);
+                    
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.alt = "Preview image";
+                    img.style.maxHeight = "300px";
+                    img.style.marginTop = "10px";
+                    imgContainer.appendChild(img);
+                    
+                    previewContainer.appendChild(imgContainer);
+                };
+                reader.readAsDataURL(file);
+            } else if (file.type.startsWith("video/")) {
+                const videoContainer = document.createElement("div");
+                videoContainer.style.width = "100%";
+                videoContainer.style.display = "flex";
+                videoContainer.style.flexDirection = "column";
+                videoContainer.style.alignItems = "center";
+                
+                const previewTitle = document.createElement("div");
+                previewTitle.className = "preview-title";
+                previewTitle.textContent = "Video Preview";
+                videoContainer.appendChild(previewTitle);
+                
+                const video = document.createElement("video");
+                video.controls = true;
+                video.style.maxHeight = "300px";
+                video.style.marginTop = "10px";
+                video.src = URL.createObjectURL(file);
+                videoContainer.appendChild(video);
+                
+                previewContainer.appendChild(videoContainer);
+            } else {
+                previewContainer.innerHTML = `
+                    <div class="preview-placeholder">
+                        <i class="fas fa-file-exclamation" style="font-size: 48px;"></i>
+                        <p>Preview not available for this file type</p>
+                    </div>
+                `;
+            }
+            
+            // Enable upload button
+            uploadBtn.disabled = false;
+            statusMessage.innerHTML = '';
+        });
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return "0 Bytes";
+            const k = 1024;
+            const sizes = ["Bytes", "KB", "MB", "GB"];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+        }
+
+        // Reset form
+        resetBtn.addEventListener("click", function() {
+            form.reset();
+            previewContainer.innerHTML = `
+                <div class="preview-placeholder">
+                    <i class="fas fa-image" style="font-size: 48px;"></i>
+                    <p>No file selected</p>
+                </div>
+            `;
+            progressContainer.style.display = "none";
+            statusMessage.innerHTML = '';
+            uploadBtn.disabled = false;
+        });
+
+        // Back to calendar
+        backBtn.addEventListener("click", function() {
+            window.location.href = "bookingcalendar.html";
+        });
+
+        // Form submission
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            
+            const file = fileInput.files[0];
+            if (!file) {
+                statusMessage.innerHTML = '<div class="error-message">Please select a file to upload.</div>';
+                return;
+            }
+
+            if (file.size > 50 * 1024 * 1024) {
+                statusMessage.innerHTML = '<div class="error-message">File exceeds 50MB limit.</div>';
+                return;
+            }
+
+            // Disable buttons during upload
+            uploadBtn.disabled = true;
+            resetBtn.disabled = true;
+            
+            // Show progress bar
+            progressContainer.style.display = "block";
+            progressBar.value = 0;
+            progressText.textContent = '0%';
+
+            try {
+                // Upload file to Firebase Storage
+                const filePath = `uploads/${Date.now()}_${file.name}`;
+                const storageRef = storage.ref(filePath);
+                const uploadTask = storageRef.put(file);
+
+                uploadTask.on(
+                    "state_changed",
+                    (snapshot) => {
+                        const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        progressBar.value = percent;
+                        progressText.textContent = `${Math.round(percent)}%`;
+                    },
+                    (error) => {
+                        statusMessage.innerHTML = `<div class="error-message">Upload failed: ${error.message}</div>`;
+                        uploadBtn.disabled = false;
+                        resetBtn.disabled = false;
+                    },
+                    async () => {
+                        // Get download URL
+                        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                        
+                        // Save metadata to Firestore
+                        await db.collection("media").add({
+                            url: downloadURL,
+                            fileName: file.name,
+                            fileType: file.type,
+                            fileSize: file.size,
+                            selectedDate: selectedDate || null,
+                            uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+
+                        // Success message with redirect countdown
+                        let seconds = 5;
+                        statusMessage.innerHTML = `
+                            <div class="success-message">
+                                <i class="fas fa-check-circle"></i> Upload successful! 
+                                Redirecting to calendar in <span class="countdown">${seconds}</span> seconds...
+                            </div>`;
+                        
+                        // Start countdown
+                        const countdownInterval = setInterval(() => {
+                            seconds--;
+                            document.querySelector('.countdown').textContent = seconds;
+                            
+                            if (seconds <= 0) {
+                                clearInterval(countdownInterval);
+                                window.location.href = "bookingcalendar.html";
+                            }
+                        }, 1000);
+                    }
+                );
+            } catch (error) {
+                statusMessage.innerHTML = `<div class="error-message">Error: ${error.message}</div>`;
+                uploadBtn.disabled = false;
+                resetBtn.disabled = false;
+            }
+        });
+
+        // Simulate authentication state
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                statusMessage.innerHTML = '<div class="error-message">Please sign in to upload media.</div>';
+                uploadBtn.disabled = true;
+            }
+        });
+    </script>
 </body>
-<footer-component></footer-component>
 </html>

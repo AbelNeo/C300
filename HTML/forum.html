@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Footmaster Pro - Forum</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .post-form textarea {
+      width: 100%;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      font-size: 1rem;
+      margin-bottom: 15px;
+    }
+    .post-form button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .post-form button:hover {
+      background: #0069d9;
+    }
+    .posts {
+      margin-top: 30px;
+    }
+    .post {
+      padding: 20px;
+      background: #f9f9f9;
+      border-left: 4px solid #007bff;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    .post .meta {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .post .content {
+      font-size: 1rem;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-comments"></i> Footmaster Pro Forum</h1>
+
+    <form class="post-form" id="postForm">
+      <textarea id="postContent" rows="4" placeholder="Share your thoughts..." required></textarea>
+      <button type="submit"><i class="fas fa-paper-plane"></i> Post</button>
+    </form>
+
+    <div class="posts" id="postsContainer">
+      <!-- Posts will appear here -->
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("postForm");
+    const postContent = document.getElementById("postContent");
+    const postsContainer = document.getElementById("postsContainer");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const content = postContent.value.trim();
+      if (!content) return;
+
+      const post = {
+        content,
+        author: "Anonymous User",
+        timestamp: new Date().toLocaleString()
+      };
+
+      addPostToDOM(post);
+      savePostToLocal(post); // Optional: LocalStorage persistence
+      postContent.value = "";
+    });
+
+    function addPostToDOM(post) {
+      const postDiv = document.createElement("div");
+      postDiv.classList.add("post");
+      postDiv.innerHTML = `
+        <div class="meta">Posted by ${post.author} on ${post.timestamp}</div>
+        <div class="content">${escapeHTML(post.content)}</div>
+      `;
+      postsContainer.prepend(postDiv);
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // Optional: Save/load from localStorage
+    function savePostToLocal(post) {
+      const posts = JSON.parse(localStorage.getItem("forumPosts") || "[]");
+      posts.unshift(post);
+      localStorage.setItem("forumPosts", JSON.stringify(posts));
+    }
+
+    function loadPostsFromLocal() {
+      const posts = JSON.parse(localStorage.getItem("forumPosts") || "[]");
+      posts.forEach(addPostToDOM);
+    }
+
+    loadPostsFromLocal();
+  </script>
+</body>
+</html>
