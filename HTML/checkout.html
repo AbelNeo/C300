@@ -315,7 +315,7 @@ async function saveMatchPurchase() {
   }
 
   // Save to Firestore
-  await addDoc(collection(db, "Match Tickets purchases"), {
+  await addDoc(collection(db, "MatchTicketsPurchases"), {
     userId: user.uid,
     userEmail: user.email,
     match_id: matchId,

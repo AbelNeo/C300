@@ -15,7 +15,6 @@
   }
 }
   </script>
-    <script type="module" src="js/firebase.js"></script>
     <script type="module" src="js/players.js"></script>
     <script type="module" src="js/main.js"></script>
     <script type="module" src="components/navbar-component.js"></script>
@@ -98,8 +97,11 @@
   <div class="no-purchases" id="noPurchasesMessage">No tickets purchased yet.</div>
 
   <script type="module">
-    import { initializeApp } from "firebase/app";
+    import { initializeApp, getApps } from "firebase/app";
     import { getDatabase, ref, onValue } from "firebase/database";
+    import { getFirestore, collection, getDocs, query, where } from "firebase/firestore";
+    import { getAuth, onAuthStateChanged} from "firebase/auth";
+    
 
     // Replace with your Firebase config
     const firebaseConfig = {
@@ -114,7 +116,9 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const purchasesRef = ref(db, 'purchases');
+    const purchasesRef = ref(db, 'purchases', 'MatchTicketsPurchases');
+    const auth = getAuth();
+
 
     const table = document.getElementById('purchasesTable');
     const tbody = table.querySelector('tbody');
@@ -184,17 +188,11 @@
       table.style.display = 'table';
       noPurchasesMsg.style.display = 'none';
     });
-  </script>
 
-<!-- Match ticket purchases -->
-<script type="module">
-import { db } from './js/firebase.js';
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const auth = getAuth();
-  const user = auth.currentUser;
+//Match Tickets Purchases
+
+  onAuthStateChanged(auth, async (user) => {
   const purchasesTable = document.getElementById('MatchPurchasesTable');
   const tbody = purchasesTable.querySelector('tbody');
   const noPurchasesMsg = document.getElementById('noPurchasesMessage');
@@ -202,10 +200,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!user) {
     noPurchasesMsg.textContent = "Please log in to view your purchases.";
     noPurchasesMsg.style.display = 'block';
+    purchasesTable.style.display = 'none';
     return;
   }
 
-  const q = query(collection(db, "Match Tickets purchases"), where("userEmail", "==", user.email));
+  const q = query(collection(db, "MatchTicketsPurchases"), where("userEmail", "==", user.email));
   const querySnapshot = await getDocs(q);
 
   tbody.innerHTML = '';
