@@ -249,7 +249,15 @@
 import { seatBlocks } from './js/seatBlocks.js';
 import { db } from './js/firebase.js';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+onAuthStateChanged(getAuth(), user => {
+  if (!user) {
+    alert("Please log in to complete your booking.");
+    window.location.href = "login.html"; 
+  }
+  updateConfirmationPrice(user);
+});
 
 function getBlockInfo(seatBlockLabel) {
   if (!seatBlockLabel) return null;
@@ -268,7 +276,7 @@ function getBlockInfo(seatBlockLabel) {
   return null;
 }
 
-function updateConfirmationPrice() {
+function updateConfirmationPrice(user) {
   const params = new URLSearchParams(window.location.search);
   const qty = parseInt(params.get('quantity'), 10) || 0;
   const seatBlockLabel = params.get('seat_block_label') || params.get('seat_block');
@@ -288,12 +296,12 @@ function updateConfirmationPrice() {
       container.appendChild(priceEl);
       container.appendChild(totalEl);
     }
-    saveMatchPurchase();
+    saveMatchPurchase(user);
   }
 }
-document.addEventListener('DOMContentLoaded', updateConfirmationPrice);
 
-async function saveMatchPurchase() {
+
+async function saveMatchPurchase(user) {
   const params = new URLSearchParams(window.location.search);
   const qty = parseInt(params.get('quantity'), 10) || 0;
   const seatBlock = params.get('seat_block');
@@ -303,10 +311,11 @@ async function saveMatchPurchase() {
   const priceInfo = getBlockInfo(seatBlockLabel);
 
   // Get user
-  const auth = getAuth();
-  const user = auth.currentUser;
-  if (!user) return; // Optionally show a login prompt
-
+  
+  if (!user) {
+    alert("Please log in to complete your booking.");
+    return; // Optionally show a login prompt
+    }
   let total = priceInfo.price * qty;
 
   let matchDate = null;
@@ -327,6 +336,16 @@ async function saveMatchPurchase() {
     totalPrice: total,
     purchaseDate: serverTimestamp()
   });
+
+  const container = document.querySelector('.purchase-card');
+  if (container && !document.getElementById('goToHistoryBtn')) {
+    const btn = document.createElement('button');
+    btn.id = 'goToHistoryBtn';
+    btn.textContent = 'Go to Purchase History';
+    btn.className = 'place-order';
+    btn.onclick = () => window.location.href = 'tracker.html';
+    container.appendChild(btn);
+  }
 }
 </script>
 </body>
