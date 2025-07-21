@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Footmaster Pro</title>
   <link rel="stylesheet" href="css/styles.css">
-  <script type="module" src="components\navbar-component.js" ></script>
-  <script type="module" src="js/booking.js" ></script>
-  <script type="module" src="components/footer-component.js"></script>
 </head>
 <script type="importmap">
 {
@@ -17,7 +14,11 @@
     "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
   }
 }
+
 </script>
+<script type="module" src="components\navbar-component.js" ></script>
+<script type="module" src="js/booking.js" ></script>
+<script type="module" src="components/footer-component.js"></script>
 <script type="module" src="js\firebase.js"></script>
 <script type="module" src="js\players.js"></script>
 <script type="module" src="js\main.js"></script>
@@ -33,20 +34,13 @@
       <h1>Booking page</h1>
       <!-- Match Selection -->
       <form class="signup-form" id="signupForm">
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" readonly required>
-
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" readonly required>
-
-        <label for="Team_home">Team Home</label>
-        <input type="text" id="Team_home" name="Team_home" readonly required>
-
-        <label for="Team_away">Team Away</label>
-        <input type="text" id="Team_away" name="Team_away" readonly required>
-
         <label for="quantity">Quantity</label>
-        <input type="number" id="quantity" name="quantity" placeholder="Enter number of tickets" required min="1" max="10000">
+
+        <div class="quantity-selector" style="display: flex; align-items: center; gap: 10px;">
+          <button type="button" id="decrement-qty" class="qty-btn" style="font-size: 1.5em; width: 40px;">-</button>
+          <input type="number" id="quantity" name="quantity" value="0" min="0" max="50" style="width: 80px; text-align: center; font-size: 1.2em;" required>
+          <button type="button" id="increment-qty" class="qty-btn" style="font-size: 1.5em; width: 40px;">+</button>
+        </div>
         <div id="quantity-warning" style="color: red; display: none;"></div>
 
         <label for="Date">Match Date</label>
@@ -55,16 +49,168 @@
         <label for="seat_block">Seat Block</label>
         <input type="text" id="seat_block" name="seat_block" readonly required>
 
+        <div id="price-info" style="margin-top: 16px; font-size: 1.2em; color: #800000;"></div>
+
         <div id="error-message" class="error-message" style="color: red; display: none;"></div>
       </form>
 
-  <li class="auth-buttons" style="list-style: none; margin-top: 20px">
-      <a href="checkout.html" class="btn-login" style="text-decoration: none;">Confirm Booking</a>
-
-  </li>
+      <li class="auth-buttons" style="list-style: none; margin-top: 20px">
+        <button id="confirm-booking-btn" class="btn" type="button" disabled>Confirm Booking</a>
+      </li>
 
   </ul>
     </main>
 
 <footer-component></footer-component>
+
+<script type="module">
+
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDZVSQAwB1YnKv6Pr_5kbsjvUz074mDsQ0",
+  authDomain: "football-club-management-3c136.firebaseapp.com",
+  projectId: "football-club-management-3c136",
+  storageBucket: "football-club-management-3c136.appspot.com",
+  messagingSenderId: "388394869174",
+  appId: "1:388394869174:web:ec8f93ab8fb685e9846117"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const matchId = params.get('match_id');
+  const quantity = params.get('quantity');
+  const seatBlock = params.get('seat_block');
+  const seatBlockLabel = params.get('seat_block_label');
+  const dateParam = params.get('match_date');
+
+ // Set quantity field if present
+  if (quantity && document.getElementById('quantity')) {
+    document.getElementById('quantity').value = quantity;
+  }
+
+// Set seat_block field if present
+  if ((seatBlockLabel || seatBlock) && document.getElementById('seat_block')) {
+    document.getElementById('seat_block').value = seatBlockLabel || seatBlock;
+  }
+
+  /* Set Match Date field if present in URL
+  if (dateParam && document.getElementById('Date')) {
+    document.getElementById('Date').value = dateParam;
+  } */
+
+  // Fetch match data and populate fields
+  if (dateParam && document.getElementById('Date')) {
+    document.getElementById('Date').value = dateParam;
+  } else if (matchId) {
+    const matchRef = doc(db, 'Matches', matchId);
+    const matchSnap = await getDoc(matchRef);
+    if (matchSnap.exists()) {
+      const match = matchSnap.data();
+      if (document.getElementById('Date')) {
+        document.getElementById('Date').value = match.match_date && match.match_date.toDate
+          ? match.match_date.toDate().toISOString().split('T')[0]
+          : '';
+      }
+      // Add more fields here if needed
+    }
+  }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const confirmBtn = document.getElementById('confirm-booking-btn');
+  const qtyInput = document.querySelector('.quantity-selector input[name="quantity"]');
+  function checkQty() {
+    let qty = parseInt(qtyInput.value, 10);
+    if (qty > 50) {
+      qtyInput.value = 50;
+      qty = 50;
+    }
+    confirmBtn.disabled = !(qty && qty > 0 && qty <= 50);
+  }
+  qtyInput.addEventListener('input', checkQty);
+  checkQty(); // Initial check
+
+  confirmBtn.addEventListener('click', function(event) {
+    event.preventDefault();
+    const quantity = qtyInput.value;
+    const date = document.getElementById('Date').value;
+    const seatBlockLabel = document.getElementById('seat_block').value;
+
+    /*const params = new URLSearchParams(window.location.search); */
+    // Extract block code (e.g., "13" from "Block 13 ..."), fallback to label if not found
+    const seatBlockMatch = seatBlockLabel.match(/Block\s*([A-Za-z0-9\-]+)/i);
+    const seatBlock = seatBlockMatch ? seatBlockMatch[1] : seatBlockLabel;
+    // Pass both seat_block and seat_block_label if available
+    let url = `checkout.html?quantity=${encodeURIComponent(quantity)}&date=${encodeURIComponent(date)}&seat_block=${encodeURIComponent(seatBlock)}&seat_block_label=${encodeURIComponent(seatBlockLabel)}`;
+    /*const url = `checkout.html?quantity=${encodeURIComponent(quantity)}&date=${encodeURIComponent(date)}&seat_block=${encodeURIComponent(seatBlock)}`; */
+    window.location.href = url;
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const qtyInput = document.querySelector('.quantity-selector input[name="quantity"]');
+  document.getElementById('increment-qty').onclick = () => {
+    let val = parseInt(qtyInput.value) || 0;
+    if (val < 50) qtyInput.value = val + 1;
+    qtyInput.dispatchEvent(new Event('input'));
+  };
+  document.getElementById('decrement-qty').onclick = () => {
+    let val = parseInt(qtyInput.value) || 0;
+    if (val > 1) qtyInput.value = val - 1;
+    qtyInput.dispatchEvent(new Event('input'));
+  };
+});
+</script>
+
+<script type="module">
+import { seatBlocks } from './js/seatBlocks.js';
+
+function getBlockInfo(seatBlockLabel) {
+  for (const group of seatBlocks) {
+    for (const block of group.blocks) {
+      if (
+        block.label === seatBlockLabel || 
+        block.value === seatBlockLabel ||
+        seatBlockLabel.includes(block.value) ||
+        seatBlockLabel.includes(block.label)
+      ) {
+        return { price: group.price, section: group.section, color: group.color, label: block.label };
+      }
+    }
+  }
+  return null;
+}
+
+function updatePriceDisplay() {
+  const qty = parseInt(document.getElementById('quantity').value, 10) || 0;
+  const seatBlockLabel = document.getElementById('seat_block').value;
+  const priceInfo = getBlockInfo(seatBlockLabel);
+  const priceDiv = document.getElementById('price-info');
+  if (priceInfo && qty > 0) {
+    let total = priceInfo.price * qty;
+    priceDiv.textContent = `Price per ticket: $${priceInfo.price.toFixed(2)} | Total: $${total.toFixed(2)}`;
+  } else {
+    priceDiv.textContent = '';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const qtyInput = document.getElementById('quantity');
+  const seatBlockInput = document.getElementById('seat_block');
+  qtyInput.addEventListener('input', updatePriceDisplay);
+  seatBlockInput.addEventListener('input', updatePriceDisplay);
+  document.getElementById('seat_block').addEventListener('input', updatePriceDisplay);
+  updatePriceDisplay();
+});
+
+</script>
 </body>

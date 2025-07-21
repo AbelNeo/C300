@@ -18,7 +18,7 @@
   <!-- Only import your JS modules -->
   <script type="module" src="js/firebase.js"></script>
   <script type="module" src="js/followings.js"></script>
-    <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/main.js"></script>
   <script type="module" src="components/navbar-component.js"></script>
   <script type="module" src="components/footer-component.js"></script>
 </head>
@@ -222,18 +222,16 @@
   <div id="purchases-container">
     <div class="purchase-card">
     <h1>Booking Confirmation</h1>
-    <p><strong>Name:</strong> <span id="name"></span></p>
-    <p><strong>Email:</strong> <span id="email"></span></p>
-    <p><strong>Match:</strong> <span id="match"></span></p>
+    <p><strong>Ticket Qty:</strong> <span id="quantity"></span></p>
     <p><strong>Date:</strong> <span id="date"></span></p>
-    <p><strong>Tickets:</strong> <span id="quantity"></span></p>
     <p><strong>Seat Block:</strong> <span id="seat_block"></span></p>
     </div>
   </div>
 
 
 <script>
-    const hasBooking = params.get('name') && params.get('team_home');
+    const params = new URLSearchParams(window.location.search);
+    const hasBooking = params.get('quantity') && params.get('date') && params.get('seat_block');
     if (hasBooking) {
       document.getElementById('purchases-container').style.display = 'block';
       document.getElementById('checkoutContainer').style.display = 'none';
@@ -242,18 +240,95 @@
       document.getElementById('checkoutContainer').style.display = 'block';
     }
 
-    const params = new URLSearchParams(window.location.search);
-    document.getElementById('name').textContent = params.get('name');
-    document.getElementById('email').textContent = params.get('email');
-    document.getElementById('match').textContent = `${params.get('team_home')} vs ${params.get('team_away')}`;
-    document.getElementById('date').textContent = params.get('date');
     document.getElementById('quantity').textContent = params.get('quantity');
-    document.getElementById('seat_block').textContent = params.get('seat_block');
+    document.getElementById('date').textContent = params.get('date');
+    document.getElementById('seat_block').textContent = params.get('seat_block_label') || params.get('seat_block');
 </script>
 
+<script type="module">
+import { seatBlocks } from './js/seatBlocks.js';
+import { db } from './js/firebase.js';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
+function getBlockInfo(seatBlockLabel) {
+  if (!seatBlockLabel) return null;
+  for (const group of seatBlocks) {
+    for (const block of group.blocks) {
+      if (
+        block.label === seatBlockLabel ||
+        block.value === seatBlockLabel ||
+        seatBlockLabel.includes(block.value) ||
+        seatBlockLabel.includes(block.label)
+      ) {
+        return { price: group.price, section: group.section, color: group.color, label: block.label };
+      }
+    }
+  }
+  return null;
+}
 
+function updateConfirmationPrice() {
+  const params = new URLSearchParams(window.location.search);
+  const qty = parseInt(params.get('quantity'), 10) || 0;
+  const seatBlockLabel = params.get('seat_block_label') || params.get('seat_block');
+  const priceInfo = getBlockInfo(seatBlockLabel);
+  if (priceInfo && qty > 0) {
+    let total = priceInfo.price * qty;
+    // Add price info to confirmation
+    const container = document.querySelector('.purchase-card');
+    if (container) {
+      const oldPrices = container.querySelectorAll('.price-info');
+      oldPrices.forEach(el => el.remove());
+      const priceEl = document.createElement('p');
+      priceEl.className = 'price-info';
+      priceEl.innerHTML = `<strong>Price per ticket:</strong> $${priceInfo.price.toFixed(2)}`;
+      const totalEl = document.createElement('p');
+      totalEl.innerHTML = `<strong>Total:</strong> $${total.toFixed(2)}`;
+      container.appendChild(priceEl);
+      container.appendChild(totalEl);
+    }
+    saveMatchPurchase();
+  }
+}
+document.addEventListener('DOMContentLoaded', updateConfirmationPrice);
 
+async function saveMatchPurchase() {
+  const params = new URLSearchParams(window.location.search);
+  const qty = parseInt(params.get('quantity'), 10) || 0;
+  const seatBlock = params.get('seat_block');
+  const seatBlockLabel = params.get('seat_block_label') || seatBlock;
+  const matchDateStr = params.get('date');
+  const matchId = parseInt(params.get('match_id'),10) || null; // If you pass match_id in URL
+  const priceInfo = getBlockInfo(seatBlockLabel);
+
+  // Get user
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return; // Optionally show a login prompt
+
+  let total = priceInfo.price * qty;
+
+  let matchDate = null;
+  if (matchDateStr) {
+    matchDate = new Date(matchDateStr);
+  }
+
+  // Save to Firestore
+  await addDoc(collection(db, "Match Tickets purchases"), {
+    userId: user.uid,
+    userEmail: user.email,
+    match_id: matchId,
+    match_date: matchDate ? matchDate : null,
+    seatBlock: seatBlock,
+    seatBlockLabel: seatBlockLabel,
+    quantity: qty,
+    pricePerTicket: priceInfo.price,
+    totalPrice: total,
+    purchaseDate: serverTimestamp()
+  });
+}
+</script>
 </body>
 <footer-component></footer-component>
 </html>

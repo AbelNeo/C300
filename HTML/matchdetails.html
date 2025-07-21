@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const matchListDiv = document.getElementById('matchesList');
   const matchDateEl = document.getElementById('matchDate');
 
+
   console.log("Selected date from URL:", selectedDate);
 
   document.getElementById('matchDate').textContent = selectedDate;
@@ -102,11 +103,9 @@ try {
   const snapshot = await getDocs(collection(db, 'Matches'));
   let matchesFound = false;
   matchListDiv.innerHTML = '';
-
   snapshot.forEach(doc => {
     const match = doc.data();
     const matchDate = match.match_date.toDate().toISOString().split('T')[0];
-
     if (matchDate === selectedDate) {
       matchesFound = true;
       const crestMap = {
@@ -127,16 +126,28 @@ try {
         `${match.match_date.toDate().toLocaleDateString()} ${match.match_date.toDate().toLocaleTimeString()} Singapore Time`;
       document.getElementById('matchVenue').textContent = match.venue || 'Emirates Stadium';
 
+      const bookBtn = document.getElementById('book-tickets-btn');
+      const seatSection = document.getElementById('seat-section');
+      const matchId = doc.id;
+      const matchDateStr = match.match_date.toDate().toISOString().split('T')[0];
 
-      /*const div = document.createElement('div');
-      div.innerHTML = `
-        <h3>${match.team_home} vs ${match.team_away}</h3>
-        <p>Time: ${new Date(match.match_date.toDate()).toLocaleTimeString()}</p>
-        <p>Venue: ${match.venue || 'Emirates Stadium'}</p>
-        <a href="bookingform.html?match_id=${doc.id}" class="btn">Book seats</a>
-      `;
-      matchListDiv.appendChild(div); */
-    } 
+      // Disable the button until a seat is selected
+      bookBtn.classList.add('book-btn-disabled');
+      bookBtn.removeAttribute('href');
+
+      // Update the link when a seat is selected
+        $('#seat-section').on('change', function() {
+        const seatBlock = this.value;
+        const seatBlockLabel = this.options[this.selectedIndex].text; 
+        if (seatBlock) {
+          bookBtn.href = `bookingform.html?match_id=${matchId}&match_date=${encodeURIComponent(matchDateStr)}&seat_block=${encodeURIComponent(seatBlock)}&seat_block_label=${encodeURIComponent(seatBlockLabel)}`;
+          bookBtn.classList.remove('book-btn-disabled');
+        } else {
+          bookBtn.removeAttribute('href');
+          bookBtn.classList.add('book-btn-disabled');
+      }
+      });
+      }; 
   });
   if (!matchesFound) {
     matchListDiv.innerHTML = '<p>No matches found for this date</p>';
@@ -174,20 +185,20 @@ try {
       
   <label for="seat-section">Select Block Section:</label>
   <select id="seat-section" class="js-example-basic-single" name="seatSection" style="width: 100%;">
-  <optgroup label="🟦 Lower Tier - East">
+  <optgroup label="🟦 Lower Tier - East (1 seat: $120.00)">
     <option value="block-13">Block 13 - Long Side - Lower Tier - East 🟦</option>
     <option value="block-14">Block 14 - Long Side - Lower Tier - East 🟦</option>
     <option value="block-19">Block 19 - Long Side - Lower Tier - East 🟦</option>
   </optgroup>
 
-  <optgroup label="🟦 Lower Tier - West">
+  <optgroup label="🟦 Lower Tier - West (1 seat: $120.00)">
     <option value="block-3">Block 3 - Long Side - Lower Tier - West 🟦</option>
     <option value="block-4">Block 4 - Long Side - Lower Tier - West 🟦</option>
     <option value="block-29">Block 29 - Long Side - Lower Tier - West 🟦</option>
     <option value="block-30">Block 30 - Long Side - Lower Tier - West 🟦</option>
   </optgroup>
 
-  <optgroup label="🔵 Upper Tier - East">
+  <optgroup label="🔵 Upper Tier - East (1 seat: $240.00)">
     <option value="block-107">Block 107 - Long Side - Upper Tier - East 🔵</option>
     <option value="block-108">Block 108 - Long Side - Upper Tier - East 🔵</option>
     <option value="block-109">Block 109 - Long Side - Upper Tier - East 🔵</option>
@@ -198,7 +209,7 @@ try {
     <option value="block-118">Block 118 - Long Side - Upper Tier - East 🔵</option>
   </optgroup>
 
-  <optgroup label="🔵 Upper Tier - West">
+  <optgroup label="🔵 Upper Tier - West (1 seat: $240.00)">
     <option value="block-93">Block 93 - Long Side - Upper Tier - West 🔵</option>
     <option value="block-94">Block 94 - Long Side - Upper Tier - West 🔵</option>
     <option value="block-95">Block 95 - Long Side - Upper Tier - West 🔵</option>
@@ -209,35 +220,35 @@ try {
     <option value="block-132">Block 132 - Long Side - Upper Tier - West 🔵</option>
   </optgroup>
 
-  <optgroup label="🟩 Lower Tier - East">
+  <optgroup label="🟩 Lower Tier - East (1 seat: $90.00)">
     <option value="block-15">Block 15 - Long Side Between Penalty Boxes - Lower Tier - East 🟩</option>
     <option value="block-16">Block 16 - Long Side Between Penalty Boxes - Lower Tier - East 🟩</option>
     <option value="block-17">Block 17 - Long Side Between Penalty Boxes - Lower Tier - East 🟩</option>
     <option value="block-18">Block 18 - Long Side Between Penalty Boxes - Lower Tier - East 🟩</option>
   </optgroup>
 
-  <optgroup label="🟩 Lower Tier - West">
+  <optgroup label="🟩 Lower Tier - West (1 seat: $90.00)">
     <option value="block-1">Block 1 - Long Side Between Penalty Boxes - Lower Tier - West 🟩</option>
     <option value="block-2">Block 2 - Long Side Between Penalty Boxes - Lower Tier - West 🟩</option>
     <option value="block-31">Block 31 - Long Side Between Penalty Boxes - Lower Tier - West 🟩</option>
     <option value="block-32">Block 32 - Long Side Between Penalty Boxes - Lower Tier - West 🟩</option>
   </optgroup>
 
-  <optgroup label="🟢 Upper Tier - East">
+  <optgroup label="🟢 Upper Tier - East (1 seat: $95.00)">
     <option value="block-111">Block 111 - Long Side Between Penalty Boxes - Upper Tier - East 🟢</option>
     <option value="block-112">Block 112 - Long Side Between Penalty Boxes - Upper Tier - East 🟢</option>
     <option value="block-113">Block 113 - Long Side Between Penalty Boxes - Upper Tier - East 🟢</option>
     <option value="block-114">Block 114 - Long Side Between Penalty Boxes - Upper Tier - East 🟢</option>
   </optgroup>
 
-  <optgroup label="🟢 Upper Tier - West">
+  <optgroup label="🟢 Upper Tier - West (1 seat: $95.00)">
     <option value="block-91">Block 91 - Long Side Between Penalty Boxes - Upper Tier - West 🟢</option>
     <option value="block-92">Block 92 - Long Side Between Penalty Boxes - Upper Tier - West 🟢</option>
     <option value="block-133">Block 133 - Long Side Between Penalty Boxes - Upper Tier - West 🟢</option>
     <option value="block-134">Block 134 - Long Side Between Penalty Boxes - Upper Tier - West 🟢</option>
   </optgroup>
 
-  <optgroup label="🟧 Lower Tier - North">
+  <optgroup label="🟧 Lower Tier - North (1 seat: $100.00)">
     <option value="block-5">Block 5 - Short Side - Lower Tier - North 🟧</option>
     <option value="block-6">Block 6 - Short Side - Lower Tier - North 🟧</option>
     <option value="block-7">Block 7 - Short Side - Lower Tier - North 🟧</option>
@@ -248,7 +259,7 @@ try {
     <option value="block-12">Block 12 - Short Side - Lower Tier - North 🟧</option>
   </optgroup>
 
-  <optgroup label="🟧 Lower Tier - South">
+  <optgroup label="🟧 Lower Tier - South (1 seat: $100.00)">
     <option value="block-24">Block 24 - Short Side - Lower Tier - South 🟧</option>
     <option value="block-25">Block 25 - Short Side - Lower Tier - South 🟧</option>
     <option value="block-26">Block 26 - Short Side - Lower Tier - South 🟧</option>
@@ -256,7 +267,7 @@ try {
     <option value="block-28">Block 28 - Short Side - Lower Tier - South 🟧</option>
   </optgroup>
 
-  <optgroup label="🟠 Upper Tier - North">
+  <optgroup label="🟠 Upper Tier - North (1 seat: $220.00)">
     <option value="block-97">Block 97 - Short Side - Upper Tier - North 🟠</option>
     <option value="block-98">Block 98 - Short Side - Upper Tier - North 🟠</option>
     <option value="block-99">Block 99 - Short Side - Upper Tier - North 🟠</option>
@@ -269,27 +280,27 @@ try {
     <option value="block-106">Block 106 - Short Side - Upper Tier - North 🟠</option>
   </optgroup>
 
-  <optgroup label="🟠 Upper Tier - South">
-    <option value="block-120">Block 119 - Short Side - Upper Tier - South 🟠</option>
-    <option value="block-121">Block 120 - Short Side - Upper Tier - South 🟠</option>
-    <option value="block-118">Block 121 - Short Side - Upper Tier - South 🟠</option>
-    <option value="block-119">Block 122 - Short Side - Upper Tier - South 🟠</option>
-    <option value="block-120">Block 123 - Short Side - Upper Tier - South 🟠</option>
-    <option value="block-121">Block 124 - Short Side - Upper Tier - South 🟠</option>
-    <option value="block-118">Block 125 - Short Side - Upper Tier - South 🟠</option>
-    <option value="block-119">Block 126 - Short Side - Upper Tier - South 🟠</option>
-    <option value="block-120">Block 127 - Short Side - Upper Tier - South 🟠</option>
-    <option value="block-121">Block 128 - Short Side - Upper Tier - South 🟠</option>
+  <optgroup label="🟠 Upper Tier - South (1 seat: $220.00)">
+    <option value="block-119">Block 119 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-120">Block 120 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-121">Block 121 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-122">Block 122 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-123">Block 123 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-124">Block 124 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-125">Block 125 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-126">Block 126 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-127">Block 127 - Short Side - Upper Tier - South 🟠</option>
+    <option value="block-128">Block 128 - Short Side - Upper Tier - South 🟠</option>
   </optgroup>
 
-  <optgroup label="🟪 Away Section - SouthEast">
+  <optgroup label="🟪 Away Section - SouthEast (1 seat: $110.00)">
     <option value="block-20">Block 20 - Away Team - Away Section - SouthEast 🟪</option>
     <option value="block-21">Block 21 - Away Team - Away Section - SouthEast 🟪</option>
     <option value="block-22">Block 22 - Away Team - Away Section - SouthEast 🟪</option>
     <option value="block-23">Block 23 - Away Team - Away Section - SouthEast 🟪</option>
   </optgroup>
 
-  <optgroup label="🟥 Club Level - Central">
+  <optgroup label="🟥 Club Level - Central (1 seat: $80.00)">
     <option value="block-B41">Block B41 - Club Level - Club Level - Central 🟥</option>
     <option value="block-B42">Block B42 - Club Level - Club Level - Central 🟥</option>
     <option value="block-B43">Block B43 - Club Level - Club Level - Central 🟥</option>
@@ -338,7 +349,8 @@ try {
 
   </select><br><br>
   </section>
-  <a href="bookingform.html?match_id=${doc.id}" class="btn">Book tickets</a>
+  <a id="book-tickets-btn" class="btn">Book tickets</a>
+<!---  <a href="bookingform.html?match_id=${doc.id}" class="btn">Book tickets</a> -->
 </main>
 
   <script>
@@ -350,7 +362,7 @@ try {
   });
   </script>
 
-  <script>
+ <!--- <script>
   document.addEventListener('DOMContentLoaded', () => {
     const matchListDiv = document.getElementById('matchesList');
     if (!matchListDiv) return;
@@ -365,11 +377,11 @@ try {
           return;
         }
 
-        window.location.href = `bookingform.html?match_id=${matchId}&seat_block=${encodeURIComponent(seatBlock)}`;
+        window.location.href = `bookingform.html?match_id=${matchId}&team_home=${encodeURIComponent(teamHome)}&team_away=${encodeURIComponent(teamAway)}&date=${encodeURIComponent(matchDate)}&seat_block=${encodeURIComponent(seatBlock)}`;
         });
       });
     });
-    </script>
+    </script> -->
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -413,7 +425,7 @@ try {
 
 <!--on the booking form page there should be a field that display which section and specific seats user booked-->
 
-  <div class="transport">
+<!--div class="transport">
   <h3>Getting to Emirates home stadium</h3>
   <div id="transportInfo"></div>
   <button id="mapToggle">Show Stadium Map</button>
@@ -433,13 +445,21 @@ try {
   </div>
 </div>
 </body>
-<footer-component></footer-component>
+<footer-component></footer-component> -->
 
 
 
 
 
 
+<!--const div = document.createElement('div');
+      div.innerHTML = `
+        <h3>${match.team_home} vs ${match.team_away}</h3>
+        <p>Time: ${new Date(match.match_date.toDate()).toLocaleTimeString()}</p>
+        <p>Venue: ${match.venue || 'Emirates Stadium'}</p>
+        <a href="bookingform.html?match_id=${doc.id}" class="btn">Book seats</a>
+      `;
+      matchListDiv.appendChild(div); -->
 
 
 
