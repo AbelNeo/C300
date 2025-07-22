@@ -375,10 +375,16 @@ const playerPostId = new URLSearchParams(window.location.search).get('id') || 'd
 async function uploadImages(files, playerPostId, userId) {
     const folder = `player_posts/${playerPostId}/${userId || 'anonymous'}`;
     const urls = [];
+    
     for (const file of files) {
-        const imgRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
-        await uploadBytes(imgRef, file);
-        urls.push(await getDownloadURL(imgRef));
+        try {
+            const imgRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
+            await uploadBytes(imgRef, file);
+            urls.push(await getDownloadURL(imgRef));
+        } catch (err) {
+            console.error(`Failed to upload ${file.name}:`, err);
+            throw new Error(`Failed to upload ${file.name}`);
+        }
     }
     return urls;
 }
