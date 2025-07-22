@@ -394,7 +394,7 @@ async function uploadImages(files, playerPostId, userId) {
         try {
             const imgRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
             await uploadBytes(imgRef, file);
-            // urls.push(await getDownloadURL(imgRef));
+            urls.push(await getDownloadURL(imgRef));
         } catch (err) {
             console.error(` ${file.name}:`, err);
             throw new Error(` ${file.name}`);
