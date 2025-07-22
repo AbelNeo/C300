@@ -1,0 +1,9 @@
+[
+  {
+    "origin": ["https://football-club-management-3c136.web.app"],
+    "method": ["GET", "POST", "PUT", "DELETE"],
+    "maxAgeSeconds": 3600,
+    "responseHeaders": ["Content-Type"]
+    
+  }
+]
