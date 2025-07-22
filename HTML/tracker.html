@@ -122,13 +122,13 @@
 
 
     const table = document.getElementById('purchasesTable');
-    const tbody = table.querySelector('tbody');
+    const purchasesTbody = table.querySelector('tbody');
     const noPurchasesMsg = document.getElementById('noPurchasesMessage');
     const purchasesRef = ref(db, 'purchases');
 
     onValue(purchasesRef, (snapshot) => {
       const purchases = snapshot.val();
-      tbody.innerHTML = '';
+      purchasesTbody.innerHTML = '';
 
       if (!purchases) {
         table.style.display = 'none';
@@ -184,7 +184,7 @@
         tr.appendChild(totalPriceCell);
         tr.appendChild(dateCell);
 
-        tbody.appendChild(tr);
+        purchasesTbody.appendChild(tr);
       });
 
       table.style.display = 'table';
@@ -196,7 +196,7 @@
 
   onAuthStateChanged(auth, async (user) => {
   const purchasesTable = document.getElementById('MatchPurchasesTable');
-  const tbody = purchasesTable.querySelector('tbody');
+  const matchTbody = purchasesTable.querySelector('tbody');
   const noPurchasesMsg = document.getElementById('noPurchasesMessage');
 
   if (!user) {
@@ -209,24 +209,38 @@
   const q = query(collection(firestore, "MatchTicketsPurchases"), where("userEmail", "==", user.email));
   const querySnapshot = await getDocs(q);
 
-  tbody.innerHTML = '';
+  matchTbody.innerHTML = '';
   let found = false;
 
+  const seen= new Set();
+
   querySnapshot.forEach(doc => {
-    found = true;
     const purchase = doc.data();
+    const seatBlockValue = purchase.seatBlockLabel ?? purchase.seatBlock;
+
+    if (!seatBlockValue) return;
+
+    const uniqueKey = `${purchase.userEmail}-${purchase.match_date?.toDate ? purchase.match_date.toDate().toISOString() : ''}-${purchase.seatBlockLabel ?? purchase.seatBlock}`;
+    if (seen.has(uniqueKey)) return; // Skip duplicate
+    seen.add(uniqueKey);
+
+    const pricePerTicket = Number(purchase.pricePerTicket) || 0;
+    const quantity = Number(purchase.quantity) || 0;
+    const totalPrice = pricePerTicket * quantity;
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${purchase.seatBlockLabel ?? purchase.seatBlock}</td>
-      <td>${purchase.quantity ?? ''}</td>
-      <td>${purchase.pricePerTicket != null ? Number(purchase.pricePerTicket).toFixed(2) :''}</td>
-      <td>${purchase.totalPrice ?? ''}</td>
+      <td>${quantity}</td>
+      <td>$${pricePerTicket.toFixed(2)}</td>
+      <td>$${totalPrice.toFixed(2)}</td>
       <td>${purchase.match_date?.toDate ? purchase.match_date.toDate().toLocaleString() : ''}</td>
       <td>${purchase.purchaseDate?.toDate ? purchase.purchaseDate.toDate().toLocaleString() : ''}</td>
       <td>${purchase.userEmail ?? ''}</td>
       
     `;
-    tbody.appendChild(tr);
+    matchTbody.appendChild(tr);
+    found = true;
   });
 
   if (found) {
