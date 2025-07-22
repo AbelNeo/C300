@@ -219,45 +219,45 @@ if (userData.favoritePlayers?.length) {
 
 
 
-// Player display loader using playerCard.js
-async function loadAndDisplayPlayers() {
-  try {
-    // Use the new playersContainer id (all player cards are handled by playerCard.js)
-    const container = document.getElementById('playersContainer');
-    if (!container) throw new Error("Players container not found in DOM");
+// // Player display loader using playerCard.js
+// async function loadAndDisplayPlayers() {
+//   try {
+//     // Use the new playersContainer id (all player cards are handled by playerCard.js)
+//     const container = document.getElementById('playersContainer');
+//     if (!container) throw new Error("Players container not found in DOM");
 
-    container.innerHTML = '<div class="loading">Loading players...</div>';
+//     container.innerHTML = '<div class="loading">Loading players...</div>';
 
-    const players = await getFavoritePlayer();
-    if (!players || players.length === 0) {
-      container.innerHTML = '<p class="no-players">No players found in database</p>';
-      return;
-    }
+//     const players = await getFavoritePlayer();
+//     if (!players || players.length === 0) {
+//       container.innerHTML = '<p class="no-players">No players found in database</p>';
+//       return;
+//     }
 
-    renderPlayersGrid(players, 'playersContainer');
-  } catch (error) {
-    console.error("Full error details:", error);
-    const container = document.getElementById('playersContainer');
-    if (container) {
-      container.innerHTML = `
-        <p style="color: red">Error loading players</p>
-        <p>${error.message}</p>
-      `;
-    }
-  }
-}
+//     renderPlayersGrid(players, 'playersContainer');
+//   } catch (error) {
+//     console.error("Full error details:", error);
+//     const container = document.getElementById('playersContainer');
+//     if (container) {
+//       container.innerHTML = `
+//         <p style="color: red">Error loading players</p>
+//         <p>${error.message}</p>
+//       `;
+//     }
+//   }
+// }
 
-// Initialize player card loading and refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  // Refresh button
-  const refreshBtn = document.getElementById('refresh-players');
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', loadAndDisplayPlayers);
-  }
+// // Initialize player card loading and refresh button
+// document.addEventListener('DOMContentLoaded', () => {
+//   // Refresh button
+//   const refreshBtn = document.getElementById('refresh-players');
+//   if (refreshBtn) {
+//     refreshBtn.addEventListener('click', loadAndDisplayPlayers);
+//   }
 
-  // Load player cards on page load
-  loadAndDisplayPlayers();
-});
+//   // Load player cards on page load
+//   loadAndDisplayPlayers();
+// });
 
 // Real account detection
 function detectAccount() {
