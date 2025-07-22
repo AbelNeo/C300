@@ -9,7 +9,7 @@ import {
   GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification, signOut, setPersistence, browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
-  getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject
+  getStorage, ref, uploadBytes, getDownloadURL, deleteObject
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"; // <-- Add this line
 
 const firebaseConfig = {
@@ -29,7 +29,7 @@ setPersistence(auth, browserLocalPersistence)
     console.error("Error setting auth persistence:", error);
   });
 const db = getFirestore(app);
-const storage = getStorage(app); // <-- Add this line
+const storage = getStorage(); // <-- Add this line
 
 async function bookSeat(match_id, seat_number, user_id) {
   const seatRef = doc(db, `matches/${match_id}/seats/${seat_number}`);
@@ -96,7 +96,7 @@ export {
   // Auth functions
   onAuthStateChanged, fetchSignInMethodsForEmail, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, OAuthProvider, sendEmailVerification, signOut,
   // Storage functions
-  storageRef, uploadBytes, getDownloadURL, deleteObject // <-- Export storage utils
+  ref, uploadBytes, getDownloadURL, deleteObject // <-- Export storage utils
 };
 
 

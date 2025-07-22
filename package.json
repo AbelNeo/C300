@@ -4,8 +4,10 @@
     "@fullcalendar/daygrid": "^6.1.17",
     "@fullcalendar/list": "^6.1.17",
     "@fullcalendar/timegrid": "^6.1.17",
-    "firebase": "^11.8.0",
-    "fullcalendar": "^6.1.17"
+    "express": "^5.1.0",
+    "firebase": "^11.10.0",
+    "fullcalendar": "^6.1.17",
+    "multer": "^2.0.2"
   },
   "scripts": {
     "build": "echo Building project..."

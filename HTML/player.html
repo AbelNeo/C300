@@ -384,32 +384,24 @@ const instagramGrid = document.getElementById('instagramGrid');
 const uploadStatus = document.getElementById('uploadStatus');
 const playerPostId = new URLSearchParams(window.location.search).get('id') || 'default';
 
-async function uploadImages(files, folder) {
-  const urls = [];
+const storageRef = ref(storage, 'some-child');
 
-  for (const file of files) {
-    try {
-      // Optional: Validate file type (image only)
-      if (!file.type.startsWith('image/')) {
-        console.warn(`${file.name} is not an image. Skipping.`);
-        continue;
-      }
-
-      const timestamp = Date.now();
-      const imgRef = ref(storage, `${folder}/${timestamp}_${file.name}`);
-      await uploadBytes(imgRef, file);
-
-      const downloadURL = await getDownloadURL(imgRef);
-      urls.push(downloadURL);
-    } catch (err) {
-      console.error(`Failed to upload ${file.name}:`, err);
-      throw new Error(`Upload failed for ${file.name}`);
+async function uploadImages(files, playerPostId, userId) {
+    const folder = `player_posts/${playerPostId}/${userId}`;
+    const urls = [];
+    
+    for (const file of files) {
+        try {
+            const imgRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
+            await uploadBytes(imgRef, file);
+            // urls.push(await getDownloadURL(imgRef));
+        } catch (err) {
+            console.error(` ${file.name}:`, err);
+            throw new Error(` ${file.name}`);
+        }
     }
-  }
-
-  return urls;
+    return urls;
 }
-
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
