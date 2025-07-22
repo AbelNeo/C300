@@ -9,7 +9,10 @@ class NavbarComponent extends HTMLElement {
             this.innerHTML = '<div class="navbar-loading">Loading...</div>';
             await this.loadNavbar();
             this.setupEventListeners();
+            window.addEventListener('storage', () => {
             this.updateAuthUI();
+        });
+
         } catch (error) {
             console.error('Navbar loading failed:', error);
             this.innerHTML = '<p>Error loading navigation</p>';
@@ -21,6 +24,7 @@ async loadNavbar() {
     if (!response.ok) throw new Error('Failed to load navbar');
     this.innerHTML = await response.text();
     this.adjustBodyPadding(); // Push content down after navbar is rendered
+    this.updateAuthUI();
 }
 
 adjustBodyPadding() {
@@ -56,6 +60,7 @@ adjustBodyPadding() {
         const loginBtn = this.querySelector('#loginBtn');
         const signupBtn = this.querySelector('#signupBtn');
         const logoutBtn = this.querySelector('#logoutBtn');
+        const manageMatchesNav = this.querySelector('#manageMatchesNav');
 
         [loginBtn, signupBtn, logoutBtn].forEach(btn => {
             if (!btn) return;
@@ -65,6 +70,19 @@ adjustBodyPadding() {
                 btn.style.display = btn.id === 'logoutBtn' ? 'none' : 'block';
             }
         });
+        // Show/hide Manage Matches button
+        if (manageMatchesNav) {
+            let showBtn = false;
+            if (user) {
+                try {
+                    const userObj = JSON.parse(user);
+                    if (userObj.email === "evansker94@gmail.com") {
+                        showBtn = true;
+                    }
+                } catch (e) {}
+            }
+            manageMatchesNav.style.display = showBtn ? 'inline-block' : 'none';
+        }
     }
 }
 

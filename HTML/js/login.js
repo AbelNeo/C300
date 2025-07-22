@@ -40,6 +40,8 @@ if (loginForm) {
         lastLogin: serverTimestamp()
       }, { merge: true });
 
+      localStorage.setItem('currentUser', JSON.stringify({ email: user.email }));
+
       showSuccess('Login successful! Redirecting...');
       setTimeout(() => {
         window.location.href = 'index.html';
@@ -67,6 +69,8 @@ if (googleBtn) {
         emailVerified: user.emailVerified || false
       }, { merge: true });
 
+      localStorage.setItem('currentUser', JSON.stringify({ email: user.email }));
+
       showSuccess('Welcome back to FootMaster Pro!');
       setTimeout(() => {
         window.location.href = 'index.html';
@@ -91,6 +95,8 @@ if (appleBtn) {
         lastLogin: serverTimestamp(),
         emailVerified: user.emailVerified || false
       }, { merge: true });
+
+      localStorage.setItem('currentUser', JSON.stringify({ email: user.email }));
 
       showSuccess('Welcome to FootMaster Pro!');
       setTimeout(() => {

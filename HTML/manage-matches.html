@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Footmaster Pro</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="module" src="components/navbar-component.js"></script>
+    <script type="module" src="js/booking.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
+    <script type="module" src="components/footer-component.js"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script type="module" src="js/firebase.js"></script>
+    <script type="module" src="js/players.js"></script>
+    <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <navbar-component></navbar-component>
+  <main>
+    <h1>Manage Matches</h1>
+    <div id="admin-controls" style="display:none;">
+      <button id="addMatchBtn">Add Match</button>
+      <table id="matchesTable">
+        <thead>
+          <tr>
+            <th>Match Date</th>
+            <th>Team Home</th>
+            <th>Team Away</th>
+            <th>Match venue</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div id="access-denied" style="display:none;">
+      <h2>Access Denied</h2>
+      <p>You do not have permission to manage matches.</p>
+    </div>
+    <!-- Modal for Add/Edit Match -->
+    <div id="matchModal" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%,0); background:#fff; border:1px solid #ccc; padding:20px; z-index:1000;">
+      <h2 id="modalTitle">Add/Edit Match</h2>
+      <form id="matchForm">
+        <input type="hidden" id="matchId" />
+        <label>Date: <input type="date" id="matchDate" required /></label><br>
+        <label>Home Team: <input type="text" id="homeTeam" required /></label><br>
+        <label>Away Team: <input type="text" id="awayTeam" required /></label><br>
+        <label>Venue: <input type="text" id="venue" required /></label><br>
+        <button type="submit" id="saveMatchBtn">Save</button>
+        <button type="button" id="deleteMatchBtn" style="display:none;">Delete</button>
+        <button type="button" id="closeModalBtn">Cancel</button>
+      </form>
+    </div>
+    <div id="modalOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:999;"></div>
+  </main>
+  <footer-component></footer-component>
+  <script type="module">
+    import { auth, db } from './js/firebase.js';
+    import { doc, getDoc, collection, getDocs, addDoc, setDoc, deleteDoc } from "firebase/firestore";
+
+    
+    const adminEmail = "evansker94@gmail.com"; 
+    let isAdmin = false;
+    let currentUser = null;
+
+   // Ensure event listeners are attached after DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('addMatchBtn').onclick = () => openMatchModal('add');
+      document.getElementById('closeModalBtn').onclick = closeMatchModal;
+      document.getElementById('matchForm').onsubmit = saveMatch;
+      document.getElementById('deleteMatchBtn').onclick = deleteMatch;
+    });
+
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        currentUser = user;
+        const userDoc = await getDoc(doc(db, "Accounts", user.uid));
+        if (userDoc.exists() && userDoc.data().isAdmin === true && user.email === adminEmail) {
+          isAdmin = true;
+          document.getElementById('admin-controls').style.display = '';
+          document.getElementById('access-denied').style.display = 'none';
+          loadMatches();
+        } else {
+          document.getElementById('admin-controls').style.display = 'none';
+          document.getElementById('access-denied').style.display = '';
+        }
+      } else {
+        document.getElementById('admin-controls').style.display = 'none';
+        document.getElementById('access-denied').style.display = '';
+      }
+    });
+
+    //Load Matches
+    async function loadMatches() {
+      const tbody = document.querySelector('#matchesTable tbody');
+      tbody.innerHTML = '';
+      const snapshot = await getDocs(collection(db, "Matches"));
+      snapshot.forEach(docSnap => {
+        const match = docSnap.data();
+        const matchDate = formatDate(match.match_date);
+        const teamHome = match.team_home || '';
+        const teamAway = match.team_away || '';
+        const matchVenue = match.venue || '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${matchDate}</td>
+          <td>${teamHome}</td>
+          <td>${teamAway}</td>
+          <td>${matchVenue}</td>
+          <td>
+            <button class="editBtn" data-id="${docSnap.id}">Edit</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      document.querySelectorAll('.editBtn').forEach(btn => {
+        btn.onclick = () => openMatchModal('edit', btn.dataset.id);
+      });
+    }
+
+    // Helper to format Firestore Timestamp or string date
+    function formatDate(dateVal) {
+      if (!dateVal) return '';
+      if (typeof dateVal === 'object' && dateVal.seconds) {
+        // Firestore Timestamp
+        const d = new Date(dateVal.seconds * 1000);
+        return d.toISOString().split('T')[0];
+      }
+      if (typeof dateVal === 'string') {
+        return dateVal.split('T')[0];
+      }
+      return '';
+    }
+
+    //Add/Edit/Delete Match Modal Logic
+    document.getElementById('addMatchBtn').onclick = () => openMatchModal('add');
+    document.getElementById('closeModalBtn').onclick = closeMatchModal;
+
+    async function openMatchModal(mode, matchId = null) {
+      document.getElementById('matchModal').style.display = '';
+      document.getElementById('modalOverlay').style.display = '';
+      document.getElementById('deleteMatchBtn').style.display = (mode === 'edit') ? '' : 'none';
+      document.getElementById('modalTitle').textContent = mode === 'edit' ? 'Edit Match' : 'Add Match';
+      document.getElementById('matchForm').reset();
+      document.getElementById('matchId').value = matchId || '';
+      if (mode === 'edit' && matchId) {
+        const matchDoc = await getDoc(doc(db, "Matches", matchId));
+        if (matchDoc.exists()) {
+          const match = matchDoc.data();
+          document.getElementById('matchDate').value = formatDate(match.match_date);
+          document.getElementById('homeTeam').value = match.team_home || '';
+          document.getElementById('awayTeam').value = match.team_away || '';
+          document.getElementById('venue').value = match.venue || '';
+        }
+      }
+    }
+
+    function closeMatchModal() {
+      document.getElementById('matchModal').style.display = 'none';
+      document.getElementById('modalOverlay').style.display = 'none';
+    }
+
+    //Save (Add/Edit) Match
+    async function saveMatch(e) {
+      e.preventDefault();
+      if (!isAdmin) return;
+      const matchId = document.getElementById('matchId').value;
+      const matchData = {
+        match_date: document.getElementById('matchDate').value,
+        team_home: document.getElementById('homeTeam').value,
+        team_away: document.getElementById('awayTeam').value,
+        venue: document.getElementById('venue').value
+      };
+      if (matchId) {
+        await setDoc(doc(db, "Matches", matchId), matchData, { merge: true });
+      } else {
+        await addDoc(collection(db, "Matches"), matchData);
+      }
+      closeMatchModal();
+      loadMatches();
+    };
+
+    //Delete match
+    async function deleteMatch() {
+      if (!isAdmin) return;
+      const matchId = document.getElementById('matchId').value;
+      if (matchId) {
+        await deleteDoc(doc(db, "Matches", matchId));
+        closeMatchModal();
+        loadMatches();
+      }
+    }
+  </script>
+</body>
+</html>

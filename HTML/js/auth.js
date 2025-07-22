@@ -11,6 +11,13 @@ import {
   sendEmailVerification
 } from './firebase.js';
 
+// Clear localStorage if not authenticated
+auth.onAuthStateChanged((user) => {
+  if (!user) {
+    localStorage.removeItem('currentUser');
+  }
+});
+
 // DOM Elements
 const signupForm = document.getElementById('signupForm');
 const googleBtn = document.getElementById('googleSignup');
