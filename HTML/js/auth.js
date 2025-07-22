@@ -52,13 +52,28 @@ if (signupForm) {
 
       // Create Firestore user document
       await setDoc(doc(db, "Accounts", user.uid), {
+        userId: user.uid,
         email: user.email,
-        createdAt: serverTimestamp(),
-        favoritePlayers: [],
+        username: user.displayName || "", // optional fallback
+        displayName: user.displayName || "",
+        photoURL: user.photoURL || "", // useful if signing in via Google
+        bio: "",
         tier: "Bronze",
+        role: "user",
+        isBanned: false,
+        favoritePlayers: [],
+        likedPosts: [],
+        followers: 0,
+        following: 0,
+        preferences: {
+          darkMode: false
+        },
+        deviceTokens: [],
+        createdAt: serverTimestamp(),
         lastLogin: serverTimestamp(),
-        emailVerified: false // Set to false by default, only true after email verification
-      });
+        emailVerified: user.emailVerified || false
+      }, { merge: true });
+
 
       // Send verification email
       await sendEmailVerification(user);
@@ -96,10 +111,24 @@ if (googleBtn) {
 
       // Create Firestore user document if new user
       await setDoc(doc(db, "Accounts", user.uid), {
+        userId: user.uid,
         email: user.email,
-        createdAt: serverTimestamp(),
-        favoritePlayers: [],
+        username: user.displayName || "", // optional fallback
+        displayName: user.displayName || "",
+        photoURL: user.photoURL || "", // useful if signing in via Google
+        bio: "",
         tier: "Bronze",
+        role: "user",
+        isBanned: false,
+        favoritePlayers: [],
+        likedPosts: [],
+        followers: 0,
+        following: 0,
+        preferences: {
+          darkMode: false
+        },
+        deviceTokens: [],
+        createdAt: serverTimestamp(),
         lastLogin: serverTimestamp(),
         emailVerified: user.emailVerified || false
       }, { merge: true });
@@ -135,10 +164,24 @@ if (appleBtn) {
 
       // Create Firestore user document if new user
       await setDoc(doc(db, "Accounts", user.uid), {
+        userId: user.uid,
         email: user.email,
-        createdAt: serverTimestamp(),
-        favoritePlayers: [],
+        username: user.displayName || "", // optional fallback
+        displayName: user.displayName || "",
+        photoURL: user.photoURL || "", // useful if signing in via Google
+        bio: "",
         tier: "Bronze",
+        role: "user",
+        isBanned: false,
+        favoritePlayers: [],
+        likedPosts: [],
+        followers: 0,
+        following: 0,
+        preferences: {
+          darkMode: false
+        },
+        deviceTokens: [],
+        createdAt: serverTimestamp(),
         lastLogin: serverTimestamp(),
         emailVerified: user.emailVerified || false
       }, { merge: true });

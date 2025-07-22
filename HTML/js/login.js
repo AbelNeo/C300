@@ -37,7 +37,8 @@ if (loginForm) {
 
       // Update last login timestamp in Firestore
       await setDoc(doc(db, "Accounts", user.uid), {
-        lastLogin: serverTimestamp()
+        lastLogin: serverTimestamp(),
+        deviceInfo: navigator.userAgent
       }, { merge: true });
 
       localStorage.setItem('currentUser', JSON.stringify({ email: user.email }));
