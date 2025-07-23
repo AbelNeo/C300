@@ -23,10 +23,10 @@
   <style>
 .instagram-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: 1fr; /* only one column */
     gap: 20px;
     padding: 20px;
-    max-width: 1200px;
+    max-width: 600px; /* optional: adjust as needed */
     margin: 0 auto;
 }
 
@@ -43,10 +43,22 @@
 }
 
 .instagram-image {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
+  width: 100%;
+  object-fit: cover;
 }
+
+.instagram-image.square {
+  aspect-ratio: 1 / 1;
+}
+
+.instagram-image.portrait {
+  aspect-ratio: 4 / 5;
+}
+
+.instagram-image.landscape {
+  aspect-ratio: 1.91 / 1;
+}
+
 
 .instagram-content {
     padding: 15px;
@@ -141,13 +153,26 @@
     import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+    import { ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { storage } from './js/firebase.js'; // Make sure this is correctly exported in your firebase.js
+
     // Get playerId from URL
     const urlParams = new URLSearchParams(window.location.search);
     const playerId = urlParams.get('id');
     const profileDiv = document.getElementById('profile');
+    const player = snap.data();
     let currentUserUid = null;
 
     function playerCardHTML(player, isFavorite, loggedIn) {
+if (player.photoPath && !player.photoPath.startsWith('http')) {
+  try {
+    const photoRef = ref(storage, player.photoPath);
+    player.photoPath = getDownloadURL(photoRef);
+  } catch (err) {
+    console.error('Failed to get photo URL:', err);
+    player.photoPath = 'https://via.placeholder.com/240x240?text=No+Image';
+  }
+}
       return `
         <section class="players-section" style="margin-bottom: 1.5em; display: flex; align-items: flex-start;">
           <div style="margin-right: 24px; display: flex; align-items: center;">
@@ -372,8 +397,10 @@ const instagramGrid = document.getElementById('instagramGrid');
 const uploadStatus = document.getElementById('uploadStatus');
 const playerPostId = new URLSearchParams(window.location.search).get('id') || 'default';
 
+const storageRef = ref(storage, 'some-child');
+
 async function uploadImages(files, playerPostId, userId) {
-    const folder = `player_posts/${playerPostId}/${userId || 'anonymous'}`;
+    const folder = `player_posts/${playerPostId}/${userId}`;
     const urls = [];
     
     for (const file of files) {
@@ -382,8 +409,8 @@ async function uploadImages(files, playerPostId, userId) {
             await uploadBytes(imgRef, file);
             urls.push(await getDownloadURL(imgRef));
         } catch (err) {
-            console.error(`Failed to upload ${file.name}:`, err);
-            throw new Error(`Failed to upload ${file.name}`);
+            console.error(` ${file.name}:`, err);
+            throw new Error(` ${file.name}`);
         }
     }
     return urls;
@@ -448,6 +475,29 @@ async function loadPlayerPosts() {
 }
 
 loadPlayerPosts();
+
+
+// const fileInput = document.querySelector('#imageUpload');
+// fileInput.addEventListener('change', (e) => {
+//   const file = e.target.files[0];
+//   if (!file) return;
+
+//   const img = new Image();
+//   img.src = URL.createObjectURL(file);
+
+//   img.onload = () => {
+//     const ratio = img.naturalWidth / img.naturalHeight;
+//     let type = 'square';
+
+//     if (ratio < 0.9) type = 'portrait';
+//     else if (ratio > 1.2) type = 'landscape';
+//     else type = 'square';
+
+//     const preview = document.querySelector('.instagram-image');
+//     preview.classList.add(type); // adds appropriate class
+//   };
+// });
+
 </script>
 <footer-component></footer-component>
 </body>

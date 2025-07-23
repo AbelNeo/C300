@@ -310,16 +310,16 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Get first favorite's playerPage
-    const playerId = favorites[0];
-    const playerDoc = await getDoc(doc(db, "Players", playerId));
-    const playerData = playerDoc.exists() ? playerDoc.data() : null;
+    // // Get first favorite's playerPage
+    // const playerId = favorites[0];
+    // const playerDoc = await getDoc(doc(db, "Players", playerId));
+    // const playerData = playerDoc.exists() ? playerDoc.data() : null;
 
-    if (playerData && playerData.playerPage) {
-          window.location.href = `player.html?id=${doc.id}`
-    } else {
-      alert('Player page not found.');
-    }
+    // if (playerData && playerData.playerPage) {
+    //       window.location.href = `player.html?id=${doc.id}`
+    // } else {
+    //   alert('Player page not found.');
+    // }
   });
 });
 
