@@ -153,13 +153,26 @@
     import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+    import { ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { storage } from './js/firebase.js'; // Make sure this is correctly exported in your firebase.js
+
     // Get playerId from URL
     const urlParams = new URLSearchParams(window.location.search);
     const playerId = urlParams.get('id');
     const profileDiv = document.getElementById('profile');
+    const player = snap.data();
     let currentUserUid = null;
 
     function playerCardHTML(player, isFavorite, loggedIn) {
+if (player.photoPath && !player.photoPath.startsWith('http')) {
+  try {
+    const photoRef = ref(storage, player.photoPath);
+    player.photoPath = getDownloadURL(photoRef);
+  } catch (err) {
+    console.error('Failed to get photo URL:', err);
+    player.photoPath = 'https://via.placeholder.com/240x240?text=No+Image';
+  }
+}
       return `
         <section class="players-section" style="margin-bottom: 1.5em; display: flex; align-items: flex-start;">
           <div style="margin-right: 24px; display: flex; align-items: center;">
