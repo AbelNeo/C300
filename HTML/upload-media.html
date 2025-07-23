@@ -564,13 +564,13 @@
                             </div>`;
                         
                         // Start countdown
-                        const countdownInterval = setInterval(() => {
+                        window.location.href = `forum.html?date=${selectedDate}`;
+                        const countdown = setInterval(() => {
                             seconds--;
-                            document.querySelector('.countdown').textContent = seconds;
-                            
+                            document.querySelector(".countdown").textContent = seconds;
                             if (seconds <= 0) {
-                                clearInterval(countdownInterval);
-                                window.location.href = "bookingcalendar.html";
+                                clearInterval(countdown);
+                                window.location.href = `forum.html?date=${selectedDate}`;
                             }
                         }, 1000);
                     }
