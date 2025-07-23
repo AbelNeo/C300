@@ -18,15 +18,15 @@
   <!-- Only import your JS modules -->
   <script type="module" src="js/firebase.js"></script>
   <script type="module" src="js/followings.js"></script>
-    <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/main.js"></script>
   <script type="module" src="components/navbar-component.js"></script>
+  <script type="module" src="components/footer-component.js"></script>
 </head>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       background-color: #f5f5f5;
-      padding: 20px;
     }
 
     h1 {
@@ -104,14 +104,16 @@
     }
 
     .place-order {
-      background-color: #ee4d2d;
+      background-color: #600000;
       color: white;
       border: none;
       padding: 14px 24px;
       font-size: 16px;
-      border-radius: 5px;
-      float: right;
-      margin-top: 20px;
+      border-radius: 50px;
+      margin-top: 10px;
+      margin-bottom: 2px;
+      display: block;
+      width: fit-content;
       cursor: pointer;
     }
 
@@ -130,104 +132,224 @@
   </header>
   <h1>Checkout</h1>
 
+  <div style="margin-top: 100px;"></div>
   <div class="checkout-container" id="checkoutContainer"></div>
 
   <div class="confirmation" id="confirmation">🎉 Purchase successful! Thank you for shopping with us.</div>
 
   <script>
-  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-  const storeItems = JSON.parse(localStorage.getItem('storeItems') || '[]');
-  const checkoutContainer = document.getElementById('checkoutContainer');
-  const confirmation = document.getElementById('confirmation');
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const storeItems = JSON.parse(localStorage.getItem('storeItems') || '[]');
+    const checkoutContainer = document.getElementById('checkoutContainer');
+    const confirmation = document.getElementById('confirmation');
 
-  function renderCheckout() {
-    checkoutContainer.innerHTML = '';
-    let total = 0;
+    function renderCheckout() {
+      checkoutContainer.innerHTML = '';
+      let total = 0;
 
-    if (cart.length === 0) {
-      checkoutContainer.innerHTML = "<p>Your cart is empty.</p>";
-      return;
+      if (cart.length === 0) {
+        checkoutContainer.innerHTML = "<p>Your cart is empty.</p>";
+        return;
+      }
+
+      cart.forEach((item, index) => {
+        const storeItem = storeItems.find(p => p.name === item.name);
+        const price = storeItem ? parseFloat(storeItem.price) : 0;
+        const subtotal = price * item.quantity;
+        total += subtotal;
+
+        const row = document.createElement('div');
+        row.className = 'item-row';
+
+        const img = document.createElement('img');
+        img.src = storeItem?.images[0] || '';
+
+        const details = document.createElement('div');
+        details.className = 'item-details';
+        details.innerHTML = `
+          <h3>${item.name}</h3>
+          <div class="price">$${price.toFixed(2)}</div>
+        `;
+
+        const qty = document.createElement('div');
+        qty.className = 'item-quantity';
+        qty.textContent = `x${item.quantity}`;
+
+        const subtotalDiv = document.createElement('div');
+        subtotalDiv.className = 'item-subtotal';
+        subtotalDiv.textContent = `$${subtotal.toFixed(2)}`;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.innerHTML = '🗑️';
+        removeBtn.onclick = () => removeItem(index);
+
+        row.appendChild(img);
+        row.appendChild(details);
+        row.appendChild(qty);
+        row.appendChild(subtotalDiv);
+        row.appendChild(removeBtn);
+
+        checkoutContainer.appendChild(row);
+      });
+
+      const summary = document.createElement('div');
+      summary.className = 'summary';
+      summary.innerHTML = `Total: $${total.toFixed(2)}`;
+      checkoutContainer.appendChild(summary);
+
+      const button = document.createElement('button');
+      button.className = 'place-order';
+      button.textContent = 'Place Order';
+      button.onclick = placeOrder;
+      checkoutContainer.appendChild(button);
     }
 
-    cart.forEach((item, index) => {
-      const storeItem = storeItems.find(p => p.name === item.name);
-      const price = storeItem ? parseFloat(storeItem.price) : 0;
-      const subtotal = price * item.quantity;
-      total += subtotal;
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCheckout();
+    }
 
-      const row = document.createElement('div');
-      row.className = 'item-row';
+    function placeOrder() {
+      localStorage.removeItem('cart');
+      checkoutContainer.innerHTML = '';
+      confirmation.style.display = 'block';
+    }
 
-      const img = document.createElement('img');
-      img.src = storeItem?.images[0] || '';
-
-      const details = document.createElement('div');
-      details.className = 'item-details';
-      details.innerHTML = `
-        <h3>${item.name}</h3>
-        <div class="price">$${price.toFixed(2)}</div>
-      `;
-
-      const qty = document.createElement('div');
-      qty.className = 'item-quantity';
-      qty.textContent = `x${item.quantity}`;
-
-      const subtotalDiv = document.createElement('div');
-      subtotalDiv.className = 'item-subtotal';
-      subtotalDiv.textContent = `$${subtotal.toFixed(2)}`;
-
-      const removeBtn = document.createElement('button');
-      removeBtn.className = 'remove-btn';
-      removeBtn.innerHTML = '🗑️';
-      removeBtn.onclick = () => removeItem(index);
-
-      row.appendChild(img);
-      row.appendChild(details);
-      row.appendChild(qty);
-      row.appendChild(subtotalDiv);
-      row.appendChild(removeBtn);
-
-      checkoutContainer.appendChild(row);
-    });
-
-    const summary = document.createElement('div');
-    summary.className = 'summary';
-    summary.innerHTML = `Total: $${total.toFixed(2)}`;
-    checkoutContainer.appendChild(summary);
-
-    const button = document.createElement('button');
-    button.className = 'place-order';
-    button.textContent = 'Place Order';
-    button.onclick = placeOrder;
-    checkoutContainer.appendChild(button);
-  }
-
-  function removeItem(index) {
-    cart.splice(index, 1);
-    localStorage.setItem('cart', JSON.stringify(cart));
     renderCheckout();
-  }
+  </script>
 
-  function placeOrder() {
-    cart.forEach(item => {
-      const storeItem = storeItems.find(p => p.name === item.name);
-      if (storeItem) {
-        storeItem.stock = Math.max(0, storeItem.stock - item.quantity);
-      }
-    });
+  <div style="margin-top: 40px;"></div>
+  <div id="purchases-container">
+    <div class="purchase-card">
+    <h1>Booking Confirmation</h1>
+    <p><strong>Ticket Qty:</strong> <span id="quantity"></span></p>
+    <p><strong>Date:</strong> <span id="date"></span></p>
+    <p><strong>Seat Block:</strong> <span id="seat_block"></span></p>
+    </div>
+  </div>
 
-    localStorage.setItem('storeItems', JSON.stringify(storeItems));
-    localStorage.removeItem('cart');
-    localStorage.setItem('lastOrder', JSON.stringify(cart));
-    window.location.href = 'payment.html';  
 
-    checkoutContainer.innerHTML = '';
-    confirmation.style.display = 'block';
-  }
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const hasBooking = params.get('quantity') && params.get('date') && params.get('seat_block');
+    if (hasBooking) {
+      document.getElementById('purchases-container').style.display = 'block';
+      document.getElementById('checkoutContainer').style.display = 'none';
+    } else {
+      document.getElementById('purchases-container').style.display = 'none';
+      document.getElementById('checkoutContainer').style.display = 'block';
+    }
 
-  renderCheckout();
+    document.getElementById('quantity').textContent = params.get('quantity');
+    document.getElementById('date').textContent = params.get('date');
+    document.getElementById('seat_block').textContent = params.get('seat_block_label') || params.get('seat_block');
 </script>
 
+<script type="module">
+import { seatBlocks } from './js/seatBlocks.js';
+import { db } from './js/firebase.js';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
+onAuthStateChanged(getAuth(), user => {
+  if (!user) {
+    alert("Please log in to complete your booking.");
+    window.location.href = "login.html"; 
+  }
+  updateConfirmationPrice(user);
+});
+
+function getBlockInfo(seatBlockLabel) {
+  if (!seatBlockLabel) return null;
+  for (const group of seatBlocks) {
+    for (const block of group.blocks) {
+      if (
+        block.label === seatBlockLabel ||
+        block.value === seatBlockLabel ||
+        seatBlockLabel.includes(block.value) ||
+        seatBlockLabel.includes(block.label)
+      ) {
+        return { price: group.price, section: group.section, color: group.color, label: block.label };
+      }
+    }
+  }
+  return null;
+}
+
+function updateConfirmationPrice(user) {
+  const params = new URLSearchParams(window.location.search);
+  const qty = parseInt(params.get('quantity'), 10) || 0;
+  const seatBlockLabel = params.get('seat_block_label') || params.get('seat_block');
+  const priceInfo = getBlockInfo(seatBlockLabel);
+  if (priceInfo && qty > 0) {
+    let total = priceInfo.price * qty;
+    // Add price info to confirmation
+    const container = document.querySelector('.purchase-card');
+    if (container) {
+      const oldPrices = container.querySelectorAll('.price-info');
+      oldPrices.forEach(el => el.remove());
+      const priceEl = document.createElement('p');
+      priceEl.className = 'price-info';
+      priceEl.innerHTML = `<strong>Price per ticket:</strong> $${priceInfo.price.toFixed(2)}`;
+      const totalEl = document.createElement('p');
+      totalEl.innerHTML = `<strong>Total:</strong> $${total.toFixed(2)}`;
+      container.appendChild(priceEl);
+      container.appendChild(totalEl);
+    }
+    saveMatchPurchase(user);
+  }
+}
+
+
+async function saveMatchPurchase(user) {
+  const params = new URLSearchParams(window.location.search);
+  const qty = parseInt(params.get('quantity'), 10) || 0;
+  const seatBlock = params.get('seat_block');
+  const seatBlockLabel = params.get('seat_block_label') || seatBlock;
+  const matchDateStr = params.get('date');
+  const matchId = parseInt(params.get('match_id'),10) || null; // If you pass match_id in URL
+  const priceInfo = getBlockInfo(seatBlockLabel);
+
+  // Get user
+  
+  if (!user) {
+    alert("Please log in to complete your booking.");
+    return; // Optionally show a login prompt
+    }
+  let total = priceInfo.price * qty;
+
+  let matchDate = null;
+  if (matchDateStr) {
+    matchDate = new Date(matchDateStr);
+  }
+
+  // Save to Firestore
+  await addDoc(collection(db, "MatchTicketsPurchases"), {
+    userId: user.uid,
+    userEmail: user.email,
+    match_id: matchId,
+    match_date: matchDate ? matchDate : null,
+    seatBlock: seatBlock,
+    seatBlockLabel: seatBlockLabel,
+    quantity: qty,
+    pricePerTicket: priceInfo.price,
+    totalPrice: total,
+    purchaseDate: serverTimestamp()
+  });
+
+  const container = document.querySelector('.purchase-card');
+  if (container && !document.getElementById('goToHistoryBtn')) {
+    const btn = document.createElement('button');
+    btn.id = 'goToHistoryBtn';
+    btn.textContent = 'Go to Purchase History';
+    btn.className = 'place-order';
+    btn.onclick = () => window.location.href = 'tracker.html';
+    container.appendChild(btn);
+  }
+}
+</script>
 </body>
+<footer-component></footer-component>
 </html>
