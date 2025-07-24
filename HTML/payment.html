@@ -137,7 +137,16 @@
 
     document.getElementById('payBtn').addEventListener('click', () => {
       confirmation.style.display = 'block';
-      setTimeout(() => confirmation.style.display = 'none', 3000);
+      
+      setTimeout(() => {
+      confirmation.style.display = 'none';
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('match_date')) {
+        params.set('date', params.get('match_date'));
+        params.delete('match_date');
+      }
+      window.location.href = `checkout.html?${params.toString()}`;
+      }, 3000);
     });
   </script>
 
