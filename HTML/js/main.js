@@ -42,13 +42,14 @@ const NavbarAuth = {
           <a href="index.html" id="logout-btn" class="btn-logout">Logout</a>
         `;
         document.getElementById('logout-btn')?.addEventListener('click', (e) => {
-          e.preventDefault();
-          signOut(auth).then(() => {
-                  setTimeout(() => {
-                    window.location.href = 'index.html';
-                  }, 3000);
-            });
-         });
+  e.preventDefault();
+  signOut(auth).then(() => {
+    // Immediately reload index.html
+    window.location.href = 'index.html';
+    window.location.reload(); // Forces a fresh reload (optional)
+  });
+});
+
       }
     } else {
       // User is logged out

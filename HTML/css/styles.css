@@ -33,6 +33,19 @@ body {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
 }
+.navbar .logo .logo-text {
+  /* Your styles here */
+    color: white;
+ text-decoration: none !important;
+    font-weight: 800;
+    transition: color 0.3s;
+    padding: 5px 0;
+}
+
+.logo:hover .logo-text {
+  transition: color 0.3s ease;
+    color: #ffcc00; /* Gold hover effect */
+}
 
 .navbar .container {
     display: flex;
