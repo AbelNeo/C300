@@ -212,12 +212,23 @@
     }
 
     function placeOrder() {
-      localStorage.removeItem('cart');
-      checkoutContainer.innerHTML = '';
-      confirmation.style.display = 'block';
-    }
+    cart.forEach(item => {
+      const storeItem = storeItems.find(p => p.name === item.name);
+      if (storeItem) {
+        storeItem.stock = Math.max(0, storeItem.stock - item.quantity);
+      }
+    });
 
-    renderCheckout();
+    localStorage.setItem('storeItems', JSON.stringify(storeItems));
+    localStorage.removeItem('cart');
+    localStorage.setItem('lastOrder', JSON.stringify(cart));
+    window.location.href = 'payment.html';  
+
+    checkoutContainer.innerHTML = '';
+    confirmation.style.display = 'block';
+}
+
+
   </script>
 
   <div style="margin-top: 40px;"></div>
