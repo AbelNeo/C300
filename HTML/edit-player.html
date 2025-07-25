@@ -2,49 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Edit Player</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
-      }
+  <title>Edit Player | FootMaster Pro</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+      "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+      "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js",
+      "firebase/storage": "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"
     }
-    </script>
-    <script type="module" src="js/firebase.js"></script>
-    <script type="module" src="js/players.js"></script>
-    <script type="module" src="js/main.js"></script>
-    <script type="module" src="components/navbar-component.js"></script>
-    <script type="module" src="js/upload.js"></script>
-    <script type="module" src="js/account-segment-link.js"></script>
-    <script type="module" src="components/footer-component.js"></script>
-    
-    <navbar-component></navbar-component>
+  }
+  </script>
+  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/players.js"></script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="components/navbar-component.js"></script>
+  <script type="module" src="js/account-segment-link.js"></script>
+  <script type="module" src="components/footer-component.js"></script>
+  
+  <navbar-component></navbar-component>
 </head>
-<script></script>
 <body>
-
-
-  <h1>Edit Player</h1>
-  <form id="editPlayerForm">
-    <label>Name: <input type="text" id="name" required /></label><br>
-    <label>Position: <input type="text" id="position" required /></label><br>
-    <label>Jersey Number: <input type="number" id="jerseyNumber" required /></label><br>
-    <label>Profile Image: <input type="file" id="image" accept="image/*" /></label><br>
-    <img id="previewImage" src="" alt="Current Image" width="100"/><br>
-    <button type="submit">Update Player</button>
-  </form>
-
+  <main class="container">
+    <h1>Edit Player</h1>
+    <div class="players-grid" style="justify-content: center;">
+      <form id="editPlayerForm" class="player-card" style="max-width: 350px; margin: auto; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
+        <img id="previewImage" src="https://via.placeholder.com/150x180?text=No+Photo" alt="Current Image" class="player-portrait" style="margin-bottom:15px;">
+        <div class="player-info">
+          <label>Name: <input type="text" id="name" required /></label><br>
+          <label>Position: <input type="text" id="position" required /></label><br>
+          <label>Jersey Number: <input type="number" id="jerseyNumber" min="1" required /></label><br>
+          <label>Profile Image: <input type="file" id="image" accept="image/*" /></label>
+        </div>
+        <div id="status" style="margin:10px 0;color:#800000;font-weight:bold;"></div>
+        <button type="submit" class="editBtn" style="width:100%;margin-top:10px;">Update Player</button>
+      </form>
+    </div>
+    <div style="text-align:center;margin-top:24px;">
+      <a href="manage-player.html" class="back-link">← Back to Manage Players</a>
+    </div>
+  </main>
+  <footer-component></footer-component>
   <script type="module">
-    import { db, storage } from './firebase.js';
-    import {
-      doc, getDoc, updateDoc
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import {
-      ref, uploadBytes, getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+    import { db, storage } from './js/firebase.js';
+    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
     const form = document.getElementById('editPlayerForm');
     const urlParams = new URLSearchParams(window.location.search);
@@ -55,9 +58,21 @@
     const jerseyInput = document.getElementById('jerseyNumber');
     const imageInput = document.getElementById('image');
     const previewImage = document.getElementById('previewImage');
+    const statusDiv = document.getElementById('status');
 
+    // Show image preview
+    imageInput.addEventListener('change', () => {
+      if (imageInput.files && imageInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => previewImage.src = e.target.result;
+        reader.readAsDataURL(imageInput.files[0]);
+      }
+    });
+
+    // Load player data
     async function loadPlayerData() {
-      const docRef = doc(db, "players", playerId);
+      statusDiv.textContent = "Loading...";
+      const docRef = doc(db, "Players", playerId);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
@@ -65,18 +80,18 @@
         nameInput.value = data.name || '';
         positionInput.value = data.position || '';
         jerseyInput.value = data.jerseyNumber || '';
-        if (data.imageUrl) {
-          previewImage.src = data.imageUrl;
-        }
+        previewImage.src = data.photoPath || data.photoURL || 'https://via.placeholder.com/150x180?text=No+Photo';
+        statusDiv.textContent = "";
       } else {
-        alert("Player not found.");
+        statusDiv.textContent = "Player not found.";
       }
     }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      statusDiv.textContent = "";
 
-      const docRef = doc(db, "players", playerId);
+      const docRef = doc(db, "Players", playerId);
       const updateData = {
         name: nameInput.value,
         position: positionInput.value,
@@ -85,18 +100,30 @@
 
       const file = imageInput.files[0];
       if (file) {
-        const storageRef = ref(storage, `players/${playerId}/${file.name}`);
-        const snapshot = await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(snapshot.ref);
-        updateData.imageUrl = url;
+        statusDiv.textContent = "Uploading image...";
+        try {
+          const storageRef = ref(storage, `player_photos/${playerId}/${file.name}`);
+          const snapshot = await uploadBytes(storageRef, file);
+          const url = await getDownloadURL(snapshot.ref);
+          updateData.photoPath = url;
+        } catch (err) {
+          statusDiv.textContent = "Image upload failed: " + err.message;
+          return;
+        }
       }
 
-      await updateDoc(docRef, updateData);
-      alert("Player updated!");
-      location.href = `player.html?id=${playerId}`;
+      statusDiv.textContent = "Updating...";
+      try {
+        await updateDoc(docRef, updateData);
+        statusDiv.textContent = "Player updated!";
+        setTimeout(() => window.location.href = `player.html?id=${playerId}`, 1000);
+      } catch (err) {
+        statusDiv.textContent = "Update failed: " + err.message;
+      }
     });
 
-    loadPlayerData();
+    if (playerId) loadPlayerData();
+    else statusDiv.textContent = "No player specified.";
   </script>
 </body>
 </html>

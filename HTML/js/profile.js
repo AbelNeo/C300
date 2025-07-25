@@ -157,9 +157,7 @@ function showAdminNavigation() {
           <h4>Settings Panel</h4>
         </div>
         <div class="panel-content">
-          <a href="#" class="panel-item"><i class="icon-password"></i><span>Change Password</span></a>
-          <a href="edit-item.html" class="panel-item"><i class="icon-edit"></i><span>Edit Item</span></a>
-          <a href="manage-items.html" class="panel-item"><i class="icon-manage"></i><span>Manage Items</span></a>
+          <a href="delete-account.html" class="panel-item"><i class="icon-password"></i><span>Account Settings</span></a>
         </div>
       </div>
       
@@ -168,8 +166,7 @@ function showAdminNavigation() {
           <h4>Player Panel</h4>
         </div>
         <div class="panel-content">
-          <a href="#" class="panel-item"><i class="icon-password"></i><span>Manage Players</span></a>
-          <a href="edit-player.html" class="panel-item"><i class="icon-edit"></i><span>Edit Player Page</span></a>
+          <a href="manage-player.html" class="panel-item"><i class="icon-password"></i><span>Manage Players</span></a>
         </div>
       </div>
     </nav>

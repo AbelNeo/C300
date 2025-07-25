@@ -38,7 +38,7 @@ auth.onAuthStateChanged(user => {
 export function loadFavorites() {
   if (!currentUser) return;
 
-  const favoritesRef = collection(db, `Accounts/${currentUser.uid}/Favorites`);
+  const favoritesRef = collection(db, `Accounts/${currentUser.uid}/favoritePlayers`);
   
   unsubscribeFavorites = onSnapshot(favoritesRef, 
     async (snapshot) => {

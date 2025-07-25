@@ -2,100 +2,294 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Edit Player</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
-      }
+  <title>Manage Players | FootMaster Pro</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+      "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+      "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js",
+      "firebase/storage": "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"
     }
-    </script>
-    <script type="module" src="js/firebase.js"></script>
-    <script type="module" src="js/players.js"></script>
-    <script type="module" src="js/main.js"></script>
-    <script type="module" src="components/navbar-component.js"></script>
-    <script type="module" src="js/upload.js"></script>
-    <script type="module" src="js/account-segment-link.js"></script>
-    <script type="module" src="components/footer-component.js"></script>
-    
-    <navbar-component></navbar-component>
+  }
+  </script>
+  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/players.js"></script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="components/navbar-component.js"></script>
+  <script type="module" src="js/account-segment-link.js"></script>
+  <script type="module" src="components/footer-component.js"></script>
+  
+  <navbar-component></navbar-component>
 </head>
 <body>
+  <main class="container">
+    <div class="page-header">
+      <h1>Manage Players</h1>
+      <button id="addPlayerBtn" class="btn-primary">+ Add New Player</button>
+    </div>
+    
+    <!-- Add Player Modal -->
+    <div id="addPlayerModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Add New Player</h2>
+        <form id="playerForm">
+          <div class="form-group">
+            <label for="playerName">Player Name</label>
+            <input type="text" id="playerName" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="playerPosition">Position</label>
+            <input type="text" id="playerPosition">
+          </div>
+          
+          <div class="form-group">
+            <label for="jerseyNumber">Jersey Number</label>
+            <input type="number" id="jerseyNumber">
+          </div>
+          
+          <div class="form-group">
+            <label for="playerPhoto">Player Photo</label>
+            <input type="file" id="playerPhoto" accept="image/*">
+            <div class="image-preview" id="imagePreview"></div>
+          </div>
+          
+          <button type="submit" class="btn-primary">Save Player</button>
+        </form>
+      </div>
+    </div>
 
+    <div class="players-grid" id="playersGrid"></div>
+  </main>
+  
+  <footer-component></footer-component>
 
-  <h1>Edit Player</h1>
-  <form id="editPlayerForm">
-    <label>Name: <input type="text" id="name" required /></label><br>
-    <label>Position: <input type="text" id="position" required /></label><br>
-    <label>Jersey Number: <input type="number" id="jerseyNumber" required /></label><br>
-    <label>Profile Image: <input type="file" id="image" accept="image/*" /></label><br>
-    <img id="previewImage" src="" alt="Current Image" width="100"/><br>
-    <button type="submit">Update Player</button>
-  </form>
+ <script type="module">
+import { db, storage } from './js/firebase.js';
+import { collection, getDocs, addDoc, deleteDoc, doc as firestoreDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-  <script type="module">
-    import { db, storage } from './firebase.js';
-    import {
-      doc, getDoc, updateDoc
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import {
-      ref, uploadBytes, getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+const grid = document.getElementById('playersGrid');
+const addPlayerBtn = document.getElementById('addPlayerBtn');
+const modal = document.getElementById('addPlayerModal');
+const closeModal = document.querySelector('.close-modal');
+const playerForm = document.getElementById('playerForm');
+const imagePreview = document.getElementById('imagePreview');
+const photoInput = document.getElementById('playerPhoto');
 
-    const form = document.getElementById('editPlayerForm');
-    const urlParams = new URLSearchParams(window.location.search);
-    const playerId = urlParams.get('id');
+// Modal functionality
+addPlayerBtn.onclick = () => modal.style.display = 'block';
+closeModal.onclick = () => modal.style.display = 'none';
+window.onclick = (e) => {
+  if (e.target === modal) modal.style.display = 'none';
+};
 
-    const nameInput = document.getElementById('name');
-    const positionInput = document.getElementById('position');
-    const jerseyInput = document.getElementById('jerseyNumber');
-    const imageInput = document.getElementById('image');
-    const previewImage = document.getElementById('previewImage');
-
-    async function loadPlayerData() {
-      const docRef = doc(db, "players", playerId);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        nameInput.value = data.name || '';
-        positionInput.value = data.position || '';
-        jerseyInput.value = data.jerseyNumber || '';
-        if (data.imageUrl) {
-          previewImage.src = data.imageUrl;
-        }
-      } else {
-        alert("Player not found.");
-      }
+// Image preview
+photoInput.addEventListener('change', function() {
+  const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 200px; max-height: 200px;">`;
     }
+    reader.readAsDataURL(file);
+  }
+});
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const docRef = doc(db, "players", playerId);
-      const updateData = {
-        name: nameInput.value,
-        position: positionInput.value,
-        jerseyNumber: parseInt(jerseyInput.value)
-      };
-
-      const file = imageInput.files[0];
-      if (file) {
-        const storageRef = ref(storage, `players/${playerId}/${file.name}`);
-        const snapshot = await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(snapshot.ref);
-        updateData.imageUrl = url;
-      }
-
-      await updateDoc(docRef, updateData);
-      alert("Player updated!");
-      location.href = `player.html?id=${playerId}`;
+// Form submission
+playerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const name = document.getElementById('playerName').value;
+  const position = document.getElementById('playerPosition').value;
+  const jerseyNumber = document.getElementById('jerseyNumber').value;
+  const photoFile = photoInput.files[0];
+  
+  try {
+    // Upload photo if exists
+    let photoURL = '';
+    if (photoFile) {
+      const storageReference = storageRef(storage, `players/${Date.now()}_${photoFile.name}`);
+      await uploadBytes(storageReference, photoFile);
+      photoURL = await getDownloadURL(storageReference);
+    }
+    
+    // Add player to Firestore
+    await addDoc(collection(db, "Players"), {
+      name,
+      position,
+      jerseyNumber,
+      photoURL,
+      createdAt: new Date()
     });
+    
+    // Reset form and close modal
+    playerForm.reset();
+    imagePreview.innerHTML = '';
+    modal.style.display = 'none';
+    
+    // Refresh player list
+    loadPlayers();
+  } catch (error) {
+    console.error("Error adding player:", error);
+    alert("Error adding player. Please try again.");
+  }
+});
 
-    loadPlayerData();
-  </script>
+async function loadPlayers() {
+  grid.innerHTML = '<div class="loading">Loading players...</div>';
+  const ref = collection(db, "Players");
+  const snap = await getDocs(ref);
+  
+  if (snap.empty) {
+    grid.innerHTML = '<div class="empty-message">No players found.</div>';
+    return;
+  }
+  
+  grid.innerHTML = "";
+  snap.forEach(playerDoc => {
+    const player = playerDoc.data();
+    const card = document.createElement('div');
+    card.className = 'player-card';
+    card.innerHTML = `
+      <div class="player-portrait-container">
+        <img 
+          src="${player.photoURL || 'https://via.placeholder.com/150x180?text=No+Photo'}"
+          class="player-portrait"
+          alt="${player.name}"
+          onerror="this.onerror=null;this.src='https://via.placeholder.com/150x180?text=No+Photo';"
+        >
+        <div class="player-actions">
+          <button class="editBtn" data-id="${playerDoc.id}">Edit</button>
+          <button class="deleteBtn" data-id="${playerDoc.id}">Delete</button>
+        </div>
+      </div>
+      <div class="player-info">
+        <h3 class="player-name">${player.name}</h3>
+        <p class="player-position">${player.position || 'Position not specified'}</p>
+        <p class="player-jersey">Jersey: ${player.jerseyNumber || '--'}</p>
+      </div>
+    `;
+    
+    card.querySelector('.editBtn').onclick = () => {
+      window.location.href = `edit-player.html?id=${playerDoc.id}`;
+    };
+    
+    card.querySelector('.deleteBtn').onclick = async () => {
+      if (confirm(`Are you sure you want to delete ${player.name}?`)) {
+        try {
+          await deleteDoc(firestoreDoc(db, "Players", playerDoc.id));
+          card.remove();
+        } catch (error) {
+          console.error("Error deleting player:", error);
+          alert("Error deleting player. Please try again.");
+        }
+      }
+    };
+    
+    grid.appendChild(card);
+  });
+}
+
+loadPlayers();
+</script>
+
+  <style>
+    /* Additional CSS for the enhanced UI */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 2rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+    }
+    
+    .close-modal {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .player-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    
+    .player-actions button {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .player-actions .editBtn {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .player-actions .deleteBtn {
+      background-color: #f44336;
+      color: white;
+    }
+    
+    .player-portrait-container {
+      position: relative;
+    }
+    
+    .player-portrait {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px 8px 0 0;
+    }
+    
+    .player-info {
+      padding: 1rem;
+    }
+  </style>
 </body>
 </html>

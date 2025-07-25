@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Delete Account | FootMaster Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+  }
+}
+</script>
+<script type="module" src="js\firebase.js"></script>
+<script type="module" src="js\players.js"></script>
+<script type="module" src="js\profile.js"></script>
+<script type="module" src="js\main.js"></script>
+<script type="module" src="components\navbar-component.js" ></script>
+<script type="module" src="components/footer-component.js"></script>
+<navbar-component></navbar-component>
+</head>
+<body>
+  <main class="container" style="max-width: 450px; margin: 50px auto;">
+    <h1>Delete Your Account</h1>
+    <p>
+      Are you sure you want to permanently delete your account? <br>
+      <b>This action cannot be undone.</b>
+    </p>
+    <button id="deleteAccountBtn" class="btn" style="background:#d32f2f;color:white;">Delete Account</button>
+    <div id="deleteStatus" style="margin-top:20px;color:#800000;"></div>
+  </main>
+  <script type="module">
+    import { auth, db } from './js/firebase.js';
+    import { doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { onAuthStateChanged, deleteUser, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const deleteBtn = document.getElementById('deleteAccountBtn');
+    const statusDiv = document.getElementById('deleteStatus');
+    let currentUser = null;
+
+    onAuthStateChanged(auth, user => {
+      currentUser = user;
+      if (!user) {
+        statusDiv.textContent = "You must be signed in to delete your account.";
+        deleteBtn.disabled = true;
+      } else {
+        deleteBtn.disabled = false;
+      }
+    });
+
+    deleteBtn.addEventListener('click', async () => {
+      if (!currentUser) return;
+      if (!confirm("Are you sure? This cannot be undone.")) return;
+
+      statusDiv.textContent = "Deleting your account...";
+
+      try {
+        // 1. Delete user document from Firestore
+        await deleteDoc(doc(db, "Accounts", currentUser.uid));
+
+        // 2. Delete Auth account (requires recent login)
+        await deleteUser(currentUser);
+
+        // 3. Optionally: remove user from localStorage/session
+        localStorage.removeItem('currentUser');
+
+        statusDiv.textContent = "Account deleted. Redirecting...";
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 2000);
+
+      } catch (err) {
+        // If requires-recent-login, sign out the user
+        if (err.code === 'auth/requires-recent-login') {
+          statusDiv.textContent = "Please log in again to delete your account.";
+          setTimeout(() => {
+            signOut(auth).then(() => {
+              window.location.href = "login.html";
+            });
+          }, 2000);
+        } else {
+          statusDiv.textContent = "Error deleting account: " + err.message;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
