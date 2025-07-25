@@ -169,7 +169,7 @@ function showAdminNavigation() {
         </div>
         <div class="panel-content">
           <a href="#" class="panel-item"><i class="icon-password"></i><span>Manage Players</span></a>
-          <a href="edit-item.html" class="panel-item"><i class="icon-edit"></i><span>Edit Player Page</span></a>
+          <a href="edit-player.html" class="panel-item"><i class="icon-edit"></i><span>Edit Player Page</span></a>
         </div>
       </div>
     </nav>

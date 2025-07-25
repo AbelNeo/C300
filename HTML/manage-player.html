@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Player</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script type="module" src="js/firebase.js"></script>
+    <script type="module" src="js/players.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="components/navbar-component.js"></script>
+    <script type="module" src="js/upload.js"></script>
+    <script type="module" src="js/account-segment-link.js"></script>
+    <script type="module" src="components/footer-component.js"></script>
+    
+    <navbar-component></navbar-component>
+</head>
+<body>
+
+
+  <h1>Edit Player</h1>
+  <form id="editPlayerForm">
+    <label>Name: <input type="text" id="name" required /></label><br>
+    <label>Position: <input type="text" id="position" required /></label><br>
+    <label>Jersey Number: <input type="number" id="jerseyNumber" required /></label><br>
+    <label>Profile Image: <input type="file" id="image" accept="image/*" /></label><br>
+    <img id="previewImage" src="" alt="Current Image" width="100"/><br>
+    <button type="submit">Update Player</button>
+  </form>
+
+  <script type="module">
+    import { db, storage } from './firebase.js';
+    import {
+      doc, getDoc, updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import {
+      ref, uploadBytes, getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+    const form = document.getElementById('editPlayerForm');
+    const urlParams = new URLSearchParams(window.location.search);
+    const playerId = urlParams.get('id');
+
+    const nameInput = document.getElementById('name');
+    const positionInput = document.getElementById('position');
+    const jerseyInput = document.getElementById('jerseyNumber');
+    const imageInput = document.getElementById('image');
+    const previewImage = document.getElementById('previewImage');
+
+    async function loadPlayerData() {
+      const docRef = doc(db, "players", playerId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        nameInput.value = data.name || '';
+        positionInput.value = data.position || '';
+        jerseyInput.value = data.jerseyNumber || '';
+        if (data.imageUrl) {
+          previewImage.src = data.imageUrl;
+        }
+      } else {
+        alert("Player not found.");
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const docRef = doc(db, "players", playerId);
+      const updateData = {
+        name: nameInput.value,
+        position: positionInput.value,
+        jerseyNumber: parseInt(jerseyInput.value)
+      };
+
+      const file = imageInput.files[0];
+      if (file) {
+        const storageRef = ref(storage, `players/${playerId}/${file.name}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(snapshot.ref);
+        updateData.imageUrl = url;
+      }
+
+      await updateDoc(docRef, updateData);
+      alert("Player updated!");
+      location.href = `player.html?id=${playerId}`;
+    });
+
+    loadPlayerData();
+  </script>
+</body>
+</html>
