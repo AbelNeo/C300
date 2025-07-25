@@ -23,8 +23,90 @@
 <script type="module" src="components/footer-component.js"></script>
 <navbar-component></navbar-component>
 </head>
-<body>
+<style>
+/* Admin Navigation Styles */
+.profileNavigation {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 
+.pageTabs {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  gap: 1rem;
+}
+
+.pageTabs_link {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.pageTabs_link:hover {
+  background-color: #e9ecef;
+}
+
+.dropdown-panel {
+  display: none;
+  background: white;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.dropdown-panel.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panel-header h4 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.panel-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.panel-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+  text-decoration: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.panel-item:hover {
+  background-color: #f1f1f1;
+}
+
+.panel-item i {
+  width: 20px;
+  text-align: center;
+}
+</style>
+<body>
 <header class="profileHeader">
   <img
     alt=""
@@ -38,105 +120,124 @@
             https://image-service.onefootball.com/transform?w=96&dpr=2&image=https://images.onefootball.com/cw/icons/profile-dark.svg 2x"
     src="https://image-service.onefootball.com/transform?w=96&dpr=2&image=https://images.onefootball.com/cw/icons/profile-dark.svg"
   />
-
   <div class="profileHeader_text">
-    <p class="profileHeader_title">Welcome</p>
-    <p class="profileHeader_subtitle">Your Profile</p>
+    <p id="account-name" class="profileHeader_title">Welcome</p>
+    <p id="account-type" class="profileHeader_subtitle">Your Profile</p>
   </div>
 </header>
-
-
-
-<nav class="profileNavigation">
-  <ul class="pageTabs">
-    <li class="pageTabs_Item">
-      <button class="pageTabs_link dropdown-toggle-store">Store</button>
-    </li>
-
-        <li class="pageTabs_Item">
-      <button class="pageTabs_link dropdown-toggle-player">Players</button>
-    </li>
-
-    <li class="pageTabs_Item">
-      <button class="pageTabs_link dropdown-toggle-settings">Settings</button>
-    </li>
-
-
-      <!-- Add more tabs above-->
-  </ul>
-  
-
-
-
-  <div class="dropdown-panel" id="storePanel"> 
-    <div class="panel-header">
-      <h4>Store Panel</h4>
-      <!-- <button class="close-panel store">&times;</button> -->
-    </div>
-    <div class="panel-content">
-      <a href="itemcreator.html" class="panel-item"><i class="icon-create"></i><span>Item Creator</span></a>
-      <a href="edit-item.html" class="panel-item"><i class="icon-edit"></i><span>Edit Item</span></a>
-      <a href="manage-items.html" class="panel-item"><i class="icon-manage"></i><span>Manage Items</span></a>
-    </div>
-  </div>
-
-
-  <div class="dropdown-panel" id="settingsPanel">
-    <div class="panel-header">
-      <h4>Settings Panel</h4>
-      <!-- <button class="close-panel settings">&times;</button> -->
-    </div>
-    <div class="panel-content">
-      <a href="#" class="panel-item"><i class="icon-password"></i><span>Change Password</span></a>
-      <a href="edit-item.html" class="panel-item"><i class="icon-edit"></i><span>Edit Item</span></a>
-      <a href="manage-items.html" class="panel-item"><i class="icon-manage"></i><span>Manage Items</span></a>
-    </div>
-  </div>
-
-    <div class="dropdown-panel" id="playerPanel">
-    <div class="panel-header">
-      <h4>Player Panel</h4>
-      <!-- <button class="close-panel player">&times;</button> -->
-    </div>
-    <div class="panel-content">
-      <a href="#" class="panel-item"><i class="icon-password"></i><span>Manage Players</span></a>
-      <a href="edit-item.html" class="panel-item"><i class="icon-edit"></i><span>Edit Player Page</span></a>
-    </div>
-  </div>
-
-  <!-- Add dropdown here -->
-</nav>
-
+<div id="adminNavContainer"></div>
 <article class="players-section">
     <p class="section-title">
         MY PLAYERS
-        <span class="player-count">(0)</span>
+        <span class="player-count" id="favoriteCount">(0)</span>
     </p>
-    
     <div class="divider"></div>
-    
-    <ul class="players-list">
-        <li class="player-card">
-            <a class="player-link" href="followings.html">
+    <ul class="players-list" id="favoritePlayersList">
+        <!-- Favorite players will be injected here by JS -->
+    </ul>
+    <div style="margin-top:20px;">
+      <button id="addFavoriteBtn" class="btn" style="background:#800000;color:white;">Add Favorite Player</button>
+    </div>
+</article>
+<script type="module">
+import { db, auth } from './js/firebase.js';
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const MAX_FAVORITES = 3;
+
+async function getPlayerDoc(playerId) {
+    const playerRef = doc(db, "Players", playerId);
+    const snap = await getDoc(playerRef);
+    return snap.exists() ? {id: playerId, ...snap.data()} : null;
+}
+
+function renderFavoritePlayers(players) {
+    const list = document.getElementById('favoritePlayersList');
+    const countSpan = document.getElementById('favoriteCount');
+    list.innerHTML = '';
+    if (!players.length) {
+        list.innerHTML = `
+            <li class="player-card">
                 <div class="player-content">
                     <div class="player-image">
-                        <img alt="Player placeholder" 
-                             decoding="async" 
-                             loading="lazy" 
-                             width="48" 
-                             height="48"
-                             class="player-img"
-                             src="https://image-service.onefootball.com/transform?w=96&dpr=2&image=https://images.onefootball.com/cw/icons/my-interests-empty-dark.svg">
+                        <img alt="No favorites" decoding="async" loading="lazy" width="48" height="48" class="player-img"
+                            src="https://image-service.onefootball.com/transform?w=96&dpr=2&image=https://images.onefootball.com/cw/icons/my-interests-empty-dark.svg">
                     </div>
-                    <p class="player-name"></p>
-                    <p class="player-action">Follow</p>
+                    <p class="player-name" style="color:#800000;">No favorite players yet</p>
+                    <p class="player-action">
+                      <button id="gotoFollowingsBtn" class="btn" style="background:#800000;color:white;">Follow</button>
+                    </p>
+                </div>
+            </li>
+        `;
+        countSpan.textContent = "(0)";
+        // Add event listener to the "Follow" button to redirect to followings.html
+        document.getElementById('gotoFollowingsBtn').onclick = () => {
+          window.location.href = "followings.html";
+        };
+        return;
+    }
+    players.forEach(player => {
+        list.innerHTML += `
+        <li class="player-card">
+            <a class="player-link" href="player.html?id=${player.id}">
+                <div class="player-content">
+                    <div class="player-image">
+                        <img alt="${player.name}" decoding="async" loading="lazy" width="48" height="48" class="player-img"
+                            src="${player.photoURL || player.photoPath || 'https://via.placeholder.com/150x180?text=No+Photo'}"
+                            onerror="this.onerror=null;this.src='https://via.placeholder.com/150x180?text=No+Photo'">
+                    </div>
+                    <p class="player-name">${player.name}</p>
+                    <p class="player-action"><button class="view-btn" data-player-id="${player.id}">View</button></p>
                 </div>
             </a>
         </li>
-        
+        `;
+    });
+    countSpan.textContent = `(${players.length})`;
 
-    </ul>
-</article>
- </body>
+    // Attach event listeners to "View" buttons for navigation
+    document.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const playerId = btn.dataset.playerId;
+        window.location.href = `player.html?id=${playerId}`;
+      });
+    });
+}
+
+async function loadFavoritePlayers() {
+    onAuthStateChanged(auth, async (user) => {
+        const addFavBtn = document.getElementById('addFavoriteBtn');
+        if (!user) {
+            renderFavoritePlayers([]);
+            if (addFavBtn) addFavBtn.disabled = true;
+            return;
+        }
+        const userDoc = await getDoc(doc(db, "Accounts", user.uid));
+        const favIds = userDoc.exists() ? (userDoc.data().favoritePlayers || []) : [];
+        // Fetch player data for each favorite
+        const players = [];
+        for (const pid of favIds.slice(0, MAX_FAVORITES)) {
+            const pdata = await getPlayerDoc(pid);
+            if (pdata) players.push(pdata);
+        }
+        renderFavoritePlayers(players);
+
+        // Setup add favorite button
+        if (addFavBtn) {
+          addFavBtn.disabled = favIds.length >= MAX_FAVORITES;
+          addFavBtn.textContent = favIds.length >= MAX_FAVORITES ? "Maximum 3 favorites" : "Add Favorite Player";
+          addFavBtn.onclick = () => {
+            window.location.href = "followings.html";
+          };
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', loadFavoritePlayers);
+</script>
 <footer-component></footer-component>
+</body>
 </html>

@@ -73,7 +73,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDZVSQAwB1YnKv6Pr_5kbsjvUz074mDsQ0",
   authDomain: "football-club-management-3c136.firebaseapp.com",
   projectId: "football-club-management-3c136",
-  storageBucket: "football-club-management-3c136.appspot.com",
+  storageBucket: "football-club-management-3c136.firebasestorage.app",
   messagingSenderId: "388394869174",
   appId: "1:388394869174:web:ec8f93ab8fb685e9846117"
 };
@@ -147,8 +147,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Extract block code (e.g., "13" from "Block 13 ..."), fallback to label if not found
     const seatBlockMatch = seatBlockLabel.match(/Block\s*([A-Za-z0-9\-]+)/i);
     const seatBlock = seatBlockMatch ? seatBlockMatch[1] : seatBlockLabel;
+
+    const params = new URLSearchParams(window.location.search);
+    const matchId = params.get('match_id');
+    const matchDate = params.get('match_date');
+
     // Pass both seat_block and seat_block_label if available
-    let url = `checkout.html?quantity=${encodeURIComponent(quantity)}&date=${encodeURIComponent(date)}&seat_block=${encodeURIComponent(seatBlock)}&seat_block_label=${encodeURIComponent(seatBlockLabel)}`;
+    let url = `payment.html?match_id=${encodeURIComponent(matchId)}&match_date=${encodeURIComponent(matchDate)}&quantity=${encodeURIComponent(quantity)}&seat_block=${encodeURIComponent(seatBlock)}&seat_block_label=${encodeURIComponent(seatBlockLabel)}`;
     /*const url = `checkout.html?quantity=${encodeURIComponent(quantity)}&date=${encodeURIComponent(date)}&seat_block=${encodeURIComponent(seatBlock)}`; */
     window.location.href = url;
   });

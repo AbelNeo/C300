@@ -299,156 +299,208 @@
   </script>
 
 <div class="header">
-    <h1><!-- This will be populated by JavaScript --></h1>
-    <p><!-- This will be populated by JavaScript --></p>
-</div>
-    
-    <!-- <div class="player-highlight">
-        <div class="player-name">BUKAYO SAKA</div>
-        <div class="player-title">PLAYER OF THE SEASON</div>
-    </div> -->
-    
-    <!-- <div class="video-gallery">
-        <!-- Video 1 -
-        <div class="video-card" onclick="window.location.href='/HTML/playerVideo.html?id=Player%201'">
-            <div class="video-thumbnail">
-                <img src="https://via.placeholder.com/300x180?text=Saka+vs+Real+Madrid" alt="Saka vs Real Madrid">
-                <div class="play-icon"></div>
-            </div>
-            <div class="video-info">
-                <h3>Saka opens the scoring vs Real Madrid</h3>
-                <p>Champions League Semi-Final</p>
-            </div>
-        </div>
-        
-        <!-- Video 2 
-        <div class="video-card" onclick="window.location.href='/HTML/playerVideo.html?id=Player%202'">
-            <div class="video-thumbnail">
-                <img src="https://via.placeholder.com/300x180?text=Saka+PSO+Goal" alt="Saka PSO Goal">
-                <div class="play-icon"></div>
-            </div>
-            <div class="video-info">
-                <h3>Saka scores in PSO semi</h3>
-                <p>Penalty Shootout Winner</p>
-            </div>
-        </div>
-        
-        <!-- Video 3 
-        <div class="video-card" onclick="window.location.href='/HTML/playerVideo.html?id=Player%203'">
-            <div class="video-thumbnail">
-                <img src="https://via.placeholder.com/300x180?text=Saka+vs+Fulham" alt="Saka vs Fulham">
-                <div class="play-icon"></div>
-            </div>
-            <div class="video-info">
-                <h3>Saka scores on comeback against Fulham</h3>
-                <p>Premier League Matchday 24</p>
-            </div>
-        </div> -->
+    <h1></h1>
+    <p></p>
+  </div>
+
+  <form id="playerPostForm">
+      <label for="name">Title:</label>
+      <input type="text" id="name" required />
+      <label for="description">Caption:</label>
+      <textarea id="description" required></textarea>
+      <label for="image">Upload Image:</label>
+      <input type="file" id="image" accept="image/*" multiple />
+      <button type="submit">Post</button>
+      <div id="uploadStatus"></div>
+  </form>
+  <div id="instagramGrid" class="instagram-grid"></div>
+
+  <!-- COMMENTS MODAL -->
+  <div id="commentsModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:400px;">
+      <span id="closeCommentsModal" class="close-modal" style="float:right;cursor:pointer;font-size:2em;">&times;</span>
+      <h3>Comments</h3>
+      <div id="commentsList" style="max-height:250px;overflow-y:auto;margin-bottom:1em;border-bottom:1px solid #eee;padding-bottom:1em;"></div>
+      <form id="commentForm" style="display:flex;gap:0.5em;">
+        <input type="text" id="commentInput" placeholder="Add a comment..." required style="flex:1;" autocomplete="off"/>
+        <button type="submit" class="btn" style="min-width:60px;">Post</button>
+      </form>
+      <div id="commentStatus" style="color:#800000;font-size:0.95em;margin-top:0.5em;"></div>
     </div>
-    
-    <div class="see-more">
-        <a href="#">SEE MORE</a>
-    </div>
+  </div>
 
+  <script type="module">
+    import { db, auth, storage } from './js/firebase.js';
+    import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+    import { addDoc, collection, query, where, getDocs, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-<form id="playerPostForm">
-    <label for="name">Title:</label>
-    <input type="text" id="name" required />
-    <label for="description">Caption:</label>
-    <textarea id="description" required></textarea>
-    <label for="image">Upload Image:</label>
-    <input type="file" id="image" accept="image/*" multiple />
-    <button type="submit">Post</button>
-    <div id="uploadStatus"></div>
-</form>
-<div id="instagramGrid" class="instagram-grid"></div>
-<script type="module">
-import { db, auth, storage } from './js/firebase.js';
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-import { addDoc, collection, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    const form = document.getElementById('playerPostForm');
+    const instagramGrid = document.getElementById('instagramGrid');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const playerPostId = new URLSearchParams(window.location.search).get('id') || 'default';
 
-const form = document.getElementById('playerPostForm');
-const instagramGrid = document.getElementById('instagramGrid');
-const uploadStatus = document.getElementById('uploadStatus');
-const playerPostId = new URLSearchParams(window.location.search).get('id') || 'default';
+    // Comments modal elements
+    const commentsModal = document.getElementById('commentsModal');
+    const closeCommentsModal = document.getElementById('closeCommentsModal');
+    const commentsList = document.getElementById('commentsList');
+    const commentForm = document.getElementById('commentForm');
+    const commentInput = document.getElementById('commentInput');
+    const commentStatus = document.getElementById('commentStatus');
+    let currentPostId = null;
 
-async function uploadImages(files, playerPostId, userId) {
-    const folder = `player_posts/${playerPostId}/${userId || 'anonymous'}`;
-    const urls = [];
-    
-    for (const file of files) {
-        try {
-            const imgRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
-            await uploadBytes(imgRef, file);
-            urls.push(await getDownloadURL(imgRef));
-        } catch (err) {
-            console.error(`Failed to upload ${file.name}:`, err);
-            throw new Error(`Failed to upload ${file.name}`);
+    // Modal open/close logic
+    function openCommentsModal(postId) {
+      currentPostId = postId;
+      commentsModal.style.display = 'block';
+      loadComments(postId);
+    }
+    function closeModal() {
+      commentsModal.style.display = 'none';
+      commentsList.innerHTML = '';
+      commentInput.value = '';
+      commentStatus.textContent = '';
+      currentPostId = null;
+    }
+    closeCommentsModal.onclick = closeModal;
+    window.onclick = function(e) {
+      if (e.target === commentsModal) closeModal();
+    };
+
+    // Upload images for post
+    async function uploadImages(files, playerPostId, userId) {
+        const folder = `player_posts/${playerPostId}/${userId || 'anonymous'}`;
+        const urls = [];
+        for (const file of files) {
+            try {
+                const imgRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
+                await uploadBytes(imgRef, file);
+                urls.push(await getDownloadURL(imgRef));
+            } catch (err) {
+                throw new Error(`Failed to upload ${file.name}`);
+            }
         }
+        return urls;
     }
-    return urls;
-}
 
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    uploadStatus.textContent = "";
-    const name = form.name.value.trim();
-    const description = form.description.value.trim();
-    const files = form.image.files;
-    let userId = null;
-
-    await new Promise(resolve => auth.onAuthStateChanged(user => { userId = user ? user.uid : null; resolve(); }));
-
-    try {
-        uploadStatus.textContent = "Uploading images...";
-        const imageUrls = await uploadImages(Array.from(files), playerPostId, userId);
-
-        uploadStatus.textContent = "Saving post...";
-        await addDoc(collection(db, "PlayerPosts"), {
-            playerPostId,
-            name,
-            description,
-            images: imageUrls,
-            createdAt: serverTimestamp(),
-            userId: userId || null
-        });
-
-        uploadStatus.textContent = "Post shared successfully!";
-        form.reset();
-        loadPlayerPosts();
-    } catch (err) {
-        uploadStatus.textContent = "Failed to upload/post: " + err.message;
-    }
-});
-
-async function loadPlayerPosts() {
-    instagramGrid.innerHTML = '<div class="loading">Loading posts...</div>';
-    const q = query(collection(db, "PlayerPosts"), where("playerPostId", "==", playerPostId));
-    const snap = await getDocs(q);
-    if (snap.empty) {
-        instagramGrid.innerHTML = '<div class="empty-message">No posts yet.</div>';
-        return;
-    }
-    instagramGrid.innerHTML = '';
-    snap.forEach(docSnap => {
-        const item = docSnap.data();
-        const card = document.createElement('div');
-        card.className = 'instagram-card';
-        card.innerHTML = `
-            <div class="instagram-image-container">
-                ${item.images?.length ? `<img src="${item.images[0]}" alt="${item.name}" class="instagram-image">` : '<div class="instagram-image no-image">No Image</div>'}
-            </div>
-            <div class="instagram-content">
-                <h3 class="instagram-title">${item.name}</h3>
-                <p class="instagram-caption">${item.description}</p>
-            </div>
-        `;
-        instagramGrid.appendChild(card);
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        uploadStatus.textContent = "";
+        const name = form.name.value.trim();
+        const description = form.description.value.trim();
+        const files = form.image.files;
+        let userId = null;
+        await new Promise(resolve => auth.onAuthStateChanged(user => { userId = user ? user.uid : null; resolve(); }));
+        try {
+            uploadStatus.textContent = "Uploading images...";
+            const imageUrls = await uploadImages(Array.from(files), playerPostId, userId);
+            uploadStatus.textContent = "Saving post...";
+            await addDoc(collection(db, "PlayerPosts"), {
+                playerPostId,
+                name,
+                description,
+                images: imageUrls,
+                createdAt: serverTimestamp(),
+                userId: userId || null
+            });
+            uploadStatus.textContent = "Post shared successfully!";
+            form.reset();
+            loadPlayerPosts();
+        } catch (err) {
+            uploadStatus.textContent = "Failed to upload/post: " + err.message;
+        }
     });
-}
 
-loadPlayerPosts();
-</script>
-<footer-component></footer-component>
+    // Load posts and add comment button
+    async function loadPlayerPosts() {
+        instagramGrid.innerHTML = '<div class="loading">Loading posts...</div>';
+        const q = query(collection(db, "PlayerPosts"), where("playerPostId", "==", playerPostId));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+            instagramGrid.innerHTML = '<div class="empty-message">No posts yet.</div>';
+            return;
+        }
+        instagramGrid.innerHTML = '';
+        snap.forEach(docSnap => {
+            const item = docSnap.data();
+            const postId = docSnap.id;
+            const card = document.createElement('div');
+            card.className = 'instagram-card';
+            card.innerHTML = `
+                <div class="instagram-image-container">
+                    ${item.images?.length ? `<img src="${item.images[0]}" alt="${item.name}" class="instagram-image">` : '<div class="instagram-image no-image">No Image</div>'}
+                </div>
+                <div class="instagram-content">
+                    <h3 class="instagram-title">${item.name}</h3>
+                    <p class="instagram-caption">${item.description}</p>
+                    <button class="comments-btn btn" data-post-id="${postId}" style="margin-top:8px;">💬 Comments</button>
+                </div>
+            `;
+            // Attach comments button
+            card.querySelector('.comments-btn').onclick = (e) => {
+              e.stopPropagation();
+              openCommentsModal(postId);
+            };
+            instagramGrid.appendChild(card);
+        });
+    }
+    loadPlayerPosts();
+
+    // COMMENTS FIRESTORE LOGIC
+    async function loadComments(postId) {
+      commentsList.innerHTML = '<div class="loading">Loading comments...</div>';
+      const q = query(
+        collection(db, "PlayerPosts", postId, "comments"),
+        orderBy("createdAt", "asc")
+      );
+      const snap = await getDocs(q);
+      if (snap.empty) {
+        commentsList.innerHTML = '<div style="color:#888;">No comments yet.</div>';
+        return;
+      }
+      commentsList.innerHTML = '';
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        const item = document.createElement('div');
+        item.style.borderBottom = "1px solid #eee";
+        item.style.padding = "6px 0";
+        item.innerHTML = `
+          <b>${data.displayName || data.username || 'User'}:</b>
+          <span>${data.text}</span>
+          <span style="color:#bbb;font-size:0.85em;margin-left:5px;">
+            ${data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString() : ''}
+          </span>
+        `;
+        commentsList.appendChild(item);
+      });
+    }
+
+    // Add comment
+    commentForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      commentStatus.textContent = "";
+      const text = commentInput.value.trim();
+      if (!text) return;
+      let userObj = null;
+      await new Promise(resolve => onAuthStateChanged(auth, user => { userObj = user; resolve(); }));
+      if (!userObj) {
+        commentStatus.textContent = "You must be logged in to comment.";
+        return;
+      }
+      try {
+        await addDoc(collection(db, "PlayerPosts", currentPostId, "comments"), {
+          text,
+          userId: userObj.uid,
+          displayName: userObj.displayName || userObj.email || "User",
+          createdAt: serverTimestamp()
+        });
+        commentInput.value = '';
+        loadComments(currentPostId);
+      } catch (err) {
+        commentStatus.textContent = "Failed to add comment: " + err.message;
+      }
+    });
+  </script>
+  <footer-component></footer-component>
 </body>
 </html>

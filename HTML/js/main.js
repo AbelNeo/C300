@@ -42,13 +42,14 @@ const NavbarAuth = {
           <a href="index.html" id="logout-btn" class="btn-logout">Logout</a>
         `;
         document.getElementById('logout-btn')?.addEventListener('click', (e) => {
-          e.preventDefault();
-          signOut(auth).then(() => {
-                  setTimeout(() => {
-                    window.location.href = 'index.html';
-                  }, 3000);
-            });
-         });
+  e.preventDefault();
+  signOut(auth).then(() => {
+    // Immediately reload index.html
+    window.location.href = 'index.html';
+    window.location.reload(); // Forces a fresh reload (optional)
+  });
+});
+
       }
     } else {
       // User is logged out
@@ -310,16 +311,16 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Get first favorite's playerPage
-    const playerId = favorites[0];
-    const playerDoc = await getDoc(doc(db, "Players", playerId));
-    const playerData = playerDoc.exists() ? playerDoc.data() : null;
+    // // Get first favorite's playerPage
+    // const playerId = favorites[0];
+    // const playerDoc = await getDoc(doc(db, "Players", playerId));
+    // const playerData = playerDoc.exists() ? playerDoc.data() : null;
 
-    if (playerData && playerData.playerPage) {
-          window.location.href = `player.html?id=${doc.id}`
-    } else {
-      alert('Player page not found.');
-    }
+    // if (playerData && playerData.playerPage) {
+    //       window.location.href = `player.html?id=${doc.id}`
+    // } else {
+    //   alert('Player page not found.');
+    // }
   });
 });
 

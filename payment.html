@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f1f1;
+      padding: 30px;
+      position: relative;
+    }
+    .container {
+      max-width: 400px;
+      margin: 60px auto 20px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #aaa;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .card-preview {
+      background: linear-gradient(to right, #4e54c8, #8f94fb);
+      color: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      font-family: monospace;
+    }
+    .card-preview div {
+      margin: 8px 0;
+      font-size: 1.2em;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background-color: #27ae60;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 1.1em;
+      cursor: pointer;
+    }
+    .confirmation {
+      display: none;
+      text-align: center;
+      padding: 15px;
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #1D5DEC;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="history.back()" class="back-button">← Back</button>
+
+  <div class="container">
+    <h2>Payment</h2>
+
+    <div class="card-preview">
+      <div id="previewNumber">•••• •••• •••• ••••</div>
+      <div id="previewName">NAME SURNAME</div>
+      <div id="previewExpiry">MM/YY</div>
+    </div>
+
+    <label>Card Number</label>
+    <input type="text" id="cardNumber" maxlength="19" placeholder="1234 5678 9012 3456"/>
+
+    <label>Cardholder Name</label>
+    <input type="text" id="cardName" placeholder="John Doe"/>
+
+    <label>Expiry Date</label>
+    <input type="text" id="cardExpiry" maxlength="5" placeholder="MM/YY"/>
+
+    <label>CVV</label>
+    <input type="text" maxlength="4" placeholder="123"/>
+
+    <button id="payBtn">Pay Now</button>
+
+    <div class="confirmation" id="confirmationMsg">✅ Payment successful!</div>
+  </div>
+
+  <script>
+    const numberInput = document.getElementById('cardNumber');
+    const nameInput = document.getElementById('cardName');
+    const expiryInput = document.getElementById('cardExpiry');
+    const previewNumber = document.getElementById('previewNumber');
+    const previewName = document.getElementById('previewName');
+    const previewExpiry = document.getElementById('previewExpiry');
+    const confirmation = document.getElementById('confirmationMsg');
+
+    numberInput.addEventListener('input', () => {
+      const formatted = numberInput.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
+      numberInput.value = formatted;
+      previewNumber.textContent = formatted || '•••• •••• •••• ••••';
+    });
+
+    nameInput.addEventListener('input', () => {
+      previewName.textContent = nameInput.value.toUpperCase() || 'NAME SURNAME';
+    });
+
+    expiryInput.addEventListener('input', () => {
+      const formatted = expiryInput.value.replace(/\D/g, '').replace(/(\d{2})(\d{0,2})/, '$1/$2');
+      expiryInput.value = formatted;
+      previewExpiry.textContent = formatted || 'MM/YY';
+    });
+
+    document.getElementById('payBtn').addEventListener('click', () => {
+      confirmation.style.display = 'block';
+      setTimeout(() => confirmation.style.display = 'none', 3000);
+    });
+  </script>
+
+</body>
+</html>
