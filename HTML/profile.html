@@ -23,6 +23,89 @@
 <script type="module" src="components/footer-component.js"></script>
 <navbar-component></navbar-component>
 </head>
+<style>
+/* Admin Navigation Styles */
+.profileNavigation {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pageTabs {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  gap: 1rem;
+}
+
+.pageTabs_link {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.pageTabs_link:hover {
+  background-color: #e9ecef;
+}
+
+.dropdown-panel {
+  display: none;
+  background: white;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.dropdown-panel.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panel-header h4 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.panel-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.panel-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+  text-decoration: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.panel-item:hover {
+  background-color: #f1f1f1;
+}
+
+.panel-item i {
+  width: 20px;
+  text-align: center;
+}
+</style>
 <body>
 
 <header class="profileHeader">
@@ -40,14 +123,16 @@
   />
 
   <div class="profileHeader_text">
-    <p class="profileHeader_title">Welcome</p>
-    <p class="profileHeader_subtitle">Your Profile</p>
+    <p id="account-name" class="profileHeader_title">Welcome</p>
+    <p id="account-type" class="profileHeader_subtitle">Your Profile</p>
   </div>
 </header>
 
+<!-- Navigation will be inserted here by JavaScript when user is admin -->
+<div id="adminNavContainer"></div>
 
 
-<nav class="profileNavigation">
+<!-- <nav class="profileNavigation">
   <ul class="pageTabs">
     <li class="pageTabs_Item">
       <button class="pageTabs_link dropdown-toggle-store">Store</button>
@@ -62,7 +147,7 @@
     </li>
 
 
-      <!-- Add more tabs above-->
+      <!-- Add more tabs above
   </ul>
   
 
@@ -71,7 +156,7 @@
   <div class="dropdown-panel" id="storePanel"> 
     <div class="panel-header">
       <h4>Store Panel</h4>
-      <!-- <button class="close-panel store">&times;</button> -->
+
     </div>
     <div class="panel-content">
       <a href="itemcreator.html" class="panel-item"><i class="icon-create"></i><span>Item Creator</span></a>
@@ -84,7 +169,7 @@
   <div class="dropdown-panel" id="settingsPanel">
     <div class="panel-header">
       <h4>Settings Panel</h4>
-      <!-- <button class="close-panel settings">&times;</button> -->
+      <!-- <button class="close-panel settings">&times;</button> 
     </div>
     <div class="panel-content">
       <a href="#" class="panel-item"><i class="icon-password"></i><span>Change Password</span></a>
@@ -96,7 +181,7 @@
     <div class="dropdown-panel" id="playerPanel">
     <div class="panel-header">
       <h4>Player Panel</h4>
-      <!-- <button class="close-panel player">&times;</button> -->
+      <!-- <button class="close-panel player">&times;</button> 
     </div>
     <div class="panel-content">
       <a href="#" class="panel-item"><i class="icon-password"></i><span>Manage Players</span></a>
@@ -104,8 +189,8 @@
     </div>
   </div>
 
-  <!-- Add dropdown here -->
-</nav>
+  <!-- Add dropdown here 
+</nav> -->
 
 <article class="players-section">
     <p class="section-title">
