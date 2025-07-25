@@ -588,6 +588,9 @@ cursor: not-allowed;
     border-color: #4285f4;
     outline: none;
 }
+.signup-header h1 {
+  text-align: center;
+}
 
 .signup-btn {
     width: 100%;

@@ -20,10 +20,9 @@
   <script type="module" src="components/navbar-component.js"></script>
   <script type="module" src="js/account-segment-link.js"></script>
   <script type="module" src="components/footer-component.js"></script>
-  
-  <navbar-component></navbar-component>
 </head>
 <body>
+  <navbar-component></navbar-component>
   <main class="container">
     <div class="page-header">
       <h1>Manage Players</h1>
@@ -69,7 +68,7 @@
 
  <script type="module">
 import { db, storage } from './js/firebase.js';
-import { collection, getDocs, addDoc, deleteDoc, doc as firestoreDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, getDocs, addDoc, deleteDoc, doc as firestoreDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const grid = document.getElementById('playersGrid');
@@ -110,20 +109,20 @@ playerForm.addEventListener('submit', async (e) => {
   
   try {
     // Upload photo if exists
-    let photoURL = '';
+    let photoPath = '';
     if (photoFile) {
       const storageReference = storageRef(storage, `players/${Date.now()}_${photoFile.name}`);
       await uploadBytes(storageReference, photoFile);
-      photoURL = await getDownloadURL(storageReference);
+      photoPath = await getDownloadURL(storageReference);
     }
     
-    // Add player to Firestore
+    // Add player to Firestore (only fields present in the form)
     await addDoc(collection(db, "Players"), {
       name,
       position,
       jerseyNumber,
-      photoURL,
-      createdAt: new Date()
+      photoPath,
+      createdAt: serverTimestamp()
     });
     
     // Reset form and close modal
@@ -157,7 +156,7 @@ async function loadPlayers() {
     card.innerHTML = `
       <div class="player-portrait-container">
         <img 
-          src="${player.photoURL || 'https://via.placeholder.com/150x180?text=No+Photo'}"
+          src="${player.photoPath || 'https://via.placeholder.com/150x180?text=No+Photo'}"
           class="player-portrait"
           alt="${player.name}"
           onerror="this.onerror=null;this.src='https://via.placeholder.com/150x180?text=No+Photo';"
