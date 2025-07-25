@@ -132,19 +132,54 @@
     });
 
     nameInput.addEventListener('input', () => {
+      nameInput.value = nameInput.value.replace(/[^A-Za-z ]/g, '');
       previewName.textContent = nameInput.value.toUpperCase() || 'NAME SURNAME';
     });
 
     expiryInput.addEventListener('input', () => {
-      const formatted = expiryInput.value.replace(/\D/g, '').replace(/(\d{2})(\d{0,2})/, '$1/$2');
-      expiryInput.value = formatted;
+      let val = expiryInput.value.replace(/\D/g, '');
+      // Prevent month starting with 00
+      if (val.startsWith('00')) val = val.replace(/^00/, '0');
+      // Format as MM/YY
+      if (val.length > 2) val = val.slice(0,2) + '/' + val.slice(2,4);
+      expiryInput.value = val;
       previewExpiry.textContent = formatted || 'MM/YY';
     });
 
     document.getElementById('payBtn').addEventListener('click', () => {
-      confirmation.style.display = 'block';
+      // Cardholder name validation
+      const cardName = nameInput.value.trim();
+      // Regex: only letters and spaces, 2-26 characters
+      const nameRegex = /^[A-Za-z ]{2,26}$/;
+  if (!nameRegex.test(cardName)) {
+    alert('Cardholder name must be 2-26 alphabetic characters (letters and spaces only).');
+    nameInput.focus();
+    return;
+  }
+
+    // Expiry date validation
+    const expiry = expiryInput.value.trim();
+    const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+    if (!expiryRegex.test(expiry)) {
+      alert('Expiry date must be in MM/YY format, month 01-12, year last two digits.');
+      expiryInput.focus();
+      return;
+    }
+
+    // Check for future date
+    const [mm, yy] = expiry.split('/');
+    const now = new Date();
+    const currentYear = now.getFullYear() % 100; // last two digits
+    const currentMonth = now.getMonth() + 1; // 1-12
+    if (parseInt(yy) < currentYear || (parseInt(yy) === currentYear && parseInt(mm) < currentMonth)) {
+      alert('Expiry date must be in the future.');
+      expiryInput.focus();
+      return;
+    }
+
+    confirmation.style.display = 'block';
       
-      setTimeout(() => {
+    setTimeout(() => {
       confirmation.style.display = 'none';
       const params = new URLSearchParams(window.location.search);
       if (params.has('match_date')) {
