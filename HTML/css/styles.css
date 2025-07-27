@@ -1915,11 +1915,6 @@ h1 {
   transform: scale(1.03);   /* Slight zoom effect on hover */
 }
 
-    
-    .player-info {
-      padding: 10px;
-    }
-    
     .player-name {
       font-weight: bold;
       margin: 5px 0;
@@ -1939,7 +1934,7 @@ h1 {
 
 .player-info {
     padding: 12px;
-    text-align: center;
+    text-align: left;
 }
 
 .player-name {
