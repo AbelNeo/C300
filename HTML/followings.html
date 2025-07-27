@@ -113,7 +113,7 @@ async function loadPlayers() {
   
   try {
     const playersRef = collection(db, 'Players');
-    const q = query(playersRef, limit(7)); // Limit to 7 players
+    const q = query(playersRef, limit(100)); // Limit to 100 players
     
     const querySnapshot = await getDocs(q);
     

@@ -62,6 +62,14 @@ document.querySelector('.close-panel.store')?.addEventListener('click', () => {
   document.getElementById('storePanel')?.classList.remove('active');
 });
 
+// Matches panel toggle
+document.querySelector('.dropdown-toggle-matches')?.addEventListener('click', () => {
+  document.getElementById('matchesPanel')?.classList.toggle('active');
+});
+document.querySelector('.close-panel.matches')?.addEventListener('click', () => {
+  document.getElementById('matchesPanel')?.classList.remove('active');
+});
+
 // Settings panel toggle
 document.querySelector('.dropdown-toggle-settings')?.addEventListener('click', () => {
   document.getElementById('settingsPanel')?.classList.toggle('active');
@@ -134,6 +142,9 @@ function showAdminNavigation() {
           <button class="pageTabs_link dropdown-toggle-store">Store</button>
         </li>
         <li class="pageTabs_Item">
+          <button class="pageTabs_link dropdown-toggle-matches">Matches</button>
+        </li>
+        <li class="pageTabs_Item">
           <button class="pageTabs_link dropdown-toggle-player">Players</button>
         </li>
         <li class="pageTabs_Item">
@@ -149,6 +160,15 @@ function showAdminNavigation() {
           <a href="itemcreator.html" class="panel-item"><i class="icon-create"></i><span>Item Creator</span></a>
           <a href="edit-item.html" class="panel-item"><i class="icon-edit"></i><span>Edit Item</span></a>
           <a href="manage-items.html" class="panel-item"><i class="icon-manage"></i><span>Manage Items</span></a>
+        </div>
+      </div>
+
+            <div class="dropdown-panel" id="matchesPanel">
+        <div class="panel-header">
+          <h4>Matches Panel</h4>
+        </div>
+        <div class="panel-content">
+          <a href="manage-matches.html" class="panel-item"><i class="icon-create"></i><span>Manage Matches</span></a>
         </div>
       </div>
       
@@ -199,6 +219,20 @@ function initializeDropdowns() {
       
       // Close other panels
       document.querySelectorAll('.dropdown-panel:not(#storePanel)').forEach(p => {
+        p.classList.remove('active');
+      });
+    });
+  });
+
+    // Matches dropdown
+  document.querySelectorAll('.dropdown-toggle-matches').forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const panel = document.getElementById('matchesPanel');
+      panel.classList.toggle('active');
+      
+      // Close other panels
+      document.querySelectorAll('.dropdown-panel:not(#matchesPanel)').forEach(p => {
         p.classList.remove('active');
       });
     });

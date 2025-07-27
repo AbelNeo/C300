@@ -5,7 +5,6 @@
   <title>Player Profile | FootMaster Pro</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/styles.css">
-
   <script type="importmap">
     {
       "imports": {
@@ -18,212 +17,386 @@
   <script type="module" src="js/firebase.js"></script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="components/navbar-component.js"></script>
-  <script type="module" src="components/footer-component.js"></script>  
-  <!-- <script type="module" src="uploadPlayerPhoto.js"></script> -->
+  <script type="module" src="components/footer-component.js"></script>
   <style>
-.instagram-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.instagram-card {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease;
-}
-
-.instagram-card:hover {
-    transform: translateY(-5px);
-}
-
-.instagram-image {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-}
-
-.instagram-content {
-    padding: 15px;
-}
-
-.instagram-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-.instagram-caption {
-    color: #555;
-    margin-bottom: 12px;
-    line-height: 1.4;
-}
-
-.instagram-details {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-}
-
-.instagram-price {
-    font-weight: bold;
-    color: #27ae60;
-}
-
-.instagram-stock {
-    color: #666;
-}
-
-.instagram-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 15px;
-}
-
-.buy-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.buy-section input {
-    width: 60px;
-    padding: 5px;
-}
-
-.buy-button, .edit-btn, .delete-btn {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-.buy-button {
-    background-color: #27ae60;
-    color: white;
-}
-
-.edit-btn {
-    background-color: #2980b9;
-    color: white;
-}
-
-.delete-btn {
-    background-color: #e74c3c;
-    color: white;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .instagram-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    body {
+      background: #f5f5f5;
     }
-} 
-</style>
-
+    .container {
+      max-width: 850px;
+      margin: 40px auto;
+      padding: 0 15px;
+    }
+    .player-profile {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(128,0,0,0.10);
+      padding: 32px 24px;
+      margin: 0 auto 32px auto;
+      max-width: 650px;
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      position: relative;
+    }
+    .player-left {
+      flex: 1 1 220px;
+      min-width: 200px;
+      text-align: center;
+    }
+    .player-photo {
+      width: 200px;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 3px solid #800000;
+      box-shadow: 0 2px 12px #80000026;
+      margin-bottom: 12px;
+      background: #f9f9f9;
+    }
+    .star-favorite {
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: transform 0.15s;
+      filter: drop-shadow(0 0 5px #ffcc00);
+    }
+    .star-favorite:hover {
+      transform: scale(1.2);
+    }
+    .star-favorite.active {
+      filter: drop-shadow(0 0 10px gold);
+    }
+    .player-right {
+      flex: 2 1 320px;
+      min-width: 260px;
+      padding: 8px 0 0 0;
+    }
+    .player-name {
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: #800000;
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+      overflow-wrap: anywhere;
+    }
+    .player-info {
+      margin-bottom: 14px;
+      font-size: 1.08em;
+    }
+    .player-info p {
+      margin: 3px 0;
+      color: #444;
+    }
+    .player-bio {
+      background: #f8f7fa;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 18px;
+      color: #333;
+      font-size: 1em;
+      font-style: italic;
+    }
+    .stats-container {
+      background: #fafafa;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(128,0,0,0.05);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+    }
+    .stats-title {
+      font-weight: 600;
+      color: #800000;
+      margin-bottom: 10px;
+      font-size: 1.1em;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px,1fr));
+      gap: 18px;
+    }
+    .stats-grid div {
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 1px 4px #80000012;
+      padding: 12px 8px 8px 8px;
+      text-align: center;
+      font-size: 1em;
+    }
+    .stats-label {
+      font-size: 0.98em;
+      color: #666;
+      margin-top: 2px;
+      letter-spacing: 0.01em;
+    }
+    /* Instagram grid */
+    .instagram-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 18px;
+      padding: 12px 0;
+      max-width: 650px;
+      margin: 0 auto 32px auto;
+    }
+    .instagram-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(128,0,0,0.07);
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .instagram-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 8px 24px #80000022;
+    }
+    .instagram-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-bottom: 1px solid #eee;
+      background: #fafafa;
+    }
+    .instagram-content {
+      padding: 11px 14px 13px 14px;
+    }
+    .instagram-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #800000;
+      margin-bottom: 6px;
+    }
+    .instagram-caption {
+      color: #555;
+      margin-bottom: 6px;
+      line-height: 1.35;
+      font-size: 0.98em;
+    }
+    /* Responsive */
+    @media (max-width: 800px) {
+      .player-profile {
+        flex-direction: column;
+        gap: 18px;
+        padding: 24px 10px;
+        max-width: 98vw;
+      }
+      .player-left,
+      .player-right {
+        min-width: 0;
+        width: 100%;
+      }
+      .player-photo {
+        width: 100%;
+        max-width: 220px;
+        height: 220px;
+      }
+      .instagram-grid {
+        grid-template-columns: 1fr;
+        padding: 7px 0;
+      }
+    }
+    @media (max-width: 600px) {
+      .player-profile {
+        padding: 9px 4px;
+      }
+      .player-photo {
+        max-width: 150px;
+        height: 150px;
+      }
+      .player-name {
+        font-size: 1.5rem;
+      }
+    }
+    .divider {
+      border-top: 1.5px solid #eee;
+      margin: 15px 0 12px 0;
+    }
+    .see-more {
+      text-align: center;
+      margin: 2rem 0 3rem;
+    }
+    .see-more a {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      background-color: #800000;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .see-more a:hover {
+      background-color: #600000;
+    }
+    /* Post form */
+    #playerPostForm {
+      background: #fff7f1;
+      border-radius: 10px;
+      padding: 19px 15px;
+      box-shadow: 0 2px 8px #80000012;
+      max-width: 650px;
+      margin: 0 auto 24px auto;
+    }
+    #playerPostForm label {
+      font-weight: 500;
+      color: #800000;
+      margin-top: 8px;
+      display: block;
+    }
+    #playerPostForm input[type="text"],
+    #playerPostForm textarea {
+      width: 98%;
+      padding: 7px;
+      margin-bottom: 8px;
+      border: 1px solid #c9c9c9;
+      border-radius: 5px;
+      font-size: 1em;
+      background: #fff;
+      color: #333;
+    }
+    #playerPostForm textarea {
+      min-height: 68px;
+      resize: vertical;
+    }
+    #playerPostForm input[type="file"] {
+      margin-bottom: 10px;
+    }
+    #playerPostForm button {
+      background: #800000;
+      color: #fff;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 7px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    #playerPostForm button:hover {
+      background: #a00000;
+    }
+    #uploadStatus {
+      margin-top: 10px;
+      font-size: 0.98em;
+      color: #800000;
+    }
+  </style>
 </head>
 <body>
   <navbar-component></navbar-component>
-
   <main class="container">
     <div class="player-profile" id="profile">
       <div class="loading">Loading player...</div>
     </div>
+    <!-- Highlight header -->
+    <div class="header" style="margin-bottom:2rem;">
+      <h1></h1>
+      <p></p>
+    </div>
+    <form id="playerPostForm">
+      <label for="name">Title:</label>
+      <input type="text" id="name" required />
+      <label for="description">Caption:</label>
+      <textarea id="description" required></textarea>
+      <label for="image">Upload Image:</label>
+      <input type="file" id="image" accept="image/*" multiple />
+      <button type="submit">Post</button>
+      <div id="uploadStatus"></div>
+    </form>
+    <div id="instagramGrid" class="instagram-grid"></div>
+    <div class="see-more"><a href="#">SEE MORE</a></div>
   </main>
+  <footer-component></footer-component>
   <script type="module">
-    import { db, auth } from './js/firebase.js';
+    import { db, auth, storage } from './js/firebase.js';
     import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
+    // UI Helper for profile display
+    function formatDate(dateVal) {
+      if (!dateVal) return '-';
+      if (typeof dateVal === 'object' && dateVal.seconds) {
+        const d = new Date(dateVal.seconds * 1000);
+        return d.toLocaleDateString();
+      }
+      if (typeof dateVal === 'string') {
+        return dateVal.split('T')[0];
+      }
+      return '-';
+    }
+    // Main UI rendering
+    function playerCardHTML(player, isFavorite, loggedIn) {
+      return `
+        <div class="player-left">
+          <img src="${player.photoPath || player.photoURL || 'https://via.placeholder.com/200x250?text=No+Photo'}"
+            class="player-photo" alt="${player.name}" />
+          <div>
+            <img
+              id="favoriteStar"
+              alt="Favorite Player"
+              src="${
+                isFavorite
+                  ? 'https://images.onefootball.com/cw/icons/star-yellow-dark.svg'
+                  : 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Yellow_bordered_white_star.svg/512px-Yellow_bordered_white_star.svg.png?20221001001156'
+              }"
+              class="star-favorite${isFavorite ? ' active' : ''}"
+              style="color: transparent;${loggedIn ? '' : 'display:none;'}"
+              title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}"
+            >
+          </div>
+        </div>
+        <div class="player-right">
+          <div class="player-name">${player.name ?? 'Unnamed Player'}</div>
+          <div class="player-info">
+            <p><b>Position:</b> ${player.position ?? '-'}</p>
+            <p><b>Nationality:</b> ${player.nationality ?? '-'}</p>
+            <p><b>Date of Birth:</b> ${player.dob ?? '-'}</p>
+            <p><b>Height:</b> ${player.heightCm ? player.heightCm + ' cm' : '-'}</p>
+            <p><b>Weight:</b> ${player.weightKg ? player.weightKg + ' kg' : '-'}</p>
+            <p><b>Jersey Number:</b> ${player.jerseyNumber ?? '-'}</p>
+            <p><b>Joined:</b> ${player.joinedDate ?? '-'}</p>
+            <p><b>Contract End:</b> ${player.contractEnd ?? '-'}</p>
+          </div>
+          ${player.bio ? `<div class="player-bio">${player.bio}</div>` : ''}
+          <div class="stats-container">
+            <div class="stats-title">Key Stats</div>
+            <div class="stats-grid">
+              <div>
+                <div style="font-size:1.3em; color:#800000; font-weight:bold;">${player.goals ?? '0'}</div>
+                <div class="stats-label">Goals</div>
+              </div>
+              <div>
+                <div style="font-size:1.3em; color:#800000;">${player.assists ?? '0'}</div>
+                <div class="stats-label">Assists</div>
+              </div>
+              <div>
+                <div style="font-size:1.3em; color:#800000;">${player.yellowCards ?? '0'}</div>
+                <div class="stats-label">Yellow Cards</div>
+              </div>
+              <div>
+                <div style="font-size:1.3em; color:#800000;">${player.redCards ?? '0'}</div>
+                <div class="stats-label">Red Cards</div>
+              </div>
+              <div>
+                <div style="font-size:1.1em;">${formatDate(player.createdAt)}</div>
+                <div class="stats-label">Created</div>
+              </div>
+              <div>
+                <div style="font-size:1.1em;">${formatDate(player.updatedAt)}</div>
+                <div class="stats-label">Updated</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
     // Get playerId from URL
     const urlParams = new URLSearchParams(window.location.search);
     const playerId = urlParams.get('id');
     const profileDiv = document.getElementById('profile');
     let currentUserUid = null;
-
-    function playerCardHTML(player, isFavorite, loggedIn) {
-      return `
-        <section class="players-section" style="margin-bottom: 1.5em; display: flex; align-items: flex-start;">
-          <div style="margin-right: 24px; display: flex; align-items: center;">
-            <img
-              id="favoriteStar"
-              alt="Favorite Player"
-              width="32"
-              height="32"
-              src="${isFavorite ? 'https://images.onefootball.com/cw/icons/star-yellow-dark.svg' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Yellow_bordered_white_star.svg/512px-Yellow_bordered_white_star.svg.png?20221001001156'}"
-              class="star-favorite${isFavorite ? ' active' : ''}"
-              style="color: transparent;${loggedIn ? '' : 'display:none;'}"
-              title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}"
-              >
-            </div>
-          <div class="player-card" style="max-width: 350px; margin: 0 auto;">
-              <img src="${player.photoPath }" alt="${player.name}" class="player-portrait" style="height: 240px;">
-              <div class="player-info">
-                  <h3 class="player-name">${player.name}</h3>
-                  <p class="player-position">${player.position || ''}</p>
-                  <p class="player-team">${player.team || ''}</p>
-              </div>
-          </div>
-        </section>
-        <div class="divider"></div>
-        ${player.teams ? `
-        <section class="teams-grid" style="margin-bottom:1.5em;">
-            <h2 style="color:#800000; margin-bottom:16px;">Teams</h2>
-            <div style="display:flex; gap:32px; flex-wrap:wrap;">
-              ${player.teams.map(team => `
-                <div class="player-card" style="width:160px;">
-                  <img src="${team.logo || 'https://via.placeholder.com/80'}" alt="${team.name}" class="player-portrait" style="height: 80px;">
-                  <div class="player-info">
-                      <p class="player-team">${team.name}</p>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-        </section>
-        ` : ''}
-        <section class="stats-container" style="background:#fff; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.07); padding:24px; max-width:650px; margin:0 auto;">
-          <p class="title" style="color:#800000; font-weight: 600;">KEY STATS</p>
-          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:18px; margin-top:18px;">
-            <div>
-                <p style="font-size:1.4em; color:#800000; font-weight:600;">${player.age || '-'}</p>
-                <p>Age</p>
-            </div>
-            <div>
-                <p style="font-size:1.2em; color:#800000;">${player.position || ''}</p>
-                <p>Position</p>
-            </div>
-            <div>
-                <p style="font-size:1.2em;">${player.country || player.nationality || '-'}</p>
-                <p>Country</p>
-            </div>
-            <div>
-                <p>${player.height || '-'}</p>
-                <p>Height</p>
-            </div>
-            <div>
-                <p>${player.weight || '-'}</p>
-                <p>Weight</p>
-            </div>
-            <div>
-                <p>${player.jerseyNumber || '-'}</p>
-                <p>Jersey Number</p>
-            </div>
-          </div>
-        </section>
-      `;
-    }
-
-    
-    
-
-    // 1. Load Firestore player data
- async function loadPlayer() {
+    async function loadPlayer() {
       if (!playerId) {
         profileDiv.innerHTML = '<div class="error">No player specified.</div>';
         return;
@@ -236,19 +409,11 @@
         return;
       }
       const player = snap.data();
-
-      // Update the header with player's name
+      // Update header with highlights
       const header = document.querySelector('.header h1');
-      if (header) {
-        header.textContent = `${player.name.toUpperCase()}'S HIGHLIGHTS`;
-      }
-      
+      if (header) header.textContent = `${player.name?.toUpperCase() || 'PLAYER'}'S HIGHLIGHTS`;
       const subheader = document.querySelector('.header p');
-      if (subheader) {
-        subheader.textContent = `${player.name}'s best moments of ${new Date().getFullYear()-1}/${new Date().getFullYear()}`;
-      }
-
-      // 2. Wait for auth state and render favorite button
+      if (subheader) subheader.textContent = `${player.name}'s best moments of ${new Date().getFullYear()-1}/${new Date().getFullYear()}`;
       onAuthStateChanged(auth, async (user) => {
         currentUserUid = user ? user.uid : null;
         let isFavorite = false;
@@ -258,8 +423,7 @@
           isFavorite = favs.includes(playerId);
         }
         profileDiv.innerHTML = playerCardHTML(player, isFavorite, !!user);
-
-        // 3. Set up favorite button logic
+        // Favorite star logic
         const star = document.getElementById('favoriteStar');
         if (star && user) {
           star.addEventListener('click', async () => {
@@ -292,215 +456,81 @@
         }
       });
     }
-
     loadPlayer();
-
-    
-  </script>
-
-<div class="header">
-    <h1></h1>
-    <p></p>
-  </div>
-
-  <form id="playerPostForm">
-      <label for="name">Title:</label>
-      <input type="text" id="name" required />
-      <label for="description">Caption:</label>
-      <textarea id="description" required></textarea>
-      <label for="image">Upload Image:</label>
-      <input type="file" id="image" accept="image/*" multiple />
-      <button type="submit">Post</button>
-      <div id="uploadStatus"></div>
-  </form>
-  <div id="instagramGrid" class="instagram-grid"></div>
-
-  <!-- COMMENTS MODAL -->
-  <div id="commentsModal" class="modal" style="display:none;">
-    <div class="modal-content" style="max-width:400px;">
-      <span id="closeCommentsModal" class="close-modal" style="float:right;cursor:pointer;font-size:2em;">&times;</span>
-      <h3>Comments</h3>
-      <div id="commentsList" style="max-height:250px;overflow-y:auto;margin-bottom:1em;border-bottom:1px solid #eee;padding-bottom:1em;"></div>
-      <form id="commentForm" style="display:flex;gap:0.5em;">
-        <input type="text" id="commentInput" placeholder="Add a comment..." required style="flex:1;" autocomplete="off"/>
-        <button type="submit" class="btn" style="min-width:60px;">Post</button>
-      </form>
-      <div id="commentStatus" style="color:#800000;font-size:0.95em;margin-top:0.5em;"></div>
-    </div>
-  </div>
-
-  <script type="module">
-    import { db, auth, storage } from './js/firebase.js';
+    // Instagram posts logic
     import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-    import { addDoc, collection, query, where, getDocs, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
+    import { addDoc, collection as fCollection, query as fQuery, where as fWhere, getDocs as fGetDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     const form = document.getElementById('playerPostForm');
     const instagramGrid = document.getElementById('instagramGrid');
     const uploadStatus = document.getElementById('uploadStatus');
-    const playerPostId = new URLSearchParams(window.location.search).get('id') || 'default';
-
-    // Comments modal elements
-    const commentsModal = document.getElementById('commentsModal');
-    const closeCommentsModal = document.getElementById('closeCommentsModal');
-    const commentsList = document.getElementById('commentsList');
-    const commentForm = document.getElementById('commentForm');
-    const commentInput = document.getElementById('commentInput');
-    const commentStatus = document.getElementById('commentStatus');
-    let currentPostId = null;
-
-    // Modal open/close logic
-    function openCommentsModal(postId) {
-      currentPostId = postId;
-      commentsModal.style.display = 'block';
-      loadComments(postId);
-    }
-    function closeModal() {
-      commentsModal.style.display = 'none';
-      commentsList.innerHTML = '';
-      commentInput.value = '';
-      commentStatus.textContent = '';
-      currentPostId = null;
-    }
-    closeCommentsModal.onclick = closeModal;
-    window.onclick = function(e) {
-      if (e.target === commentsModal) closeModal();
-    };
-
-    // Upload images for post
+    const playerPostId = playerId || 'default';
     async function uploadImages(files, playerPostId, userId) {
-        const folder = `player_posts/${playerPostId}/${userId || 'anonymous'}`;
-        const urls = [];
-        for (const file of files) {
-            try {
-                const imgRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
-                await uploadBytes(imgRef, file);
-                urls.push(await getDownloadURL(imgRef));
-            } catch (err) {
-                throw new Error(`Failed to upload ${file.name}`);
-            }
-        }
-        return urls;
-    }
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        uploadStatus.textContent = "";
-        const name = form.name.value.trim();
-        const description = form.description.value.trim();
-        const files = form.image.files;
-        let userId = null;
-        await new Promise(resolve => auth.onAuthStateChanged(user => { userId = user ? user.uid : null; resolve(); }));
+      const folder = `player_posts/${playerPostId}/${userId || 'anonymous'}`;
+      const urls = [];
+      for (const file of files) {
         try {
-            uploadStatus.textContent = "Uploading images...";
-            const imageUrls = await uploadImages(Array.from(files), playerPostId, userId);
-            uploadStatus.textContent = "Saving post...";
-            await addDoc(collection(db, "PlayerPosts"), {
-                playerPostId,
-                name,
-                description,
-                images: imageUrls,
-                createdAt: serverTimestamp(),
-                userId: userId || null
-            });
-            uploadStatus.textContent = "Post shared successfully!";
-            form.reset();
-            loadPlayerPosts();
+          const imgRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
+          await uploadBytes(imgRef, file);
+          urls.push(await getDownloadURL(imgRef));
         } catch (err) {
-            uploadStatus.textContent = "Failed to upload/post: " + err.message;
+          throw new Error(`Failed to upload ${file.name}`);
         }
-    });
-
-    // Load posts and add comment button
-    async function loadPlayerPosts() {
-        instagramGrid.innerHTML = '<div class="loading">Loading posts...</div>';
-        const q = query(collection(db, "PlayerPosts"), where("playerPostId", "==", playerPostId));
-        const snap = await getDocs(q);
-        if (snap.empty) {
-            instagramGrid.innerHTML = '<div class="empty-message">No posts yet.</div>';
-            return;
-        }
-        instagramGrid.innerHTML = '';
-        snap.forEach(docSnap => {
-            const item = docSnap.data();
-            const postId = docSnap.id;
-            const card = document.createElement('div');
-            card.className = 'instagram-card';
-            card.innerHTML = `
-                <div class="instagram-image-container">
-                    ${item.images?.length ? `<img src="${item.images[0]}" alt="${item.name}" class="instagram-image">` : '<div class="instagram-image no-image">No Image</div>'}
-                </div>
-                <div class="instagram-content">
-                    <h3 class="instagram-title">${item.name}</h3>
-                    <p class="instagram-caption">${item.description}</p>
-                    <button class="comments-btn btn" data-post-id="${postId}" style="margin-top:8px;">💬 Comments</button>
-                </div>
-            `;
-            // Attach comments button
-            card.querySelector('.comments-btn').onclick = (e) => {
-              e.stopPropagation();
-              openCommentsModal(postId);
-            };
-            instagramGrid.appendChild(card);
-        });
+      }
+      return urls;
     }
-    loadPlayerPosts();
-
-    // COMMENTS FIRESTORE LOGIC
-    async function loadComments(postId) {
-      commentsList.innerHTML = '<div class="loading">Loading comments...</div>';
-      const q = query(
-        collection(db, "PlayerPosts", postId, "comments"),
-        orderBy("createdAt", "asc")
-      );
-      const snap = await getDocs(q);
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      uploadStatus.textContent = "";
+      const name = form.name.value.trim();
+      const description = form.description.value.trim();
+      const files = form.image.files;
+      let userId = null;
+      await new Promise(resolve => auth.onAuthStateChanged(user => { userId = user ? user.uid : null; resolve(); }));
+      try {
+        uploadStatus.textContent = "Uploading images...";
+        const imageUrls = await uploadImages(Array.from(files), playerPostId, userId);
+        uploadStatus.textContent = "Saving post...";
+        await addDoc(fCollection(db, "PlayerPosts"), {
+          playerPostId,
+          name,
+          description,
+          images: imageUrls,
+          createdAt: serverTimestamp(),
+          userId: userId || null
+        });
+        uploadStatus.textContent = "Post shared successfully!";
+        form.reset();
+        loadPlayerPosts();
+      } catch (err) {
+        uploadStatus.textContent = "Failed to upload/post: " + err.message;
+      }
+    });
+    async function loadPlayerPosts() {
+      instagramGrid.innerHTML = '<div class="loading">Loading posts...</div>';
+      const q = fQuery(fCollection(db, "PlayerPosts"), fWhere("playerPostId", "==", playerPostId));
+      const snap = await fGetDocs(q);
       if (snap.empty) {
-        commentsList.innerHTML = '<div style="color:#888;">No comments yet.</div>';
+        instagramGrid.innerHTML = '<div class="empty-message">No posts yet.</div>';
         return;
       }
-      commentsList.innerHTML = '';
+      instagramGrid.innerHTML = '';
       snap.forEach(docSnap => {
-        const data = docSnap.data();
-        const item = document.createElement('div');
-        item.style.borderBottom = "1px solid #eee";
-        item.style.padding = "6px 0";
-        item.innerHTML = `
-          <b>${data.displayName || data.username || 'User'}:</b>
-          <span>${data.text}</span>
-          <span style="color:#bbb;font-size:0.85em;margin-left:5px;">
-            ${data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString() : ''}
-          </span>
+        const item = docSnap.data();
+        const card = document.createElement('div');
+        card.className = 'instagram-card';
+        card.innerHTML = `
+          <div class="instagram-image-container">
+            ${item.images?.length ? `<img src="${item.images[0]}" alt="${item.name}" class="instagram-image">` : '<div class="instagram-image no-image">No Image</div>'}
+          </div>
+          <div class="instagram-content">
+            <h3 class="instagram-title">${item.name}</h3>
+            <p class="instagram-caption">${item.description}</p>
+          </div>
         `;
-        commentsList.appendChild(item);
+        instagramGrid.appendChild(card);
       });
     }
-
-    // Add comment
-    commentForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      commentStatus.textContent = "";
-      const text = commentInput.value.trim();
-      if (!text) return;
-      let userObj = null;
-      await new Promise(resolve => onAuthStateChanged(auth, user => { userObj = user; resolve(); }));
-      if (!userObj) {
-        commentStatus.textContent = "You must be logged in to comment.";
-        return;
-      }
-      try {
-        await addDoc(collection(db, "PlayerPosts", currentPostId, "comments"), {
-          text,
-          userId: userObj.uid,
-          displayName: userObj.displayName || userObj.email || "User",
-          createdAt: serverTimestamp()
-        });
-        commentInput.value = '';
-        loadComments(currentPostId);
-      } catch (err) {
-        commentStatus.textContent = "Failed to add comment: " + err.message;
-      }
-    });
+    loadPlayerPosts();
   </script>
-  <footer-component></footer-component>
 </body>
 </html>
