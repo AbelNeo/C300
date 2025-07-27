@@ -156,6 +156,7 @@
     let isAdmin = false;
     let currentUser = null;
     let allMatches = [];
+    let matchDatesSet = new Set();
 
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('addMatchBtn').onclick = () => openMatchModal('add');
@@ -196,7 +197,6 @@
         allMatches.push({ id: docSnap.id, ...docSnap.data() });
       });
       renderTable(allMatches);
-      renderCalendar(allMatches);
     }
 
     function renderTable(matches) {
@@ -347,30 +347,77 @@
       renderTable(filtered);
     }
 
-    function renderCalendar(matches) {
-      const calendarEl = document.getElementById('calendar');
-      calendarEl.innerHTML = '';
-      const events = matches.map(match => ({
-        id: match.id,
-        title: `${match.team_home} vs ${match.team_away}`,
-        start: match.match_date,
-        allDay: true,
-        extendedProps: {
-          venue: match.venue,
-          team_home: match.team_home,
-          team_away: match.team_away
-        }
-      }));
-      const calendar = new window.FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        events: events,
-        eventClick: function(info) {
-          const matchId = info.event.id;
-          openMatchModal('edit', matchId);
-        }
-      });
-      calendar.render();
+  document.addEventListener('DOMContentLoaded', async function() {
+  var calendarEl = document.getElementById('calendar');
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    events: async function(fetchInfo, successCallback, failureCallback) {
+      try {
+        const matchesSnapshot = await getDocs(collection(db, 'Matches'));
+        const events = matchesSnapshot.docs.map(doc => {
+          const match = doc.data();
+          let startDate = null;
+          if (match.match_date && typeof match.match_date.toDate === 'function') {
+            startDate = match.match_date.toDate();
+          } else if (match.match_date) {
+            startDate = new Date(match.match_date);
+          } else {
+            // Optionally skip this event if no date
+            return null;
+          }
+          return {
+            id: doc.id,
+            title: `${match.team_home} vs ${match.team_away}`,
+            start: startDate,
+            extendedProps: {
+              team_home: match.team_home,
+              team_away: match.team_away
+            }
+          };
+        }).filter(Boolean);
+
+        matchDatesSet = new Set(events.map(ev => {
+          const d = new Date(ev.start);
+          return d.toISOString().split('T')[0];
+        }));
+
+        console.log("Loaded events for calendar:", events); 
+        successCallback(events);
+      } catch (error) {
+        failureCallback(error);
+      }
+    },
+    eventContent: function(arg) {
+      let crestUrl = '';
+      const crestMap = {
+        'AC Milan': 'images/ACMilan-logo.jpeg',
+        'Manchester City': 'images/ManchesterCity-logo.jpeg',
+        'Newcastle United': 'images/NewcastleUnited-logo.jpeg',
+        'Nottingham Forest': 'images/nottinghamforest-logo.jpeg',
+    };
+    if (crestMap[arg.event.extendedProps.team_away]) {
+      crestUrl = crestMap[arg.event.extendedProps.team_away];
     }
+    if (crestUrl) {
+      return { html: `<img src='${crestUrl}' alt='' style='height:50px;width:50px;display:block;margin:auto;'>` };
+      }
+      return { html: `<span>${arg.event.extendedProps.team_home} vs ${arg.event.extendedProps.team_away}</span>` };
+  },
+    dateClick: function(info) {
+      const clickedDate = info.dateStr;
+      if (matchDatesSet.has(clickedDate)) {
+        document.querySelectorAll('.selected-date').forEach(el => {
+          el.classList.remove('selected-date');
+        });
+        info.dayEl.classList.add('selected-date');
+        // No popup, no button logic
+      } else {
+        alert('No match on this date.');
+      }
+    },
+  });
+  calendar.render();
+  });
   </script>
 </body>
 </html>
