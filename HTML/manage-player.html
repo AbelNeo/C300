@@ -272,6 +272,21 @@
     playerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       // Must-have fields
+      const addPlayer = async (playerData) => {
+  try {
+    // This will auto-generate a unique ID
+    const playerRef = await addDoc(collection(db, "Players"), playerData);
+    
+    // playerRef.id contains the auto-generated ID
+    console.log("Player added with ID: ", playerRef.id);
+    
+    // If you need to use this ID immediately
+    return playerRef.id;
+  } catch (error) {
+    console.error("Error adding player: ", error);
+    throw error;
+  }
+};
       const name = document.getElementById('playerName').value.trim();
       const dob = document.getElementById('dob').value;
       const nationality = document.getElementById('nationality').value.trim();
@@ -298,6 +313,7 @@
         }
         const now = new Date();
         await addDoc(collection(db, "Players"), {
+          playerId,
           name,
           dob,
           nationality,

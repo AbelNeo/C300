@@ -1,92 +1,3 @@
-// // document.querySelectorAll('.dropdown-toggle').forEach(button => {
-// //     button.addEventListener('click', () => {
-// //         const parent = button.closest('.dropdown');
-// //         parent.classList.toggle('open');
-// //     });
-// // });
-// // document.querySelectorAll('.dropdown-toggle-settings').forEach(button => {
-// //     button.addEventListener('click', () => {
-// //         const parent = button.closest('.dropdown');
-// //         parent.classList.toggle('open');
-// //     });
-// // });
-
-// // document.querySelector('.dropdown-toggle-settings').addEventListener('click', function() {
-// //   this.nextElementSibling.classList.toggle('open');
-// // });
-
-// // Toggle panel on click
-// document.querySelectorAll('.dropdown-toggle').forEach(button => {
-//     button.addEventListener('click', function(e) {
-//         e.stopPropagation();
-//         const dropdown = this.closest('.dropdown');
-//         dropdown.classList.toggle('active');
-        
-//         // Close other open panels
-//         document.querySelectorAll('.dropdown').forEach(otherDropdown => {
-//             if (otherDropdown !== dropdown) {
-//                 otherDropdown.classList.remove('active');
-//             }
-//         });
-//     });
-// });
-
-// // Close panel when clicking close button
-// document.querySelectorAll('.close-panel').forEach(button => {
-//     button.addEventListener('click', function(e) {
-//         e.stopPropagation();
-//         this.closest('.dropdown').classList.remove('active');
-//     });
-// });
-
-// // Close panel when clicking outside
-// document.addEventListener('click', function() {
-//     document.querySelectorAll('.dropdown').forEach(dropdown => {
-//         dropdown.classList.remove('active');
-//     });
-// });
-
-
-
-
-
-
-
-
-
-// Store panel toggle
-document.querySelector('.dropdown-toggle-store')?.addEventListener('click', () => {
-  document.getElementById('storePanel')?.classList.toggle('active');
-});
-document.querySelector('.close-panel.store')?.addEventListener('click', () => {
-  document.getElementById('storePanel')?.classList.remove('active');
-});
-
-// Matches panel toggle
-document.querySelector('.dropdown-toggle-matches')?.addEventListener('click', () => {
-  document.getElementById('matchesPanel')?.classList.toggle('active');
-});
-document.querySelector('.close-panel.matches')?.addEventListener('click', () => {
-  document.getElementById('matchesPanel')?.classList.remove('active');
-});
-
-// Settings panel toggle
-document.querySelector('.dropdown-toggle-settings')?.addEventListener('click', () => {
-  document.getElementById('settingsPanel')?.classList.toggle('active');
-});
-document.querySelector('.close-panel.settings')?.addEventListener('click', () => {
-  document.getElementById('settingsPanel')?.classList.remove('active');
-});
-
-// Player panel toggle
-document.querySelector('.dropdown-toggle-player')?.addEventListener('click', () => {
-  document.getElementById('playerPanel')?.classList.toggle('active');
-});
-document.querySelector('.close-panel.player')?.addEventListener('click', () => {
-  document.getElementById('playerPanel')?.classList.remove('active');
-});
-
-
 import { auth, db } from './firebase.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -97,21 +8,14 @@ async function initializeAdminFeatures() {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       const userDoc = await getDoc(doc(db, "Accounts", user.uid));
-      
-      if (userDoc.exists() && userDoc.data().isAdmin) {
-        // User is admin - show navigation
-        showAdminNavigation();
-        updateProfileDisplay(user, true);
-        initializeDropdowns(); // Initialize dropdown functionality
-      } else {
-        // User is not admin
-        updateProfileDisplay(user, false);
-        removeAdminNavigation();
-      }
+      const isAdmin = userDoc.exists() && userDoc.data().isAdmin;
+      showNavigation(isAdmin);
+      updateProfileDisplay(user, isAdmin);
+      initializeDropdowns();
     } else {
-      // No user logged in
+      showNavigation(false);
       updateProfileDisplay(null, false);
-      removeAdminNavigation();
+      initializeDropdowns();
     }
   });
 }
@@ -131,27 +35,36 @@ function updateProfileDisplay(user, isAdmin) {
   }
 }
 
-function showAdminNavigation() {
+// Show settingsPanel for all users, admin panels only for admin
+function showNavigation(isAdmin) {
   const navContainer = document.getElementById('adminNavContainer');
   if (!navContainer) return;
+
+  let adminPanels = '';
+  if (isAdmin) {
+    adminPanels = `
+      <li class="pageTabs_Item">
+        <button class="pageTabs_link dropdown-toggle-store">Store</button>
+      </li>
+      <li class="pageTabs_Item">
+        <button class="pageTabs_link dropdown-toggle-matches">Matches</button>
+      </li>
+      <li class="pageTabs_Item">
+        <button class="pageTabs_link dropdown-toggle-player">Players</button>
+      </li>
+    `;
+  }
 
   navContainer.innerHTML = `
     <nav class="profileNavigation">
       <ul class="pageTabs">
-        <li class="pageTabs_Item">
-          <button class="pageTabs_link dropdown-toggle-store">Store</button>
-        </li>
-        <li class="pageTabs_Item">
-          <button class="pageTabs_link dropdown-toggle-matches">Matches</button>
-        </li>
-        <li class="pageTabs_Item">
-          <button class="pageTabs_link dropdown-toggle-player">Players</button>
-        </li>
+        ${adminPanels}
         <li class="pageTabs_Item">
           <button class="pageTabs_link dropdown-toggle-settings">Settings</button>
         </li>
       </ul>
       
+      ${isAdmin ? `
       <div class="dropdown-panel" id="storePanel">
         <div class="panel-header">
           <h4>Store Panel</h4>
@@ -162,8 +75,7 @@ function showAdminNavigation() {
           <a href="manage-items.html" class="panel-item"><i class="icon-manage"></i><span>Manage Items</span></a>
         </div>
       </div>
-
-            <div class="dropdown-panel" id="matchesPanel">
+      <div class="dropdown-panel" id="matchesPanel">
         <div class="panel-header">
           <h4>Matches Panel</h4>
         </div>
@@ -171,16 +83,6 @@ function showAdminNavigation() {
           <a href="manage-matches.html" class="panel-item"><i class="icon-create"></i><span>Manage Matches</span></a>
         </div>
       </div>
-      
-      <div class="dropdown-panel" id="settingsPanel">
-        <div class="panel-header">
-          <h4>Settings Panel</h4>
-        </div>
-        <div class="panel-content">
-          <a href="delete-account.html" class="panel-item"><i class="icon-password"></i><span>Account Settings</span></a>
-        </div>
-      </div>
-      
       <div class="dropdown-panel" id="playerPanel">
         <div class="panel-header">
           <h4>Player Panel</h4>
@@ -189,15 +91,18 @@ function showAdminNavigation() {
           <a href="manage-player.html" class="panel-item"><i class="icon-password"></i><span>Manage Players</span></a>
         </div>
       </div>
+      ` : ''}
+      
+      <div class="dropdown-panel" id="settingsPanel">
+        <div class="panel-header">
+          <h4>Settings Panel</h4>
+        </div>
+        <div class="panel-content">
+          <a href="manageAccount.html" class="panel-item"><i class="icon-password"></i><span>Account Settings</span></a>
+        </div>
+      </div>
     </nav>
   `;
-}
-
-function removeAdminNavigation() {
-  const navContainer = document.getElementById('adminNavContainer');
-  if (navContainer) {
-    navContainer.innerHTML = '';
-  }
 }
 
 function initializeDropdowns() {
@@ -210,59 +115,59 @@ function initializeDropdowns() {
     }
   });
 
-  // Store dropdown
+  // Store dropdown (admin only)
   document.querySelectorAll('.dropdown-toggle-store').forEach(button => {
     button.addEventListener('click', (e) => {
       e.stopPropagation();
       const panel = document.getElementById('storePanel');
-      panel.classList.toggle('active');
-      
-      // Close other panels
-      document.querySelectorAll('.dropdown-panel:not(#storePanel)').forEach(p => {
-        p.classList.remove('active');
-      });
+      if (panel) {
+        panel.classList.toggle('active');
+        document.querySelectorAll('.dropdown-panel:not(#storePanel)').forEach(p => {
+          p.classList.remove('active');
+        });
+      }
     });
   });
 
-    // Matches dropdown
+  // Matches dropdown (admin only)
   document.querySelectorAll('.dropdown-toggle-matches').forEach(button => {
     button.addEventListener('click', (e) => {
       e.stopPropagation();
       const panel = document.getElementById('matchesPanel');
-      panel.classList.toggle('active');
-      
-      // Close other panels
-      document.querySelectorAll('.dropdown-panel:not(#matchesPanel)').forEach(p => {
-        p.classList.remove('active');
-      });
+      if (panel) {
+        panel.classList.toggle('active');
+        document.querySelectorAll('.dropdown-panel:not(#matchesPanel)').forEach(p => {
+          p.classList.remove('active');
+        });
+      }
     });
   });
-  
-  // Players dropdown
+
+  // Players dropdown (admin only)
   document.querySelectorAll('.dropdown-toggle-player').forEach(button => {
     button.addEventListener('click', (e) => {
       e.stopPropagation();
       const panel = document.getElementById('playerPanel');
-      panel.classList.toggle('active');
-      
-      // Close other panels
-      document.querySelectorAll('.dropdown-panel:not(#playerPanel)').forEach(p => {
-        p.classList.remove('active');
-      });
+      if (panel) {
+        panel.classList.toggle('active');
+        document.querySelectorAll('.dropdown-panel:not(#playerPanel)').forEach(p => {
+          p.classList.remove('active');
+        });
+      }
     });
   });
-  
-  // Settings dropdown
+
+  // Settings dropdown (all users)
   document.querySelectorAll('.dropdown-toggle-settings').forEach(button => {
     button.addEventListener('click', (e) => {
       e.stopPropagation();
       const panel = document.getElementById('settingsPanel');
-      panel.classList.toggle('active');
-      
-      // Close other panels
-      document.querySelectorAll('.dropdown-panel:not(#settingsPanel)').forEach(p => {
-        p.classList.remove('active');
-      });
+      if (panel) {
+        panel.classList.toggle('active');
+        document.querySelectorAll('.dropdown-panel:not(#settingsPanel)').forEach(p => {
+          p.classList.remove('active');
+        });
+      }
     });
   });
 }

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Account Management | FootMaster Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+      "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+      "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+    }
+  }
+  </script>
+  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/players.js"></script>
+  <script type="module" src="js/profile.js"></script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="components/navbar-component.js"></script>
+  <script type="module" src="components/footer-component.js"></script>
+  <navbar-component></navbar-component>
+</head>
+<body>
+  <main class="container" style="max-width: 450px; margin: 50px auto;">
+    <h1>Account Management</h1>
+    <p>
+      Here you can update your display name, request a password change, or delete your account.<br>
+    </p>
+
+    <!-- Update Display Name Section -->
+    <section style="margin-bottom:2em; margin-top:2em;">
+      <h2 style="font-size:1.1em;">Update Display Name</h2>
+      <form id="displayNameForm" style="margin-bottom:10px;">
+        <input type="text" id="displayNameInput" placeholder="New display name" required style="width:80%;padding:8px;">
+        <button type="submit" class="btn" style="background:#800000;color:white;">Update</button>
+      </form>
+      <div id="displayNameStatus" style="color:#800000;font-size:0.95em;"></div>
+    </section>
+
+    <!-- Change Password Section -->
+    <section style="margin-bottom:2em;">
+      <h2 style="font-size:1.1em;">Change Password</h2>
+      <button id="changePasswordBtn" class="btn" style="background:#1976d2;color:white;">Send Password Reset Email</button>
+      <div id="changePasswordStatus" style="color:#800000;font-size:0.95em;margin-top:8px;"></div>
+    </section>
+
+    <!-- Delete Account Section -->
+    <section>
+      <h2 style="font-size:1.1em;">Delete Your Account</h2>
+      <b style="font-size: 0.9em;">Deleting your account cannot be undone.</b>
+      <button id="deleteAccountBtn" class="btn" style="background:#d32f2f;color:white;">Delete Account</button>
+      <div id="deleteStatus" style="margin-top:20px;color:#800000;"></div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { auth, db } from './js/firebase.js';
+    import { doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { onAuthStateChanged, updateProfile, sendPasswordResetEmail, deleteUser, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const displayNameForm = document.getElementById('displayNameForm');
+    const displayNameInput = document.getElementById('displayNameInput');
+    const displayNameStatus = document.getElementById('displayNameStatus');
+
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    const changePasswordStatus = document.getElementById('changePasswordStatus');
+
+    const deleteBtn = document.getElementById('deleteAccountBtn');
+    const statusDiv = document.getElementById('deleteStatus');
+
+    let currentUser = null;
+
+    // Auth state listener to set current user and autofill display name
+    onAuthStateChanged(auth, user => {
+      currentUser = user;
+      if (!user) {
+        statusDiv.textContent = "You must be signed in to manage your account.";
+        deleteBtn.disabled = true;
+        displayNameForm.querySelector('button').disabled = true;
+        changePasswordBtn.disabled = true;
+      } else {
+        deleteBtn.disabled = false;
+        displayNameForm.querySelector('button').disabled = false;
+        changePasswordBtn.disabled = false;
+        displayNameInput.value = user.displayName || '';
+      }
+    });
+
+    // Update display name
+    displayNameForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      displayNameStatus.textContent = '';
+      if (!currentUser) {
+        displayNameStatus.textContent = 'You must be signed in.';
+        return;
+      }
+      const newName = displayNameInput.value.trim();
+      if (!newName) {
+        displayNameStatus.textContent = 'Display name cannot be empty.';
+        return;
+      }
+      displayNameForm.querySelector('button').disabled = true;
+      displayNameStatus.textContent = 'Updating...';
+      try {
+        // Update Firebase Auth profile
+        await updateProfile(currentUser, { displayName: newName });
+        // Update Firestore user document
+        await updateDoc(doc(db, "Accounts", currentUser.uid), { displayName: newName });
+        displayNameStatus.textContent = 'Display name updated!';
+      } catch (err) {
+        displayNameStatus.textContent = 'Update failed: ' + err.message;
+      } finally {
+        displayNameForm.querySelector('button').disabled = false;
+      }
+    });
+
+    // Send password reset email
+    changePasswordBtn.addEventListener('click', async () => {
+      changePasswordStatus.textContent = '';
+      if (!currentUser) {
+        changePasswordStatus.textContent = 'You must be signed in.';
+        return;
+      }
+      changePasswordBtn.disabled = true;
+      changePasswordStatus.textContent = 'Sending password reset email...';
+      try {
+        await sendPasswordResetEmail(auth, currentUser.email);
+        changePasswordStatus.textContent = 'Password reset email sent to ' + currentUser.email;
+      } catch (err) {
+        changePasswordStatus.textContent = 'Error: ' + err.message;
+      } finally {
+        changePasswordBtn.disabled = false;
+      }
+    });
+
+    // Delete account logic
+    deleteBtn.addEventListener('click', async () => {
+      if (!currentUser) return;
+      if (!confirm("Are you sure? This cannot be undone.")) return;
+
+      statusDiv.textContent = "Deleting your account...";
+      deleteBtn.disabled = true;
+
+      try {
+        // 1. Delete user document from Firestore
+        await deleteDoc(doc(db, "Accounts", currentUser.uid));
+
+        // 2. Delete Auth account (requires recent login)
+        await deleteUser(currentUser);
+
+        // 3. Optionally: remove user from localStorage/session
+        localStorage.removeItem('currentUser');
+
+        statusDiv.textContent = "Account deleted. Redirecting...";
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 2000);
+
+      } catch (err) {
+        // If requires-recent-login, sign out the user
+        if (err.code === 'auth/requires-recent-login') {
+          statusDiv.textContent = "Please log in again to delete your account.";
+          setTimeout(() => {
+            signOut(auth).then(() => {
+              window.location.href = "login.html";
+            });
+          }, 2000);
+        } else {
+          statusDiv.textContent = "Error deleting account: " + err.message;
+        }
+        deleteBtn.disabled = false;
+      }
+    });
+
+  </script>
+  <footer-component></footer-component>
+</body>
+</html>
