@@ -1,135 +1,1023 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Footmaster Pro - Forum</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      padding: 20px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Forum | FootMaster Pro</title>
+    <link rel="stylesheet" href="css/styles.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px; 
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        form.post-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        textarea {
+            resize: vertical;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            min-height: 80px;
+        }
+        .emoji-picker-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .emoji-categories {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .emoji-category {
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #f0f0f0;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+        .emoji-category.active,
+        .emoji-category:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .emoji-picker {
+            display: flex;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 1.4rem;
+            cursor: pointer;
+            user-select: none;
+            flex-wrap: wrap;
+            max-height: 100px;
+            overflow-y: auto;
+            border-top: 1px solid #ddd;
+        }
+        .emoji-picker span:hover {
+            background: #e0e0e0;
+            border-radius: 6px;
+        }
+        input[type='file'] {
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            padding: 6px;
+        }
+        button {
+            align-self: flex-start;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+        button:disabled {
+            background-color: #999;
+            cursor: default;
+        }
+        button:hover:not(:disabled) {
+            background-color: #0069d9;
+        }
+        .posts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+            position: relative;
+        }
+        
+        /* 纯文字帖子占满宽度 */
+        .posts .post:not([data-has-media]) {
+            grid-column: 1 / -1;
+            display: block;
+        }
+        .loading,
+        .error-msg {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin-top: 20px;
+        }
+        .preview-container {
+            margin-top: 10px;
+            max-height: 150px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .preview-container img,
+        .preview-container video {
+            max-height: 150px;
+            border-radius: 8px;
+            object-fit: contain;
+            max-width: 150px;
+        }
+        .preview-remove {
+            cursor: pointer;
+            color: #d33;
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(255 255 255 / 0.8);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            text-align: center;
+            line-height: 24px;
+            user-select: none;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+            transition: color 0.3s;
+        }
+        .preview-remove:hover {
+            color: #a00;
+        }
+    </style>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js",
+            "firebase/storage": "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"
+        }
     }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #333;
-    }
-    .post-form textarea {
-      width: 100%;
-      padding: 15px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      resize: vertical;
-      font-size: 1rem;
-      margin-bottom: 15px;
-    }
-    .post-form button {
-      padding: 10px 20px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    .post-form button:hover {
-      background: #0069d9;
-    }
-    .posts {
-      margin-top: 30px;
-    }
-    .post {
-      padding: 20px;
-      background: #f9f9f9;
-      border-left: 4px solid #007bff;
-      border-radius: 6px;
-      margin-bottom: 20px;
-    }
-    .post .meta {
-      font-size: 0.85rem;
-      color: #666;
-      margin-bottom: 10px;
-    }
-    .post .content {
-      font-size: 1rem;
-      color: #333;
-    }
-  </style>
+    </script>
 </head>
 <body>
-  <div class="container">
+    <navbar-component></navbar-component>
+
+    <!-- Featured Section -->
+    <section class="featured-section" style="margin-bottom: 30px;">
+        <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Featured Posts</h2>
+        <div class="featured-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; padding: 0 20px;">
+            
+            <div class="featured-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: transform 0.2s;">
+                <img src="https://via.placeholder.com/300x150/4f46e5/ffffff?text=Featured+1" alt="Featured" style="width: 100%; height: 150px; object-fit: cover;">
+                <div style="padding: 16px;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; color: #333;">Reflecting on Two Decades of Football</h3>
+                    <p style="margin: 0 0 12px 0; font-size: 0.9rem; color: #666; line-height: 1.4;">Hi Football fans, sharing thoughts on how the beautiful game has evolved...</p>
+                    <div style="display: flex; gap: 15px; font-size: 0.85rem; color: #888;">
+                        <span><i class="fas fa-user"></i> BradMinor1</span>
+                        <span><i class="fas fa-thumbs-up"></i> 1015</span>
+                        <span><i class="fas fa-comment"></i> 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="featured-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: transform 0.2s;">
+                <img src="https://via.placeholder.com/300x150/10b981/ffffff?text=Featured+2" alt="Featured" style="width: 100%; height: 150px; object-fit: cover;">
+                <div style="padding: 16px;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; color: #333;">20 Years of Creativity and Community</h3>
+                    <p style="margin: 0 0 12px 0; font-size: 0.9rem; color: #666; line-height: 1.4;">As shared earlier this week, our community is celebrating 20 years...</p>
+                    <div style="display: flex; gap: 15px; font-size: 0.85rem; color: #888;">
+                        <span><i class="fas fa-user"></i> kelleus</span>
+                        <span><i class="fas fa-thumbs-up"></i> 220</span>
+                        <span><i class="fas fa-comment"></i> 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="featured-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: transform 0.2s;">
+                <img src="https://via.placeholder.com/300x150/f59e0b/ffffff?text=Featured+3" alt="Featured" style="width: 100%; height: 150px; object-fit: cover;">
+                <div style="padding: 16px;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; color: #333;">Community Newsletter: July 27, 2025</h3>
+                    <p style="margin: 0 0 12px 0; font-size: 0.9rem; color: #666; line-height: 1.4;">Trending now with players "Spiced Neutrals" - this season's new palette...</p>
+                    <div style="display: flex; gap: 15px; font-size: 0.85rem; color: #888;">
+                        <span><i class="fas fa-user"></i> Iridesent</span>
+                        <span><i class="fas fa-thumbs-up"></i> 118</span>
+                        <span><i class="fas fa-comment"></i> 0</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
     <h1><i class="fas fa-comments"></i> Footmaster Pro Forum</h1>
+    <div class="container">
+        <form class="post-form" id="postForm">
+            <textarea id="postContent" placeholder="Share your thoughts..." autocomplete="off" required=""></textarea>
 
-    <form class="post-form" id="postForm">
-      <textarea id="postContent" rows="4" placeholder="Share your thoughts..." required></textarea>
-      <button type="submit"><i class="fas fa-paper-plane"></i> Post</button>
-    </form>
+            <div class="emoji-picker-container">
+                <input type="text" placeholder="Search emojis..." id="emojiSearch" class="emoji-search" autocomplete="off">
+                <div class="emoji-categories" id="emojiCategories"><button type="button" class="emoji-category active">Smileys</button><button type="button" class="emoji-category">Gestures</button><button type="button" class="emoji-category">Hearts</button><button type="button" class="emoji-category">Animals</button><button type="button" class="emoji-category">Food</button><button type="button" class="emoji-category">Symbols</button></div>
+                <div class="emoji-picker" id="emojiPicker"><span title="Add emoji 😀" style="user-select: none;">😀</span><span title="Add emoji 😂" style="user-select: none;">😂</span><span title="Add emoji 😍" style="user-select: none;">😍</span><span title="Add emoji 😎" style="user-select: none;">😎</span><span title="Add emoji 🤔" style="user-select: none;">🤔</span><span title="Add emoji 😢" style="user-select: none;">😢</span><span title="Add emoji 😡" style="user-select: none;">😡</span><span title="Add emoji 😊" style="user-select: none;">😊</span><span title="Add emoji 😴" style="user-select: none;">😴</span><span title="Add emoji 😇" style="user-select: none;">😇</span><span title="Add emoji 😱" style="user-select: none;">😱</span><span title="Add emoji 🤯" style="user-select: none;">🤯</span><span title="Add emoji 😤" style="user-select: none;">😤</span></div>
+            </div>
 
-    <div class="posts" id="postsContainer">
-      <!-- Posts will appear here -->
+            <input type="file" id="mediaInput" accept="image/*,video/*">
+            <div class="preview-container" id="previewContainer" style="display:none;">
+                </div>
+
+            <button type="submit" id="postBtn">
+                <i class="fas fa-paper-plane"></i> Post
+            </button>
+            <div id="formError" class="error-msg" style="display:none;"></div>
+        </form>
+
+        <div class="posts" id="postsContainer"><div class="post" id="post_nWKbY8jqezqQrozsfmCP" data-has-media="true" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px; margin-bottom: 20px; width: 100%; max-width: 320px; transition: transform 0.2s;"><div style="width: 100%; height: 200px; overflow: hidden; position: relative;"><img src="https://firebasestorage.googleapis.com/v0/b/football-club-management-3c136.firebasestorage.app/o/posts%2Fl9y7qKQyNxUryKO7nmzR499BPcX2%2F1753680581964_good.png?alt=media&amp;token=5942901b-77d1-4411-b855-6f2e566467ad" alt="Post image" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><div style="padding: 16px;"><h3 style="margin: 0px 0px 8px; font-size: 1.1rem; color: rgb(51, 51, 51); font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">321😀😀</h3><div style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px;"><div style="display: flex; align-items: center; gap: 8px;"><div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, rgb(79, 70, 229), rgb(124, 58, 237)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.7rem;">H</div><span style="font-weight: 600; color: rgb(51, 51, 51); font-size: 0.85rem;">haonan0922</span></div><div style="display: flex; align-items: center; gap: 15px; font-size: 0.85rem; color: rgb(136, 136, 136);"><button style="background: none; border: none; display: flex; align-items: center; gap: 4px; color: rgb(136, 136, 136); cursor: pointer; padding: 4px; border-radius: 4px; transition: color 0.2s;"><i class="fas fa-thumbs-up"></i> <span>1</span></button><button style="background: none; border: none; display: flex; align-items: center; gap: 4px; color: rgb(136, 136, 136); cursor: pointer; padding: 4px; border-radius: 4px; transition: color 0.2s;"><i class="fas fa-comment"></i> <span>1</span></button></div></div></div></div><div class="post" id="post_56d9626rrp08eoqRZD9s" data-has-media="true" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px; margin-bottom: 20px; width: 100%; max-width: 320px; transition: transform 0.2s;"><div style="width: 100%; height: 200px; overflow: hidden; position: relative;"><img src="https://firebasestorage.googleapis.com/v0/b/football-club-management-3c136.firebasestorage.app/o/posts%2Fl9y7qKQyNxUryKO7nmzR499BPcX2%2F1753679809946_good.png?alt=media&amp;token=d7e82e87-08a0-4daa-adbc-4be8e65ba69e" alt="Post image" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><div style="padding: 16px;"><h3 style="margin: 0px 0px 8px; font-size: 1.1rem; color: rgb(51, 51, 51); font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">123😀</h3><div style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px;"><div style="display: flex; align-items: center; gap: 8px;"><div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, rgb(79, 70, 229), rgb(124, 58, 237)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.7rem;">H</div><span style="font-weight: 600; color: rgb(51, 51, 51); font-size: 0.85rem;">haonan0922</span></div><div style="display: flex; align-items: center; gap: 15px; font-size: 0.85rem; color: rgb(136, 136, 136);"><button style="background: none; border: none; display: flex; align-items: center; gap: 4px; color: rgb(136, 136, 136); cursor: pointer; padding: 4px; border-radius: 4px; transition: color 0.2s;"><i class="fas fa-thumbs-up"></i> <span>0</span></button><button style="background: none; border: none; display: flex; align-items: center; gap: 4px; color: rgb(136, 136, 136); cursor: pointer; padding: 4px; border-radius: 4px; transition: color 0.2s;"><i class="fas fa-comment"></i> <span>0</span></button></div></div></div></div><div class="post" id="post_7SoSgg5aKxUP1O6N2cEX" data-has-media="true" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px; margin-bottom: 20px; width: 100%; max-width: 320px; transition: transform 0.2s;"><div style="width: 100%; height: 200px; overflow: hidden; position: relative;"><img src="https://firebasestorage.googleapis.com/v0/b/football-club-management-3c136.firebasestorage.app/o/posts%2Fl9y7qKQyNxUryKO7nmzR499BPcX2%2F1753679776342_good.png?alt=media&amp;token=d1be0fe1-3601-4853-80e5-2fbd7907cab2" alt="Post image" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><div style="padding: 16px;"><h3 style="margin: 0px 0px 8px; font-size: 1.1rem; color: rgb(51, 51, 51); font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">123😀</h3><div style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px;"><div style="display: flex; align-items: center; gap: 8px;"><div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, rgb(79, 70, 229), rgb(124, 58, 237)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.7rem;">H</div><span style="font-weight: 600; color: rgb(51, 51, 51); font-size: 0.85rem;">haonan0922</span></div><div style="display: flex; align-items: center; gap: 15px; font-size: 0.85rem; color: rgb(136, 136, 136);"><button style="background: none; border: none; display: flex; align-items: center; gap: 4px; color: rgb(136, 136, 136); cursor: pointer; padding: 4px; border-radius: 4px; transition: color 0.2s;"><i class="fas fa-thumbs-up"></i> <span>0</span></button><button style="background: none; border: none; display: flex; align-items: center; gap: 4px; color: rgb(136, 136, 136); cursor: pointer; padding: 4px; border-radius: 4px; transition: color 0.2s;"><i class="fas fa-comment"></i> <span>0</span></button></div></div></div></div><div class="post" id="post_eUCYnwerRMFidi11BVnA" data-has-media="true" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px; margin-bottom: 20px; width: 100%; max-width: 320px; transition: transform 0.2s;"><div style="width: 100%; height: 200px; overflow: hidden; position: relative;"><img src="https://firebasestorage.googleapis.com/v0/b/football-club-management-3c136.firebasestorage.app/o/posts%2FvDJsv3LqcVW8CDvadEL9OFCIQBy2%2F1753632803021_after_delete_attempt-2025-07-21T07-15-26-589Z.png?alt=media&amp;token=cd1f864a-e17e-41c6-9a7f-18a4d22cefdf" alt="Post image" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><div style="padding: 16px;"><h3 style="margin: 0px 0px 8px; font-size: 1.1rem; color: rgb(51, 51, 51); font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">3123123213✌️</h3><div style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px;"><div style="display: flex; align-items: center; gap: 8px;"><div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, rgb(79, 70, 229), rgb(124, 58, 237)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.7rem;">1</div><span style="font-weight: 600; color: rgb(51, 51, 51); font-size: 0.85rem;">123</span></div><div style="display: flex; align-items: center; gap: 15px; font-size: 0.85rem; color: rgb(136, 136, 136);"><button style="background: none; border: none; display: flex; align-items: center; gap: 4px; color: rgb(136, 136, 136); cursor: pointer; padding: 4px; border-radius: 4px; transition: color 0.2s;"><i class="fas fa-thumbs-up"></i> <span>0</span></button><button style="background: none; border: none; display: flex; align-items: center; gap: 4px; color: rgb(136, 136, 136); cursor: pointer; padding: 4px; border-radius: 4px; transition: color 0.2s;"><i class="fas fa-comment"></i> <span>0</span></button></div></div></div></div><div class="post" id="post_hWsM5rwiLY64vTft96el" data-has-media="true" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px; margin-bottom: 20px; width: 100%; max-width: 320px; transition: transform 0.2s;"><div style="width: 100%; height: 200px; overflow: hidden; position: relative;"><img src="https://firebasestorage.googleapis.com/v0/b/football-club-management-3c136.firebasestorage.app/o/posts%2FvDJsv3LqcVW8CDvadEL9OFCIQBy2%2F1753631833007_after_delete_no_confirm-2025-07-21T07-52-53-564Z.png?alt=media&amp;token=7934dfba-3fd8-4ab7-b77b-9ab7a9fc3c40" alt="Post image" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><div style="padding: 16px;"><h3 style="margin: 0px 0px 8px; font-size: 1.1rem; color: rgb(51, 51, 51); font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">23213213✌️</h3><div style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px;"><div style="display: flex; align-items: center; gap: 8px;"><div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, rgb(79, 70, 229), rgb(124, 58, 237)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.7rem;">1</div><span style="font-weight: 600; color: rgb(51, 51, 51); font-size: 0.85rem;">123</span></div><div style="display: flex; align-items: center; gap: 15px; font-size: 0.85rem; color: rgb(136, 136, 136);"><button style="background: none; border: none; display: flex; align-items: center; gap: 4px; color: rgb(136, 136, 136); cursor: pointer; padding: 4px; border-radius: 4px; transition: color 0.2s;"><i class="fas fa-thumbs-up"></i> <span>0</span></button><button style="background: none; border: none; display: flex; align-items: center; gap: 4px; color: rgb(136, 136, 136); cursor: pointer; padding: 4px; border-radius: 4px; transition: color 0.2s;"><i class="fas fa-comment"></i> <span>0</span></button></div></div></div></div></div>
+        <div id="loadingMsg" class="loading" style="display: none;">Loading posts...</div>
+        <div id="errorMsg" class="error-msg" style="display:none;"></div>
     </div>
-  </div>
 
-  <script>
-    const form = document.getElementById("postForm");
-    const postContent = document.getElementById("postContent");
-    const postsContainer = document.getElementById("postsContainer");
+    <footer-component></footer-component>
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      const content = postContent.value.trim();
-      if (!content) return;
+    <script type="module">
+        import {
+            db, auth, storage,
+            collection, addDoc, serverTimestamp, query, orderBy, limit, startAfter,
+            doc, updateDoc, deleteDoc, getDocs, onAuthStateChanged, getDoc,
+            ref, uploadBytes, getDownloadURL, deleteObject
+        } from "./js/firebase.js";
 
-      const post = {
-        content,
-        author: "Anonymous User",
-        timestamp: new Date().toLocaleString()
-      };
+        const postForm = document.getElementById("postForm");
+        const postContent = document.getElementById("postContent");
+        const mediaInput = document.getElementById("mediaInput");
+        const postBtn = document.getElementById("postBtn");
+        const postsContainer = document.getElementById("postsContainer");
+        const emojiPicker = document.getElementById("emojiPicker");
+        const emojiSearch = document.getElementById("emojiSearch");
+        const emojiCategories = document.getElementById("emojiCategories");
+        const previewContainer = document.getElementById("previewContainer");
+        const formError = document.getElementById("formError");
+        const loadingMsg = document.getElementById("loadingMsg");
+        const errorMsg = document.getElementById("errorMsg");
 
-      addPostToDOM(post);
-      savePostToLocal(post); // Optional: LocalStorage persistence
-      postContent.value = "";
-    });
+        let currentUser = null;
 
-    function addPostToDOM(post) {
-      const postDiv = document.createElement("div");
-      postDiv.classList.add("post");
-      postDiv.innerHTML = `
-        <div class="meta">Posted by ${post.author} on ${post.timestamp}</div>
-        <div class="content">${escapeHTML(post.content)}</div>
-      `;
-      postsContainer.prepend(postDiv);
-    }
+        // Pagination state
+        const PAGE_SIZE = 5;
+        let lastVisible = null;
+        let loadingPosts = false;
+        let allLoaded = false;
+        
 
-    function escapeHTML(str) {
-      return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
+        // Emoji categories and emojis
+        const emojiData = {
+            "Smileys": ["😀", "😂", "😍", "😎", "🤔", "😢", "😡", "😊", "😴", "😇", "😱", "🤯", "😤"],
+            "Gestures": ["👍", "🙏", "👏", "🤝", "✌️", "🤘", "👌", "👎", "👋", "🤙"],
+            "Hearts": ["❤️", "💛", "💚", "💙", "💜", "🖤", "💔", "❣️"],
+            "Animals": ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁"],
+            "Food": ["🍏", "🍎", "🍌", "🍉", "🍇", "🍓", "🍔", "🍕", "🍟", "🌭", "🍿"],
+            "Symbols": ["🎉", "🔥", "⭐", "🌟", "💥", "⚡", "💫", "🎶", "💤"],
+        };
 
-    // Optional: Save/load from localStorage
-    function savePostToLocal(post) {
-      const posts = JSON.parse(localStorage.getItem("forumPosts") || "[]");
-      posts.unshift(post);
-      localStorage.setItem("forumPosts", JSON.stringify(posts));
-    }
+        let activeCategory = "Smileys";
+        let filteredEmojis = emojiData[activeCategory];
 
-    function loadPostsFromLocal() {
-      const posts = JSON.parse(localStorage.getItem("forumPosts") || "[]");
-      posts.forEach(addPostToDOM);
-    }
+        // Auth check
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                console.log("User logged in:", user.email);
+                loadInitialPosts();
+            } else {
+                alert("Please log in to post.");
+                window.location.href = "login.html";
+            }
+        });
 
-    loadPostsFromLocal();
-  </script>
+        // Render emoji picker UI
+        function renderEmojiCategories() {
+            emojiCategories.innerHTML = "";
+            Object.keys(emojiData).forEach((cat) => {
+                const btn = document.createElement("button");
+                btn.textContent = cat;
+                btn.type = "button";
+                btn.className = "emoji-category" + (cat === activeCategory ? " active" : "");
+                btn.addEventListener("click", () => {
+                    activeCategory = cat;
+                    filteredEmojis = emojiData[cat];
+                    renderEmojiPicker();
+                    renderEmojiCategories();
+                });
+                emojiCategories.appendChild(btn);
+            });
+        }
+
+        function renderEmojiPicker() {
+            emojiPicker.innerHTML = "";
+            filteredEmojis.forEach((e) => {
+                const span = document.createElement("span");
+                span.textContent = e;
+                span.title = "Add emoji " + e;
+                span.style.userSelect = "none";
+                span.addEventListener("click", () => {
+                    insertAtCursor(postContent, e);
+                    postContent.focus();
+                });
+                emojiPicker.appendChild(span);
+            });
+        }
+
+        emojiSearch.addEventListener("input", () => {
+            const searchTerm = emojiSearch.value.trim();
+            if (!searchTerm) {
+                filteredEmojis = emojiData[activeCategory];
+            } else {
+                filteredEmojis = [];
+                Object.values(emojiData).forEach((arr) => {
+                    arr.forEach((e) => {
+                        if (e.includes(searchTerm)) filteredEmojis.push(e);
+                    });
+                });
+            }
+            renderEmojiPicker();
+        });
+
+        function insertAtCursor(textarea, text) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const before = textarea.value.substring(0, start);
+            const after = textarea.value.substring(end, textarea.value.length);
+            textarea.value = before + text + after;
+            textarea.selectionStart = textarea.selectionEnd = start + text.length;
+        }
+
+        renderEmojiCategories();
+        renderEmojiPicker();
+
+        // Preview image/video on file select
+        mediaInput.addEventListener("change", () => {
+            previewContainer.innerHTML = "";
+            formError.style.display = "none";
+
+            if (mediaInput.files.length === 0) {
+                previewContainer.style.display = "none";
+                return;
+            }
+
+            const file = mediaInput.files[0];
+            const type = file.type;
+
+            const url = URL.createObjectURL(file);
+            let previewEl;
+
+            if (type.startsWith("image/")) {
+                previewEl = document.createElement("img");
+                previewEl.src = url;
+                previewEl.alt = "Image preview";
+            } else if (type.startsWith("video/")) {
+                previewEl = document.createElement("video");
+                previewEl.src = url;
+                previewEl.controls = true;
+            } else {
+                formError.textContent = "Unsupported file type.";
+                formError.style.display = "block";
+                mediaInput.value = null;
+                previewContainer.style.display = "none";
+                return;
+            }
+
+            const removeBtn = document.createElement("div");
+            removeBtn.className = "preview-remove";
+            removeBtn.innerHTML = "&times;";
+            removeBtn.title = "Remove selected media";
+            removeBtn.addEventListener("click", () => {
+                mediaInput.value = null;
+                previewContainer.style.display = "none";
+                previewContainer.innerHTML = "";
+            });
+
+            previewContainer.appendChild(previewEl);
+            previewContainer.appendChild(removeBtn);
+            previewContainer.style.display = "flex";
+        });
+
+        // Posting new post
+        postForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            formError.style.display = "none";
+
+            if (!currentUser) {
+                alert("Please log in.");
+                return;
+            }
+
+            const text = postContent.value.trim();
+
+            if (!text && mediaInput.files.length === 0) {
+                formError.textContent = "Please add some text or select an image/video.";
+                formError.style.display = "block";
+                return;
+            }
+
+            postBtn.disabled = true;
+            postBtn.textContent = "Posting...";
+
+            try {
+                let mediaURL = null;
+                let mediaType = null;
+
+                if (mediaInput.files.length > 0) {
+                    const file = mediaInput.files[0];
+                    const storageRef = ref(
+                        storage,
+                        `posts/${currentUser.uid}/${Date.now()}_${file.name}`
+                    );
+                    await uploadBytes(storageRef, file);
+                    mediaURL = await getDownloadURL(storageRef);
+                    mediaType = file.type.startsWith("image/") ? "image" : "video";
+                }
+
+                await addDoc(collection(db, "posts"), {
+                    uid: currentUser.uid,
+                    author: currentUser.email,
+                    text,
+                    mediaURL,
+                    mediaType,
+                    createdAt: serverTimestamp(),
+                });
+
+                // Reset form
+                postContent.value = "";
+                mediaInput.value = null;
+                previewContainer.style.display = "none";
+                previewContainer.innerHTML = "";
+
+                // Reload posts
+                loadInitialPosts();
+
+            } catch (error) {
+                formError.textContent = "Error posting: " + error.message;
+                formError.style.display = "block";
+            } finally {
+                postBtn.disabled = false;
+                postBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+            }
+        });
+
+        // Load posts with pagination
+        async function loadInitialPosts() {
+            loadingMsg.style.display = "block";
+            errorMsg.style.display = "none";
+            postsContainer.innerHTML = "";
+            lastVisible = null;
+            allLoaded = false;
+            await loadMorePosts();
+            loadingMsg.style.display = "none";
+        }
+
+        async function loadMorePosts() {
+            if (loadingPosts || allLoaded) return;
+            loadingPosts = true;
+            loadingMsg.style.display = "block";
+
+            try {
+                let q;
+                if (!lastVisible) {
+                    q = query(
+                        collection(db, "posts"),
+                        orderBy("createdAt", "desc"),
+                        limit(PAGE_SIZE)
+                    );
+                } else {
+                    q = query(
+                        collection(db, "posts"),
+                        orderBy("createdAt", "desc"),
+                        startAfter(lastVisible),
+                        limit(PAGE_SIZE)
+                    );
+                }
+
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    allLoaded = true;
+                    if (!lastVisible) {
+                        postsContainer.innerHTML = "<p>No posts yet. Be the first!</p>";
+                    }
+                    loadingMsg.style.display = "none";
+                    loadingPosts = false;
+                    return;
+                }
+
+                lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+                querySnapshot.forEach((docSnap) => {
+                    const post = { id: docSnap.id, ...docSnap.data() };
+                    renderPost(post);
+                });
+
+            } catch (error) {
+                errorMsg.textContent = "Failed to load posts: " + error.message;
+                errorMsg.style.display = "block";
+            } finally {
+                loadingMsg.style.display = "none";
+                loadingPosts = false;
+            }
+        }
+
+        // Render a single post - FIXED VERSION
+        function renderPost(post) {
+            if (document.getElementById("post_" + post.id)) return;
+
+            const postDiv = document.createElement("div");
+            postDiv.className = "post";
+            postDiv.id = "post_" + post.id;
+            
+            if (post.mediaURL) {
+                // 卡片式布局 - 有媒体
+                postDiv.setAttribute('data-has-media', 'true');
+                postDiv.style.cssText = "background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; max-width: 320px; transition: transform 0.2s ease;";
+                
+                // 媒体容器
+                const mediaContainer = document.createElement("div");
+                mediaContainer.style.cssText = "width: 100%; height: 200px; overflow: hidden; position: relative;";
+                
+                // 媒体元素
+                let mediaEl;
+                if (post.mediaType === "image") {
+                    mediaEl = document.createElement("img");
+                    mediaEl.src = post.mediaURL;
+                    mediaEl.alt = "Post image";
+                    mediaEl.style.cssText = "width: 100%; height: 100%; object-fit: cover; display: block;";
+                } else if (post.mediaType === "video") {
+                    mediaEl = document.createElement("video");
+                    mediaEl.src = post.mediaURL;
+                    mediaEl.controls = true;
+                    mediaEl.style.cssText = "width: 100%; height: 100%; object-fit: cover; display: block;";
+                }
+                
+                if (mediaEl) {
+                    mediaContainer.appendChild(mediaEl);
+                }
+
+                // 编辑/删除按钮
+                if (post.uid === currentUser.uid) {
+                    const actions = document.createElement("div");
+                    actions.style.cssText = "position: absolute; top: 8px; right: 8px; display: flex; gap: 4px;";
+
+                    const editBtn = document.createElement("button");
+                    editBtn.title = "Edit post";
+                    editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                    editBtn.style.cssText = "background: rgba(0,0,0,0.6); border: none; color: white; cursor: pointer; padding: 8px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;";
+                    editBtn.onclick = () => editPost(post.id, post.text);
+
+                    const delBtn = document.createElement("button");
+                    delBtn.title = "Delete post";
+                    delBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                    delBtn.style.cssText = "background: rgba(220,53,69,0.8); border: none; color: white; cursor: pointer; padding: 8px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;";
+                    delBtn.onclick = () => deletePost(post.id);
+
+                    actions.appendChild(editBtn);
+                    actions.appendChild(delBtn);
+                    mediaContainer.appendChild(actions);
+                }
+
+                // 内容区域
+                const contentArea = document.createElement("div");
+                contentArea.style.cssText = "padding: 16px;";
+
+                // 标题
+                const title = document.createElement("h3");
+                title.style.cssText = "margin: 0 0 8px 0; font-size: 1.1rem; color: #333; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;";
+                title.textContent = post.text || "Untitled Post";
+
+                // 底部信息
+                const footer = document.createElement("div");
+                footer.style.cssText = "display: flex; align-items: center; justify-content: space-between; margin-top: 12px;";
+
+                // 用户信息
+                const userInfo = document.createElement("div");
+                userInfo.style.cssText = "display: flex; align-items: center; gap: 8px;";
+
+                const avatar = document.createElement("div");
+                avatar.style.cssText = "width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, #4f46e5, #7c3aed); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.7rem;";
+                avatar.textContent = post.author.charAt(0).toUpperCase();
+
+                const authorName = document.createElement("span");
+                authorName.style.cssText = "font-weight: 600; color: #333; font-size: 0.85rem;";
+                authorName.textContent = post.author.split('@')[0];
+
+                userInfo.appendChild(avatar);
+                userInfo.appendChild(authorName);
+
+                // 点赞和评论
+                const stats = document.createElement("div");
+                stats.style.cssText = "display: flex; align-items: center; gap: 15px; font-size: 0.85rem; color: #888;";
+
+                const likeButton = document.createElement("button");
+                likeButton.style.cssText = "background: none; border: none; display: flex; align-items: center; gap: 4px; color: #888; cursor: pointer; padding: 4px; border-radius: 4px; transition: color 0.2s;";
+                likeButton.innerHTML = `<i class="fas fa-thumbs-up"></i> <span>${post.likes || 0}</span>`;
+                likeButton.onclick = () => toggleLike(post.id);
+                likeButton.onmouseover = () => likeButton.style.color = "#4f46e5";
+                likeButton.onmouseout = () => likeButton.style.color = "#888";
+
+                const commentButton = document.createElement("button");
+                commentButton.style.cssText = "background: none; border: none; display: flex; align-items: center; gap: 4px; color: #888; cursor: pointer; padding: 4px; border-radius: 4px; transition: color 0.2s;";
+                commentButton.innerHTML = `<i class="fas fa-comment"></i> <span>${post.comments || 0}</span>`;
+                commentButton.onclick = () => toggleComments(post.id);
+                commentButton.onmouseover = () => commentButton.style.color = "#4f46e5";
+                commentButton.onmouseout = () => commentButton.style.color = "#888";
+
+                stats.appendChild(likeButton);
+                stats.appendChild(commentButton);
+
+                footer.appendChild(userInfo);
+                footer.appendChild(stats);
+
+                contentArea.appendChild(title);
+                contentArea.appendChild(footer);
+
+                postDiv.appendChild(mediaContainer);
+                postDiv.appendChild(contentArea);
+
+            } else {
+                // 标准布局 - 纯文字
+                postDiv.style.cssText = "background: #f9f9f9; border-left: 4px solid #007bff; padding: 16px; border-radius: 6px; position: relative; margin-bottom: 20px;";
+
+                const header = document.createElement("div");
+                header.style.cssText = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;";
+                
+                const authorInfo = document.createElement("div");
+                authorInfo.style.cssText = "display: flex; align-items: center; gap: 10px;";
+                
+                const avatar = document.createElement("div");
+                avatar.style.cssText = "width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(45deg, #4f46e5, #7c3aed); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem;";
+                avatar.textContent = post.author.charAt(0).toUpperCase();
+                
+                const userDetails = document.createElement("div");
+                const authorName = document.createElement("div");
+                authorName.style.cssText = "font-weight: 600; color: #333; font-size: 0.95rem;";
+                authorName.textContent = post.author;
+                
+                const postTime = document.createElement("div");
+                postTime.style.cssText = "color: #666; font-size: 0.8rem;";
+                const date = post.createdAt?.toDate ? post.createdAt.toDate().toLocaleString() : "Just now";
+                postTime.textContent = date;
+                
+                userDetails.appendChild(authorName);
+                userDetails.appendChild(postTime);
+                authorInfo.appendChild(avatar);
+                authorInfo.appendChild(userDetails);
+
+                // Actions for text posts
+                const actions = document.createElement("div");
+                actions.style.cssText = "display: flex; gap: 8px;";
+
+                if (post.uid === currentUser.uid) {
+                    const editBtn = document.createElement("button");
+                    editBtn.title = "Edit post";
+                    editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                    editBtn.style.cssText = "background: transparent; border: none; color: #666; cursor: pointer; padding: 6px; border-radius: 4px;";
+                    editBtn.onclick = () => editPost(post.id, post.text);
+
+                    const delBtn = document.createElement("button");
+                    delBtn.title = "Delete post";
+                    delBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                    delBtn.style.cssText = "background: transparent; border: none; color: #666; cursor: pointer; padding: 6px; border-radius: 4px;";
+                    delBtn.onclick = () => deletePost(post.id);
+
+                    actions.appendChild(editBtn);
+                    actions.appendChild(delBtn);
+                }
+
+                header.appendChild(authorInfo);
+                header.appendChild(actions);
+
+                const content = document.createElement("div");
+                content.style.cssText = "margin-bottom: 12px; line-height: 1.5; white-space: pre-wrap;";
+                content.textContent = post.text;
+
+                const socialActions = document.createElement("div");
+                socialActions.style.cssText = "display: flex; gap: 20px; padding-top: 12px; border-top: 1px solid #e5e7eb; margin-top: 12px;";
+
+                const likeBtn = document.createElement("button");
+                likeBtn.style.cssText = "background: none; border: none; display: flex; align-items: center; gap: 6px; color: #666; cursor: pointer; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;";
+                likeBtn.innerHTML = `<i class="fas fa-heart"></i> <span>${post.likes || 0}</span>`;
+                likeBtn.onclick = () => toggleLike(post.id);
+                likeBtn.onmouseover = () => likeBtn.style.backgroundColor = "#fef2f2";
+                likeBtn.onmouseout = () => likeBtn.style.backgroundColor = "transparent";
+
+                const commentBtn = document.createElement("button");
+                commentBtn.style.cssText = "background: none; border: none; display: flex; align-items: center; gap: 6px; color: #666; cursor: pointer; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;";
+                commentBtn.innerHTML = `<i class="fas fa-comment"></i> <span>${post.comments || 0}</span>`;
+                commentBtn.onclick = () => toggleComments(post.id);
+                commentBtn.onmouseover = () => commentBtn.style.backgroundColor = "#f0f9ff";
+                commentBtn.onmouseout = () => commentBtn.style.backgroundColor = "transparent";
+
+                socialActions.appendChild(likeBtn);
+                socialActions.appendChild(commentBtn);
+
+                postDiv.appendChild(header);
+                postDiv.appendChild(content);
+                postDiv.appendChild(socialActions);
+            }
+
+            postsContainer.appendChild(postDiv);
+        }
+
+        // Simple edit/delete functions
+        async function editPost(postId, currentText) {
+            const newText = prompt("Edit your post:", currentText);
+            if (newText && newText.trim() !== currentText) {
+                try {
+                    await updateDoc(doc(db, "posts", postId), {
+                        text: newText.trim()
+                    });
+                    loadInitialPosts(); // Reload posts
+                } catch (error) {
+                    alert("Failed to update post: " + error.message);
+                }
+            }
+        }
+
+        async function deletePost(postId) {
+            if (!confirm("Delete this post? This action cannot be undone.")) return;
+            try {
+                await deleteDoc(doc(db, "posts", postId));
+                loadInitialPosts(); // Reload posts
+            } catch (error) {
+                alert("Failed to delete post: " + error.message);
+            }
+        }
+
+        // 点赞功能
+        async function toggleLike(postId) {
+            if (!currentUser) {
+                alert("Please log in to like posts.");
+                return;
+            }
+
+            try {
+                const postRef = doc(db, "posts", postId);
+                const postDoc = await getDoc(postRef);
+                
+                if (postDoc.exists()) {
+                    const currentPost = postDoc.data();
+                    const currentLikes = currentPost.likes || 0;
+                    const likedBy = currentPost.likedBy || [];
+                    
+                    let newLikes = currentLikes;
+                    let newLikedBy = [...likedBy];
+                    
+                    if (likedBy.includes(currentUser.uid)) {
+                        // 取消点赞
+                        newLikes = Math.max(0, currentLikes - 1);
+                        newLikedBy = likedBy.filter(uid => uid !== currentUser.uid);
+                    } else {
+                        // 点赞
+                        newLikes = currentLikes + 1;
+                        newLikedBy.push(currentUser.uid);
+                    }
+                    
+                    await updateDoc(postRef, {
+                        likes: newLikes,
+                        likedBy: newLikedBy
+                    });
+
+                    // 更新UI
+                    const postDiv = document.getElementById("post_" + postId);
+                    const likeButtons = postDiv.querySelectorAll("button");
+                    likeButtons.forEach(btn => {
+                        if (btn.innerHTML.includes("fa-heart") || btn.innerHTML.includes("fa-thumbs-up")) {
+                            const icon = btn.innerHTML.includes("fa-heart") ? "fa-heart" : "fa-thumbs-up";
+                            btn.innerHTML = `<i class="fas ${icon}"></i> <span>${newLikes}</span>`;
+                            
+                            if (newLikedBy.includes(currentUser.uid)) {
+                                btn.style.color = "#ef4444";
+                            } else {
+                                btn.style.color = "#666";
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Error toggling like:", error);
+                alert("Failed to like post: " + error.message);
+            }
+        }
+
+        // 评论功能
+        async function toggleComments(postId) {
+            const postDiv = document.getElementById("post_" + postId);
+            let commentsSection = postDiv.querySelector(".comments-section");
+            
+            if (commentsSection) {
+                // 切换显示/隐藏
+                commentsSection.style.display = commentsSection.style.display === "none" ? "block" : "none";
+            } else {
+                // 创建评论区域
+                commentsSection = document.createElement("div");
+                commentsSection.className = "comments-section";
+                commentsSection.style.cssText = "margin-top: 12px; padding: 12px; border-top: 1px solid #e5e7eb; background: #f9f9f9; border-radius: 0 0 12px 12px;";
+
+                // 评论输入框
+                const commentForm = document.createElement("div");
+                commentForm.style.cssText = "display: flex; gap: 8px; margin-bottom: 12px;";
+                
+                const commentInput = document.createElement("input");
+                commentInput.type = "text";
+                commentInput.placeholder = "Write a comment...";
+                commentInput.style.cssText = "flex: 1; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 20px; outline: none; font-size: 0.9rem;";
+                
+                const submitBtn = document.createElement("button");
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                submitBtn.style.cssText = "background: #4f46e5; color: white; border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;";
+                
+                submitBtn.onclick = () => addComment(postId, commentInput.value.trim(), commentInput);
+                commentInput.onkeypress = (e) => {
+                    if (e.key === "Enter" && commentInput.value.trim()) {
+                        addComment(postId, commentInput.value.trim(), commentInput);
+                    }
+                };
+
+                commentForm.appendChild(commentInput);
+                commentForm.appendChild(submitBtn);
+                
+                // 评论列表
+                const commentsList = document.createElement("div");
+                commentsList.className = "comments-list";
+                
+                commentsSection.appendChild(commentForm);
+                commentsSection.appendChild(commentsList);
+                postDiv.appendChild(commentsSection);
+                
+                // 加载现有评论
+                loadComments(postId, commentsList);
+            }
+        }
+
+        // 添加评论
+        async function addComment(postId, commentText, inputElement) {
+            if (!currentUser) {
+                alert("Please log in to comment.");
+                return;
+            }
+            
+            if (!commentText) return;
+
+            try {
+                await addDoc(collection(db, "comments"), {
+                    postId: postId,
+                    uid: currentUser.uid,
+                    author: currentUser.email,
+                    text: commentText,
+                    createdAt: serverTimestamp()
+                });
+                
+                inputElement.value = "";
+                
+                // 更新评论数量
+                const postRef = doc(db, "posts", postId);
+                const postDoc = await getDoc(postRef);
+                
+                if (postDoc.exists()) {
+                    const currentPost = postDoc.data();
+                    const currentComments = currentPost.comments || 0;
+                    await updateDoc(postRef, {
+                        comments: currentComments + 1
+                    });
+                    
+                    // 更新UI
+                    const postDiv = document.getElementById("post_" + postId);
+                    const commentButtons = postDiv.querySelectorAll("button");
+                    commentButtons.forEach(btn => {
+                        if (btn.innerHTML.includes("fa-comment")) {
+                            btn.innerHTML = `<i class="fas fa-comment"></i> <span>${currentComments + 1}</span>`;
+                        }
+                    });
+                }
+                
+                // 重新加载评论
+                const commentsList = document.getElementById("post_" + postId).querySelector(".comments-list");
+                loadComments(postId, commentsList);
+                
+            } catch (error) {
+                console.error("Error adding comment:", error);
+                alert("Failed to add comment: " + error.message);
+            }
+        }
+
+        // 加载评论
+        async function loadComments(postId, commentsList) {
+            try {
+                const commentsQuery = query(
+                    collection(db, "comments"),
+                    orderBy("createdAt", "asc")
+                );
+                
+                const commentsSnapshot = await getDocs(commentsQuery);
+                commentsList.innerHTML = "";
+                
+                commentsSnapshot.forEach((doc) => {
+                    const comment = doc.data();
+                    if (comment.postId === postId) {
+                        const commentEl = document.createElement("div");
+                        commentEl.style.cssText = "padding: 8px 0; display: flex; gap: 8px; align-items: flex-start;";
+                        
+                        const commentAvatar = document.createElement("div");
+                        commentAvatar.style.cssText = "width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, #10b981, #3b82f6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.7rem; flex-shrink: 0;";
+                        commentAvatar.textContent = comment.author.charAt(0).toUpperCase();
+                        
+                        const commentContent = document.createElement("div");
+                        commentContent.style.cssText = "flex: 1;";
+                        
+                        const commentAuthor = document.createElement("div");
+                        commentAuthor.style.cssText = "font-weight: 600; font-size: 0.8rem; color: #333; margin-bottom: 2px;";
+                        commentAuthor.textContent = comment.author.split('@')[0];
+                        
+                        const commentText = document.createElement("div");
+                        commentText.style.cssText = "font-size: 0.85rem; color: #555; line-height: 1.4;";
+                        commentText.textContent = comment.text;
+                        
+                        commentContent.appendChild(commentAuthor);
+                        commentContent.appendChild(commentText);
+                        commentEl.appendChild(commentAvatar);
+                        commentEl.appendChild(commentContent);
+                        commentsList.appendChild(commentEl);
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading comments:", error);
+            }
+        }
+
+        // Infinite scroll
+        postsContainer.addEventListener("scroll", () => {
+            if (
+                postsContainer.scrollTop + postsContainer.clientHeight >=
+                postsContainer.scrollHeight - 50
+            ) {
+                loadMorePosts();
+            }
+        });
+    </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
 </body>
-</html>
