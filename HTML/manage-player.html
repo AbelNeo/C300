@@ -20,107 +20,9 @@
   <script type="module" src="components/navbar-component.js"></script>
   <script type="module" src="js/account-segment-link.js"></script>
   <script type="module" src="components/footer-component.js"></script>
-  <navbar-component></navbar-component>
-  <style>
-    /* Modal Styles with Slide Up Animation */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0,0,0,0.5);
-      overflow: auto;
-    }
-    .modal-content {
-      background-color: #fff;
-      padding: 2rem;
-      margin: 0 auto;
-      position: relative;
-      top: 100vh;
-      border-radius: 12px 12px 0 0;
-      max-width: 600px;
-      width: 98%;
-      box-shadow: 0 2px 24px rgba(0,0,0,0.15);
-      transform: translateY(0);
-      transition: top 0.7s cubic-bezier(0.57,1.01,0.1,1), 
-                  box-shadow 0.2s, transform 0.7s cubic-bezier(0.57,1.01,0.1,1);
-      will-change: top, transform;
-    }
-    .modal.show .modal-content {
-      top: 10vh;
-      transform: translateY(-8vh);
-      animation: slideUp 0.7s cubic-bezier(0.57,1.01,0.1,1) forwards;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
-    }
-    @keyframes slideUp {
-      from { top: 100vh; transform: translateY(0); }
-      to { top: 10vh; transform: translateY(-8vh);}
-    }
-    .close-modal {
-      position: absolute;
-      right: 1.5rem;
-      top: 1.2rem;
-      font-size: 1.6rem;
-      cursor: pointer;
-      user-select: none;
-      background: none;
-      border: none;
-      color: #800000;
-      z-index: 2;
-      transition: color 0.2s;
-    }
-    .close-modal:hover {
-      color: #ffcc00;
-    }
-    .form-group {
-      margin-bottom: 1.2rem;
-    }
-    .form-group label {
-      font-weight: 500;
-      margin-bottom: 0.4rem;
-      display: block;
-    }
-    .form-group input, .form-group textarea {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    .image-preview img {
-      max-width: 200px;
-      max-height: 200px;
-      margin-top: 0.5rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px #80000033;
-    }
-    .btn-primary {
-      background: #800000;
-      color: #fff;
-      border: none;
-      padding: 0.7em 1.5em;
-      border-radius: 6px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-top: 1.2em;
-      font-weight: 600;
-    }
-    .btn-primary:hover {
-      background: #a00000;
-    }
-    /* Responsive modal */
-    @media (max-width: 600px) {
-      .modal-content {
-        max-width: 98vw;
-        padding: 1em;
-      }
-    }
-  </style>
 </head>
 <body>
+  <navbar-component></navbar-component>
   <main class="container">
     <div class="page-header">
       <h1>Manage Players</h1>
@@ -130,72 +32,30 @@
     <!-- Add Player Modal -->
     <div id="addPlayerModal" class="modal">
       <div class="modal-content">
-        <button class="close-modal" id="closeModalBtn" title="Close">&times;</button>
+        <span class="close-modal">&times;</span>
         <h2>Add New Player</h2>
         <form id="playerForm">
-          <!-- Must-have fields -->
           <div class="form-group">
-            <label for="playerName">Player Name*</label>
+            <label for="playerName">Player Name</label>
             <input type="text" id="playerName" required>
           </div>
+          
           <div class="form-group">
-            <label for="dob">Date of Birth*</label>
-            <input type="date" id="dob" required>
+            <label for="playerPosition">Position</label>
+            <input type="text" id="playerPosition">
           </div>
+          
           <div class="form-group">
-            <label for="nationality">Nationality*</label>
-            <input type="text" id="nationality" required>
+            <label for="jerseyNumber">Jersey Number</label>
+            <input type="number" id="jerseyNumber">
           </div>
+          
           <div class="form-group">
-            <label for="heightCm">Height (cm)*</label>
-            <input type="number" id="heightCm" required min="120" max="250">
-          </div>
-          <div class="form-group">
-            <label for="weightKg">Weight (kg)*</label>
-            <input type="number" id="weightKg" required min="40" max="150">
-          </div>
-          <div class="form-group">
-            <label for="bio">Bio*</label>
-            <textarea id="bio" required rows="2"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="jerseyNumber">Jersey Number*</label>
-            <input type="number" id="jerseyNumber" required min="1" max="99">
-          </div>
-          <div class="form-group">
-            <label for="playerPhoto">Player Photo*</label>
-            <input type="file" id="playerPhoto" accept="image/*" required>
+            <label for="playerPhoto">Player Photo</label>
+            <input type="file" id="playerPhoto" accept="image/*">
             <div class="image-preview" id="imagePreview"></div>
           </div>
-          <div class="form-group">
-            <label for="playerPosition">Position*</label>
-            <input type="text" id="playerPosition" required>
-          </div>
-          <!-- Optional fields -->
-          <div class="form-group">
-            <label for="goals">Goals</label>
-            <input type="number" id="goals" min="0">
-          </div>
-          <div class="form-group">
-            <label for="assists">Assists</label>
-            <input type="number" id="assists" min="0">
-          </div>
-          <div class="form-group">
-            <label for="yellowCards">Yellow Cards</label>
-            <input type="number" id="yellowCards" min="0">
-          </div>
-          <div class="form-group">
-            <label for="redCards">Red Cards</label>
-            <input type="number" id="redCards" min="0">
-          </div>
-          <div class="form-group">
-            <label for="joinedDate">Joined Date</label>
-            <input type="date" id="joinedDate">
-          </div>
-          <div class="form-group">
-            <label for="contractEnd">Contract End Date</label>
-            <input type="date" id="contractEnd">
-          </div>
+          
           <button type="submit" class="btn-primary">Save Player</button>
         </form>
       </div>
@@ -206,91 +66,49 @@
   
   <footer-component></footer-component>
 
-  <script type="module">
-    import { db, storage } from './js/firebase.js';
-    import { collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+ <script type="module">
+import { db, storage } from './js/firebase.js';
+import { collection, getDocs, addDoc, deleteDoc, doc as firestoreDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-    const grid = document.getElementById('playersGrid');
-    const addPlayerBtn = document.getElementById('addPlayerBtn');
-    const modal = document.getElementById('addPlayerModal');
-    const modalContent = modal.querySelector('.modal-content');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const playerForm = document.getElementById('playerForm');
-    const imagePreview = document.getElementById('imagePreview');
-    const photoInput = document.getElementById('playerPhoto');
+const grid = document.getElementById('playersGrid');
+const addPlayerBtn = document.getElementById('addPlayerBtn');
+const modal = document.getElementById('addPlayerModal');
+const closeModal = document.querySelector('.close-modal');
+const playerForm = document.getElementById('playerForm');
+const imagePreview = document.getElementById('imagePreview');
+const photoInput = document.getElementById('playerPhoto');
 
-    // Modal show/close with slide
-    addPlayerBtn.onclick = () => {
-      modal.style.display = 'block';
-      setTimeout(() => modal.classList.add('show'), 10);
-      setTimeout(() => {
-        modalContent.scrollIntoView({behavior: 'smooth', block: 'center'});
-        document.getElementById('playerName').focus();
-      }, 700);
-    };
-    function closeModalFn() {
-      modal.classList.remove('show');
-      setTimeout(() => {
-        modal.style.display = 'none';
-        playerForm.reset();
-        imagePreview.innerHTML = '';
-      }, 700); // Wait for animation
+// Modal functionality
+addPlayerBtn.onclick = () => modal.style.display = 'block';
+closeModal.onclick = () => modal.style.display = 'none';
+window.onclick = (e) => {
+  if (e.target === modal) modal.style.display = 'none';
+};
+
+// Image preview
+photoInput.addEventListener('change', function() {
+  const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 200px; max-height: 200px;">`;
     }
-    closeModalBtn.onclick = closeModalFn;
-    window.onclick = (e) => {
-      if (e.target === modal) closeModalFn();
-    };
+    reader.readAsDataURL(file);
+  }
+});
 
-    // Slide up contents to fill fields if user clicks close-modal again (simulate slider)
-    closeModalBtn.addEventListener('dblclick', () => {
-      // Find first empty required field and scroll to it
-      const requiredInputs = modalContent.querySelectorAll('[required]');
-      for (const input of requiredInputs) {
-        if (!input.value) {
-          input.scrollIntoView({behavior: 'smooth', block: 'center'});
-          input.focus();
-          break;
-        }
-      }
-    });
-
-    // Image preview
-    photoInput.addEventListener('change', function() {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-        }
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Form submission
-    playerForm.addEventListener('submit', async (e) => {
+// Form submission
+playerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   
-  // Get form values
-  const name = document.getElementById('playerName').value.trim();
-  const dob = document.getElementById('dob').value;
-  const nationality = document.getElementById('nationality').value.trim();
-  const heightCm = parseInt(document.getElementById('heightCm').value, 10);
-  const weightKg = parseInt(document.getElementById('weightKg').value, 10);
-  const bio = document.getElementById('bio').value.trim();
-  const jerseyNumber = parseInt(document.getElementById('jerseyNumber').value, 10);
-  const playerPosition = document.getElementById('playerPosition').value.trim();
+  const name = document.getElementById('playerName').value;
+  const position = document.getElementById('playerPosition').value;
+  const jerseyNumber = document.getElementById('jerseyNumber').value;
   const photoFile = photoInput.files[0];
   
-  // Optional fields
-  const goals = document.getElementById('goals').value ? parseInt(document.getElementById('goals').value, 10) : 0;
-  const assists = document.getElementById('assists').value ? parseInt(document.getElementById('assists').value, 10) : 0;
-  const yellowCards = document.getElementById('yellowCards').value ? parseInt(document.getElementById('yellowCards').value, 10) : 0;
-  const redCards = document.getElementById('redCards').value ? parseInt(document.getElementById('redCards').value, 10) : 0;
-  const joinedDate = document.getElementById('joinedDate').value || null;
-  const contractEnd = document.getElementById('contractEnd').value || null;
-
   try {
+    // Upload photo if exists
     let photoPath = '';
     if (photoFile) {
       const storageReference = storageRef(storage, `players/${Date.now()}_${photoFile.name}`);
@@ -298,32 +116,21 @@
       photoPath = await getDownloadURL(storageReference);
     }
     
-    const now = new Date();
-    
-    // Add document to Firestore
+    // Add player to Firestore (only fields present in the form)
     await addDoc(collection(db, "Players"), {
       name,
-      dob,
-      nationality,
-      heightCm,
-      weightKg,
-      bio,
+      position,
       jerseyNumber,
       photoPath,
-      position: playerPosition,
-      createdAt: now,
-      updatedAt: now,
-      goals,
-      assists,
-      yellowCards,
-      redCards,
-      joinedDate,
-      contractEnd
+      createdAt: serverTimestamp()
     });
     
+    // Reset form and close modal
     playerForm.reset();
     imagePreview.innerHTML = '';
-    closeModalFn();
+    modal.style.display = 'none';
+    
+    // Refresh player list
     loadPlayers();
   } catch (error) {
     console.error("Error adding player:", error);
@@ -331,61 +138,157 @@
   }
 });
 
-    async function loadPlayers() {
-      grid.innerHTML = '<div class="loading">Loading players...</div>';
-      const ref = collection(db, "Players");
-      const snap = await getDocs(ref);
-      if (snap.empty) {
-        grid.innerHTML = '<div class="empty-message">No players found.</div>';
-        return;
+async function loadPlayers() {
+  grid.innerHTML = '<div class="loading">Loading players...</div>';
+  const ref = collection(db, "Players");
+  const snap = await getDocs(ref);
+  
+  if (snap.empty) {
+    grid.innerHTML = '<div class="empty-message">No players found.</div>';
+    return;
+  }
+  
+  grid.innerHTML = "";
+  snap.forEach(playerDoc => {
+    const player = playerDoc.data();
+    const card = document.createElement('div');
+    card.className = 'player-card';
+    card.innerHTML = `
+      <div class="player-portrait-container">
+        <img 
+          src="${player.photoPath || 'https://via.placeholder.com/150x180?text=No+Photo'}"
+          class="player-portrait"
+          alt="${player.name}"
+          onerror="this.onerror=null;this.src='https://via.placeholder.com/150x180?text=No+Photo';"
+        >
+        <div class="player-actions">
+          <button class="editBtn" data-id="${playerDoc.id}">Edit</button>
+          <button class="deleteBtn" data-id="${playerDoc.id}">Delete</button>
+        </div>
+      </div>
+      <div class="player-info">
+        <h3 class="player-name">${player.name}</h3>
+        <p class="player-position">${player.position || 'Position not specified'}</p>
+        <p class="player-jersey">Jersey: ${player.jerseyNumber || '--'}</p>
+      </div>
+    `;
+    
+    card.querySelector('.editBtn').onclick = () => {
+      window.location.href = `edit-player.html?id=${playerDoc.id}`;
+    };
+    
+    card.querySelector('.deleteBtn').onclick = async () => {
+      if (confirm(`Are you sure you want to delete ${player.name}?`)) {
+        try {
+          await deleteDoc(firestoreDoc(db, "Players", playerDoc.id));
+          card.remove();
+        } catch (error) {
+          console.error("Error deleting player:", error);
+          alert("Error deleting player. Please try again.");
+        }
       }
-      grid.innerHTML = "";
-      snap.forEach(doc => {
-        const player = doc.data();
-        const card = document.createElement('div');
-        card.className = 'player-card';
-        card.innerHTML = `
-          <div class="player-portrait-container">
-            <img src="${player.photoPath || 'https://via.placeholder.com/150x180?text=No+Photo'}" 
-                 class="player-portrait" alt="${player.name}">
-            <div class="player-actions">
-              <button class="editBtn" data-id="${doc.id}">Edit</button>
-              <button class="deleteBtn" data-id="${doc.id}">Delete</button>
-            </div>
-          </div>
-          <div class="player-info">
-            <h3 class="player-name">${player.name}</h3>
-            <p class="player-position">${player.position || 'Position not specified'}</p>
-            <p class="player-jersey">Jersey: ${player.jerseyNumber || '--'}</p>
-            <p class="player-nationality">${player.nationality || ''}</p>
-            <p class="player-dob">${player.dob ? `DOB: ${player.dob}` : ''}</p>
-            <p class="player-bio">${player.bio || ''}</p>
-            ${player.goals !== null && player.goals !== undefined ? `<p>Goals: ${player.goals}</p>` : ''}
-            ${player.assists !== null && player.assists !== undefined ? `<p>Assists: ${player.assists}</p>` : ''}
-            ${player.yellowCards !== null && player.yellowCards !== undefined ? `<p>Yellow Cards: ${player.yellowCards}</p>` : ''}
-            ${player.redCards !== null && player.redCards !== undefined ? `<p>Red Cards: ${player.redCards}</p>` : ''}
-            ${player.joinedDate ? `<p>Joined: ${player.joinedDate}</p>` : ''}
-            ${player.contractEnd ? `<p>Contract End: ${player.contractEnd}</p>` : ''}
-          </div>
-        `;
-        card.querySelector('.editBtn').onclick = () => {
-          window.location.href = `edit-player.html?id=${doc.id}`;
-        };
-        card.querySelector('.deleteBtn').onclick = async () => {
-          if (confirm(`Are you sure you want to delete ${player.name}?`)) {
-            try {
-              await deleteDoc(doc(db, "Players", doc.id));
-              card.remove();
-            } catch (error) {
-              console.error("Error deleting player:", error);
-              alert("Error deleting player. Please try again.");
-            }
-          }
-        };
-        grid.appendChild(card);
-      });
+    };
+    
+    grid.appendChild(card);
+  });
+}
+
+loadPlayers();
+</script>
+
+  <style>
+    /* Additional CSS for the enhanced UI */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
     }
-    loadPlayers();
-  </script>
+    
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 2rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+    }
+    
+    .close-modal {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .player-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    
+    .player-actions button {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .player-actions .editBtn {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .player-actions .deleteBtn {
+      background-color: #f44336;
+      color: white;
+    }
+    
+    .player-portrait-container {
+      position: relative;
+    }
+    
+    .player-portrait {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px 8px 0 0;
+    }
+    
+    .player-info {
+      padding: 1rem;
+    }
+  </style>
 </body>
 </html>
