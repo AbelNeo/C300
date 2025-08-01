@@ -306,7 +306,22 @@
       <div id="uploadStatus"></div>
     </form>
     <div id="instagramGrid" class="instagram-grid"></div>
-    <div class="see-more"><a href="#">SEE MORE</a></div>
+
+    <!-- COMMENTS MODAL -->
+  <div id="commentsModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:400px;">
+      <span id="closeCommentsModal" class="close-modal" style="float:right;cursor:pointer;font-size:2em;">&times;</span>
+      <h3>Comments</h3>
+      <div id="commentsList" style="max-height:250px;overflow-y:auto;margin-bottom:1em;border-bottom:1px solid #eee;padding-bottom:1em;"></div>
+      <form id="commentForm" style="display:flex;gap:0.5em;">
+        <input type="text" id="commentInput" placeholder="Add a comment..." required style="flex:1;" autocomplete="off"/>
+        <button type="submit" class="btn" style="min-width:60px;">Post</button>
+      </form>
+      <div id="commentStatus" style="color:#800000;font-size:0.95em;margin-top:0.5em;"></div>
+    </div>
+  </div>
+
+    <!-- <div class="see-more"><a href="#">SEE MORE</a></div> -->
   </main>
   <footer-component></footer-component>
   <script type="module">
@@ -458,6 +473,36 @@
     const instagramGrid = document.getElementById('instagramGrid');
     const uploadStatus = document.getElementById('uploadStatus');
     const playerPostId = playerId || 'default';
+
+
+        // Comments modal elements
+    const commentsModal = document.getElementById('commentsModal');
+    const closeCommentsModal = document.getElementById('closeCommentsModal');
+    const commentsList = document.getElementById('commentsList');
+    const commentForm = document.getElementById('commentForm');
+    const commentInput = document.getElementById('commentInput');
+    const commentStatus = document.getElementById('commentStatus');
+    let currentPostId = null;
+
+    // Modal open/close logic
+    function openCommentsModal(postId) {
+      currentPostId = postId;
+      commentsModal.style.display = 'block';
+      loadComments(postId);
+    }
+    function closeModal() {
+      commentsModal.style.display = 'none';
+      commentsList.innerHTML = '';
+      commentInput.value = '';
+      commentStatus.textContent = '';
+      currentPostId = null;
+    }
+    closeCommentsModal.onclick = closeModal;
+    window.onclick = function(e) {
+      if (e.target === commentsModal) closeModal();
+    };
+
+
     async function uploadImages(files, playerPostId, userId) {
       const folder = `player_posts/${playerPostId}/${userId || 'anonymous'}`;
       const urls = [];
@@ -499,32 +544,94 @@
         uploadStatus.textContent = "Failed to upload/post: " + err.message;
       }
     });
-    async function loadPlayerPosts() {
-      instagramGrid.innerHTML = '<div class="loading">Loading posts...</div>';
-      const q = fQuery(fCollection(db, "PlayerPosts"), fWhere("playerPostId", "==", playerPostId));
-      const snap = await fGetDocs(q);
-      if (snap.empty) {
-        instagramGrid.innerHTML = '<div class="empty-message">No posts yet.</div>';
-        return;
-      }
-      instagramGrid.innerHTML = '';
-      snap.forEach(docSnap => {
-        const item = docSnap.data();
-        const card = document.createElement('div');
-        card.className = 'instagram-card';
-        card.innerHTML = `
-          <div class="instagram-image-container">
-            ${item.images?.length ? `<img src="${item.images[0]}" alt="${item.name}" class="instagram-image">` : '<div class="instagram-image no-image">No Image</div>'}
-          </div>
-          <div class="instagram-content">
-            <h3 class="instagram-title">${item.name}</h3>
-            <p class="instagram-caption">${item.description}</p>
-          </div>
-        `;
-        instagramGrid.appendChild(card);
-      });
+ async function loadPlayerPosts() {
+        instagramGrid.innerHTML = '<div class="loading">Loading posts...</div>';
+        const q = query(collection(db, "PlayerPosts"), where("playerPostId", "==", playerPostId));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+            instagramGrid.innerHTML = '<div class="empty-message">No posts yet.</div>';
+            return;
+        }
+        instagramGrid.innerHTML = '';
+        snap.forEach(docSnap => {
+            const item = docSnap.data();
+            const postId = docSnap.id;
+            const card = document.createElement('div');
+            card.className = 'instagram-card';
+            card.innerHTML = `
+                <div class="instagram-image-container">
+                    ${item.images?.length ? `<img src="${item.images[0]}" alt="${item.name}" class="instagram-image">` : '<div class="instagram-image no-image">No Image</div>'}
+                </div>
+                <div class="instagram-content">
+                    <h3 class="instagram-title">${item.name}</h3>
+                    <p class="instagram-caption">${item.description}</p>
+                    <button class="comments-btn btn" data-post-id="${postId}" style="margin-top:8px;">💬 Comments</button>
+                </div>
+            `;
+            // Attach comments button
+            card.querySelector('.comments-btn').onclick = (e) => {
+              e.stopPropagation();
+              openCommentsModal(postId);
+            };
+            instagramGrid.appendChild(card);
+        });
     }
     loadPlayerPosts();
+
+    // COMMENTS FIRESTORE LOGIC
+    async function loadComments(postId) {
+      commentsList.innerHTML = '<div class="loading">Loading comments...</div>';
+      const q = query(
+        collection(db, "PlayerPosts", postId, "comments"),
+        orderBy("createdAt", "asc")
+      );
+      const snap = await getDocs(q);
+      if (snap.empty) {
+        commentsList.innerHTML = '<div style="color:#888;">No comments yet.</div>';
+        return;
+      }
+      commentsList.innerHTML = '';
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        const item = document.createElement('div');
+        item.style.borderBottom = "1px solid #eee";
+        item.style.padding = "6px 0";
+        item.innerHTML = `
+          <b>${data.displayName || data.username || 'User'}:</b>
+          <span>${data.text}</span>
+          <span style="color:#bbb;font-size:0.85em;margin-left:5px;">
+            ${data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString() : ''}
+          </span>
+        `;
+        commentsList.appendChild(item);
+      });
+    }
+
+    // Add comment
+    commentForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      commentStatus.textContent = "";
+      const text = commentInput.value.trim();
+      if (!text) return;
+      let userObj = null;
+      await new Promise(resolve => onAuthStateChanged(auth, user => { userObj = user; resolve(); }));
+      if (!userObj) {
+        commentStatus.textContent = "You must be logged in to comment.";
+        return;
+      }
+      try {
+        await addDoc(collection(db, "PlayerPosts", currentPostId, "comments"), {
+          text,
+          userId: userObj.uid,
+          displayName: userObj.displayName || userObj.email || "User",
+          createdAt: serverTimestamp()
+        });
+        commentInput.value = '';
+        loadComments(currentPostId);
+      } catch (err) {
+        commentStatus.textContent = "Failed to add comment: " + err.message;
+      }
+    });
   </script>
 </body>
 </html>

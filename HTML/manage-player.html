@@ -18,7 +18,6 @@
   <script type="module" src="js/players.js"></script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="components/navbar-component.js"></script>
-  <script type="module" src="js/upload.js"></script>
   <script type="module" src="js/account-segment-link.js"></script>
   <script type="module" src="components/footer-component.js"></script>
   <navbar-component></navbar-component>
@@ -270,77 +269,67 @@
 
     // Form submission
     playerForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      // Must-have fields
-      const addPlayer = async (playerData) => {
-  try {
-    // This will auto-generate a unique ID
-    const playerRef = await addDoc(collection(db, "Players"), playerData);
-    
-    // playerRef.id contains the auto-generated ID
-    console.log("Player added with ID: ", playerRef.id);
-    
-    // If you need to use this ID immediately
-    return playerRef.id;
-  } catch (error) {
-    console.error("Error adding player: ", error);
-    throw error;
-  }
-};
-      const name = document.getElementById('playerName').value.trim();
-      const dob = document.getElementById('dob').value;
-      const nationality = document.getElementById('nationality').value.trim();
-      const heightCm = parseInt(document.getElementById('heightCm').value, 10);
-      const weightKg = parseInt(document.getElementById('weightKg').value, 10);
-      const bio = document.getElementById('bio').value.trim();
-      const jerseyNumber = parseInt(document.getElementById('jerseyNumber').value, 10);
-      const playerPosition = document.getElementById('playerPosition').value.trim();
-      const photoFile = photoInput.files[0];
-      // Optional fields
-      const goals = document.getElementById('goals').value ? parseInt(document.getElementById('goals').value, 10) : null;
-      const assists = document.getElementById('assists').value ? parseInt(document.getElementById('assists').value, 10) : null;
-      const yellowCards = document.getElementById('yellowCards').value ? parseInt(document.getElementById('yellowCards').value, 10) : null;
-      const redCards = document.getElementById('redCards').value ? parseInt(document.getElementById('redCards').value, 10) : null;
-      const joinedDate = document.getElementById('joinedDate').value || null;
-      const contractEnd = document.getElementById('contractEnd').value || null;
+  e.preventDefault();
+  
+  // Get form values
+  const name = document.getElementById('playerName').value.trim();
+  const dob = document.getElementById('dob').value;
+  const nationality = document.getElementById('nationality').value.trim();
+  const heightCm = parseInt(document.getElementById('heightCm').value, 10);
+  const weightKg = parseInt(document.getElementById('weightKg').value, 10);
+  const bio = document.getElementById('bio').value.trim();
+  const jerseyNumber = parseInt(document.getElementById('jerseyNumber').value, 10);
+  const playerPosition = document.getElementById('playerPosition').value.trim();
+  const photoFile = photoInput.files[0];
+  
+  // Optional fields
+  const goals = document.getElementById('goals').value ? parseInt(document.getElementById('goals').value, 10) : 0;
+  const assists = document.getElementById('assists').value ? parseInt(document.getElementById('assists').value, 10) : 0;
+  const yellowCards = document.getElementById('yellowCards').value ? parseInt(document.getElementById('yellowCards').value, 10) : 0;
+  const redCards = document.getElementById('redCards').value ? parseInt(document.getElementById('redCards').value, 10) : 0;
+  const joinedDate = document.getElementById('joinedDate').value || null;
+  const contractEnd = document.getElementById('contractEnd').value || null;
 
-      try {
-        let photoPath = '';
-        if (photoFile) {
-          const storageReference = storageRef(storage, `players/${Date.now()}_${photoFile.name}`);
-          await uploadBytes(storageReference, photoFile);
-          photoPath = await getDownloadURL(storageReference);
-        }
-        const now = new Date();
-        await addDoc(collection(db, "Players"), {
-          playerId,
-          name,
-          dob,
-          nationality,
-          heightCm,
-          weightKg,
-          bio,
-          jerseyNumber,
-          photoPath,
-          position: playerPosition,
-          createdAt: now,
-          updatedAt: now,
-          goals,
-          assists,
-          yellowCards,
-          redCards,
-          joinedDate,
-          contractEnd
-        });
-        playerForm.reset();
-        imagePreview.innerHTML = '';
-        closeModalFn();
-        loadPlayers();
-      } catch (error) {
-        console.error("Error adding player:", error);
-        alert("Error adding player. Please try again.");
-      }
+  try {
+    let photoPath = '';
+    if (photoFile) {
+      const storageReference = storageRef(storage, `players/${Date.now()}_${photoFile.name}`);
+      await uploadBytes(storageReference, photoFile);
+      photoPath = await getDownloadURL(storageReference);
+    }
+    
+    const now = new Date();
+    
+    // Add document to Firestore
+    await addDoc(collection(db, "Players"), {
+      name,
+      dob,
+      nationality,
+      heightCm,
+      weightKg,
+      bio,
+      jerseyNumber,
+      photoPath,
+      position: playerPosition,
+      createdAt: now,
+      updatedAt: now,
+      goals,
+      assists,
+      yellowCards,
+      redCards,
+      joinedDate,
+      contractEnd
     });
+    
+    playerForm.reset();
+    imagePreview.innerHTML = '';
+    closeModalFn();
+    loadPlayers();
+  } catch (error) {
+    console.error("Error adding player:", error);
+    alert("Error adding player. Please try again.");
+  }
+});
 
     async function loadPlayers() {
       grid.innerHTML = '<div class="loading">Loading players...</div>';
