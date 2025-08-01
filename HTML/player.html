@@ -502,7 +502,7 @@
       if (e.target === commentsModal) closeModal();
     };
 
-
+    
     async function uploadImages(files, playerPostId, userId) {
       const folder = `player_posts/${playerPostId}/${userId || 'anonymous'}`;
       const urls = [];
@@ -544,94 +544,32 @@
         uploadStatus.textContent = "Failed to upload/post: " + err.message;
       }
     });
- async function loadPlayerPosts() {
-        instagramGrid.innerHTML = '<div class="loading">Loading posts...</div>';
-        const q = query(collection(db, "PlayerPosts"), where("playerPostId", "==", playerPostId));
-        const snap = await getDocs(q);
-        if (snap.empty) {
-            instagramGrid.innerHTML = '<div class="empty-message">No posts yet.</div>';
-            return;
-        }
-        instagramGrid.innerHTML = '';
-        snap.forEach(docSnap => {
-            const item = docSnap.data();
-            const postId = docSnap.id;
-            const card = document.createElement('div');
-            card.className = 'instagram-card';
-            card.innerHTML = `
-                <div class="instagram-image-container">
-                    ${item.images?.length ? `<img src="${item.images[0]}" alt="${item.name}" class="instagram-image">` : '<div class="instagram-image no-image">No Image</div>'}
-                </div>
-                <div class="instagram-content">
-                    <h3 class="instagram-title">${item.name}</h3>
-                    <p class="instagram-caption">${item.description}</p>
-                    <button class="comments-btn btn" data-post-id="${postId}" style="margin-top:8px;">💬 Comments</button>
-                </div>
-            `;
-            // Attach comments button
-            card.querySelector('.comments-btn').onclick = (e) => {
-              e.stopPropagation();
-              openCommentsModal(postId);
-            };
-            instagramGrid.appendChild(card);
-        });
-    }
-    loadPlayerPosts();
-
-    // COMMENTS FIRESTORE LOGIC
-    async function loadComments(postId) {
-      commentsList.innerHTML = '<div class="loading">Loading comments...</div>';
-      const q = query(
-        collection(db, "PlayerPosts", postId, "comments"),
-        orderBy("createdAt", "asc")
-      );
-      const snap = await getDocs(q);
+    async function loadPlayerPosts() {
+      instagramGrid.innerHTML = '<div class="loading">Loading posts...</div>';
+      const q = fQuery(fCollection(db, "PlayerPosts"), fWhere("playerPostId", "==", playerPostId));
+      const snap = await fGetDocs(q);
       if (snap.empty) {
-        commentsList.innerHTML = '<div style="color:#888;">No comments yet.</div>';
+        instagramGrid.innerHTML = '<div class="empty-message">No posts yet.</div>';
         return;
       }
-      commentsList.innerHTML = '';
+      instagramGrid.innerHTML = '';
       snap.forEach(docSnap => {
-        const data = docSnap.data();
-        const item = document.createElement('div');
-        item.style.borderBottom = "1px solid #eee";
-        item.style.padding = "6px 0";
-        item.innerHTML = `
-          <b>${data.displayName || data.username || 'User'}:</b>
-          <span>${data.text}</span>
-          <span style="color:#bbb;font-size:0.85em;margin-left:5px;">
-            ${data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString() : ''}
-          </span>
+        const item = docSnap.data();
+        const card = document.createElement('div');
+        card.className = 'instagram-card';
+        card.innerHTML = `
+          <div class="instagram-image-container">
+            ${item.images?.length ? `<img src="${item.images[0]}" alt="${item.name}" class="instagram-image">` : '<div class="instagram-image no-image">No Image</div>'}
+          </div>
+          <div class="instagram-content">
+            <h3 class="instagram-title">${item.name}</h3>
+            <p class="instagram-caption">${item.description}</p>
+          </div>
         `;
-        commentsList.appendChild(item);
+        instagramGrid.appendChild(card);
       });
     }
-
-    // Add comment
-    commentForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      commentStatus.textContent = "";
-      const text = commentInput.value.trim();
-      if (!text) return;
-      let userObj = null;
-      await new Promise(resolve => onAuthStateChanged(auth, user => { userObj = user; resolve(); }));
-      if (!userObj) {
-        commentStatus.textContent = "You must be logged in to comment.";
-        return;
-      }
-      try {
-        await addDoc(collection(db, "PlayerPosts", currentPostId, "comments"), {
-          text,
-          userId: userObj.uid,
-          displayName: userObj.displayName || userObj.email || "User",
-          createdAt: serverTimestamp()
-        });
-        commentInput.value = '';
-        loadComments(currentPostId);
-      } catch (err) {
-        commentStatus.textContent = "Failed to add comment: " + err.message;
-      }
-    });
+    loadPlayerPosts();
   </script>
 </body>
 </html>
